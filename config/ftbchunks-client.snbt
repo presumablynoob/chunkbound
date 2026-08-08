@@ -138,86 +138,86 @@
 		# Default: true
 		entity_heads: true
 		entity_icon: {
-			"minecraft:ocelot": true
-			"darkerdepths:body_snatcher": true
-			"minecraft:pig": true
-			"spawn:blenny": false
-			"minecraft:sheep": true
-			"minecraft:donkey": true
-			"minecraft:zombified_piglin": true
-			"minecraft:horse": true
-			"spawn:spider_crab": true
-			"minecraft:squid": true
-			"minecraft:zombie_villager": true
-			"artifacts:mimic": true
-			"minecraft:turtle": true
-			"spawn:octopus": true
-			"minecraft:bee": true
-			"minecraft:strider": true
-			"spawn:herring": false
-			"biomeswevegone:oddion": true
-			"minecraft:armadillo": true
-			"minecraft:piglin_brute": true
-			"minecraft:husk": true
-			"minecraft:salmon": false
-			"spawn:dodo": true
-			"spawn:pilot_fish": false
-			"spawn:flukeshroom": false
-			"minecraft:drowned": true
-			"minecraft:axolotl": true
 			"darkerdepths:scorcher": true
-			"spawn:coastal_crab": true
-			"minecraft:goat": true
-			"minecraft:cave_spider": true
-			"minecraft:chicken": true
-			"minecraft:polar_bear": true
-			"minecraft:spider": true
-			"spawn:seal": true
-			"minecraft:elder_guardian": true
-			"minecraft:wolf": true
-			"minecraft:iron_golem": true
-			"minecraft:enderman": true
 			"minecraft:wither_skeleton": true
-			"minecraft:witch": true
-			"minecraft:dolphin": true
-			"minecraft:parrot": true
-			"spawn:clam": false
-			"minecraft:skeleton": true
-			"spawn:angler_fish": false
-			"spawn:seahorse": false
-			"minecraft:cow": true
-			"minecraft:guardian": true
-			"spawn:sunfish": true
-			"minecraft:piglin": true
-			"minecraft:rabbit": true
-			"regions_unexplored:ashen": true
-			"minecraft:glow_squid": true
-			"minecraft:breeze": true
-			"minecraft:stray": true
-			"minecraft:slime": true
-			"minecraft:pufferfish": false
-			"minecraft:mooshroom": true
-			"minecraft:cod": false
 			"minecraft:creeper": true
-			"spawn:sea_cow": true
-			"cobblemon:pokemon": true
-			"spawn:hamster": true
+			"biomeswevegone:oddion": true
+			"minecraft:slime": true
+			"spawn:snail": true
+			"spawn:octopus": true
+			"minecraft:parrot": true
+			"minecraft:guardian": true
+			"minecraft:ocelot": true
+			"regions_unexplored:ashen": true
+			"minecraft:tropical_fish": false
+			"spawn:spider_crab": true
+			"minecraft:polar_bear": true
+			"minecraft:fox": true
+			"minecraft:dolphin": true
+			"minecraft:sheep": true
 			"minecraft:bat": true
+			"spawn:flukeshroom": false
 			"minecraft:cat": true
 			"minecraft:villager": true
+			"spawn:sea_cow": true
+			"minecraft:husk": true
+			"minecraft:zombie_villager": true
+			"minecraft:wolf": true
+			"minecraft:piglin": true
+			"spawn:clam": false
+			"minecraft:axolotl": true
+			"cobblemon:pokemon": true
+			"minecraft:stray": true
+			"spawn:herring": false
+			"minecraft:mooshroom": true
+			"minecraft:goat": true
+			"minecraft:chicken": true
+			"minecraft:spider": true
+			"minecraft:horse": true
+			"spawn:pilot_fish": false
+			"minecraft:glow_squid": true
+			"minecraft:salmon": false
 			"minecraft:frog": true
-			"minecraft:tropical_fish": false
-			"minecraft:llama": true
-			"spawn:snail": true
-			"darkerdepths:void_soul": true
-			"minecraft:hoglin": true
-			"spawn:ant": true
-			"minecraft:zombie": true
-			"darkerdepths:void_soul_knight": true
-			"minecraft:fox": true
-			"spawn:tuna": true
 			"minecraft:allay": true
+			"spawn:seal": true
+			"minecraft:strider": true
+			"minecraft:iron_golem": true
+			"minecraft:cave_spider": true
+			"spawn:coastal_crab": true
+			"spawn:tuna": true
+			"minecraft:armadillo": true
+			"minecraft:drowned": true
+			"minecraft:donkey": true
+			"spawn:sunfish": true
+			"spawn:dodo": true
+			"spawn:hamster": true
+			"minecraft:cow": true
+			"spawn:blenny": false
+			"minecraft:zombified_piglin": true
+			"spawn:angler_fish": false
+			"darkerdepths:body_snatcher": true
+			"minecraft:rabbit": true
+			"minecraft:turtle": true
+			"minecraft:elder_guardian": true
 			"spawn:bluefish": false
+			"darkerdepths:void_soul": true
+			"minecraft:breeze": true
+			"darkerdepths:void_soul_knight": true
+			"artifacts:mimic": true
+			"spawn:seahorse": false
+			"minecraft:bee": true
+			"minecraft:llama": true
+			"minecraft:pufferfish": false
+			"minecraft:piglin_brute": true
+			"minecraft:hoglin": true
+			"minecraft:enderman": true
+			"minecraft:zombie": true
+			"spawn:ant": true
+			"minecraft:pig": true
+			"minecraft:witch": true
+			"minecraft:skeleton": true
+			"minecraft:cod": false
+			"minecraft:squid": true
 		}
 		
 		# Minimap font scaling (values not a multiple of 0.5 may look bad)
