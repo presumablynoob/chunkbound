@@ -1,0 +1,19 @@
+{
+	chapter.029876A67B3D5E81.chapter_subtitle: ["Start Here!"]
+	chapter.029876A67B3D5E81.title: "The Basics"
+	chapter_group.4ACE5AB84DC51686.title: "New Beginnings"
+	quest.1A3958AD3AD6D3DF.quest_desc: ["A &9&lCrafting Table&r&r is needed to craft more complex items. "]
+	quest.1A3958AD3AD6D3DF.title: "Making an Upgrade"
+	quest.2BC60346BE5C2ADB.quest_desc: [
+		"To start your journey, begin by breaking any &9&lLog&r&r."
+		""
+		"Logs can be used to craft &9&lWooden Planks&r&r, which is a necessary to create the infamous &9&lCrafting Table&r&r."
+	]
+	quest.2BC60346BE5C2ADB.title: "Getting Started"
+	quest.43EB6615C65C3466.quest_desc: ["The &9&lWooden Pickaxe&r&r is the most basic of all tools, needed to aquire &l&9Cobblestone&r&r which will allow for making more advanced tools."]
+	quest.43EB6615C65C3466.title: "Stone Age"
+	quest.4B16804A4A1488C6.quest_desc: ["Many ores, like &9&lIron&r&r, cannot be mined with a basic Wood Pickaxe and will instead require a &l&9Stone Pickaxe&r&r."]
+	quest.4B16804A4A1488C6.title: "Retooling"
+	task.54E78F3243FC2309.title: "Any Log"
+	task.751C8B00DC2C0B1B.title: "Any Planks"
+}

@@ -1,0 +1,24 @@
+# Minecraft instances generate runtime files constantly (caches, logs,
+# per-mod data folders). Ignore everything by default and explicitly
+# whitelist only the files that define the pack.
+/*
+
+# --- Tracked: pack definition ---
+!/.gitignore
+!/.github/
+!/.vscode/
+!/config/
+!/defaultconfigs/
+!/datapacks/
+!/kubejs/
+!/minecraftinstance.json
+
+# Personal-but-worth-backing-up settings (remove if you don't want them)
+!/options.txt
+!/emi.json
+
+# --- Runtime junk inside tracked folders ---
+kubejs/exported/
+kubejs/logs/
+# Generated blob containing a local web-editor password
+config/resourceful-config-web.json

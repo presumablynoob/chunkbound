@@ -1,0 +1,149 @@
+{
+	autofocus_id: "2BC60346BE5C2ADB"
+	default_hide_dependency_lines: false
+	default_quest_shape: ""
+	filename: "starting_out"
+	group: "4ACE5AB84DC51686"
+	icon: {
+		id: "minecraft:grass_block"
+	}
+	id: "029876A67B3D5E81"
+	images: [ ]
+	order_index: 0
+	quest_links: [ ]
+	quests: [
+		{
+			icon: {
+				id: "minecraft:oak_log"
+			}
+			id: "2BC60346BE5C2ADB"
+			rewards: [
+				{
+					count: 8
+					id: "357739310DC9BDAB"
+					item: {
+						count: 1
+						id: "minecraft:bread"
+					}
+					type: "item"
+				}
+				{
+					id: "0BFC9696A1456D5A"
+					type: "xp"
+					xp: 20
+				}
+			]
+			shape: "square"
+			size: 1.25d
+			tasks: [
+				{
+					id: "54E78F3243FC2309"
+					item: { components: { "ftbfiltersystem:filter": "or(item_tag(minecraft:logs))" }, count: 1, id: "ftbfiltersystem:smart_filter" }
+					type: "item"
+				}
+				{
+					count: 4L
+					id: "751C8B00DC2C0B1B"
+					item: { components: { "ftbfiltersystem:filter": "or(item_tag(minecraft:planks))" }, count: 1, id: "ftbfiltersystem:smart_filter" }
+					type: "item"
+				}
+			]
+			x: 0.0d
+			y: 0.0d
+		}
+		{
+			dependencies: ["2BC60346BE5C2ADB"]
+			id: "1A3958AD3AD6D3DF"
+			rewards: [{
+				id: "28520CCB87042C15"
+				type: "xp"
+				xp: 10
+			}]
+			shape: "square"
+			tasks: [{
+				id: "37EE4DA289D6D006"
+				item: { count: 1, id: "minecraft:crafting_table" }
+				type: "item"
+			}]
+			x: 2.0d
+			y: 0.0d
+		}
+		{
+			dependencies: ["1A3958AD3AD6D3DF"]
+			icon: {
+				id: "minecraft:wooden_pickaxe"
+			}
+			id: "43EB6615C65C3466"
+			rewards: [
+				{
+					count: 16
+					id: "29ED597AEA255AA1"
+					item: {
+						count: 1
+						id: "minecraft:torch"
+					}
+					type: "item"
+				}
+				{
+					id: "795DF908CBC71DFA"
+					type: "xp"
+					xp: 10
+				}
+			]
+			shape: "square"
+			tasks: [
+				{
+					id: "2AAB9E95E0D3EA32"
+					item: { count: 1, id: "minecraft:wooden_pickaxe" }
+					type: "item"
+				}
+				{
+					count: 3L
+					id: "4CC751F1714EA7F8"
+					item: { count: 1, id: "minecraft:cobblestone" }
+					type: "item"
+				}
+			]
+			x: 3.5d
+			y: 0.0d
+		}
+		{
+			dependencies: ["43EB6615C65C3466"]
+			icon: {
+				id: "minecraft:stone_pickaxe"
+			}
+			id: "4B16804A4A1488C6"
+			rewards: [
+				{
+					id: "541ACA7ABA178A4F"
+					item: {
+						count: 1
+						id: "minecraft:stone_sword"
+					}
+					type: "item"
+				}
+				{
+					id: "78ADD44C34E888BF"
+					item: {
+						count: 1
+						id: "minecraft:stone_axe"
+					}
+					type: "item"
+				}
+				{
+					id: "14B327C776F651DD"
+					type: "xp"
+					xp: 10
+				}
+			]
+			shape: "square"
+			tasks: [{
+				id: "50548427F8574D55"
+				item: { count: 1, id: "minecraft:stone_pickaxe" }
+				type: "item"
+			}]
+			x: 5.0d
+			y: 0.0d
+		}
+	]
+}

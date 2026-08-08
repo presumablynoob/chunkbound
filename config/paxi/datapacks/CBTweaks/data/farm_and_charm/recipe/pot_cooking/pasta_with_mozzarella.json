@@ -1,0 +1,26 @@
+{
+  "type": "farm_and_charm:pot_cooking",
+  "ingredients": [
+    {
+      "tag": "c:foods/pasta"
+    },
+    {
+      "item": "minecraft:egg"
+    },
+    {
+      "tag": "candlelight:red_effect"
+    },
+    {
+      "item": "candlelight:mozzarella"
+    }
+  ],
+  "requireContainer": true,
+  "container": {
+    "id": "minecraft:bowl"
+  },
+  "result": {
+    "id": "candlelight:pasta_with_mozzarella",
+    "count": 4
+  },
+  "requiresLearning": false
+}
