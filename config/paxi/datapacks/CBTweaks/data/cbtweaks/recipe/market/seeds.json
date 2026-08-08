@@ -1,6 +1,7 @@
 {
   "type": "farmingforblockheads:market",
-  "defaults": "selling.seeds",
+  "category": "farmingforblockheads:seeds",
+  "preset": "farmersdelight:seeds",
   "result": {
     "item": "farm_and_charm:tomato_seeds"
   }
