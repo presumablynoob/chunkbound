@@ -1,6 +1,7 @@
 {
   "favorites": [],
   "lookup_history": [
+    "item:farm_and_charm:tomato_seeds",
     "item:kaleidoscope_cookery:shengjian_mantou_plate",
     "item:kaleidoscope_cookery:qingtuan_plate",
     "item:kaleidoscope_cookery:sticky_candy_plate",
@@ -244,7 +245,6 @@
     "item:cornexpansion:buttery_polenta",
     "item:farm_and_charm:tomato_bag",
     "item:farm_and_charm:rotten_tomato",
-    "item:farm_and_charm:tomato_seeds",
     "item:farmersdelight:tomato_seeds",
     "item:candlelight:tomato_mozzarella_salad",
     "item:farmersdelight:rotten_tomato",
