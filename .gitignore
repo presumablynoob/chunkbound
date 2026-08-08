@@ -5,6 +5,7 @@
 
 # --- Tracked: pack definition ---
 !/.gitignore
+!/.gitattributes
 !/.github/
 !/.vscode/
 !/config/
@@ -12,6 +13,12 @@
 !/datapacks/
 !/kubejs/
 !/minecraftinstance.json
+
+# Pack content for clone-and-play on another computer
+# (mods/Cobblemon*.jar is stored via Git LFS — over GitHub's 100MB limit)
+!/mods/
+!/resourcepacks/
+!/shaderpacks/
 
 # Personal-but-worth-backing-up settings (remove if you don't want them)
 !/options.txt
