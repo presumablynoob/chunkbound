@@ -29,3 +29,55 @@ kubejs/exported/
 kubejs/logs/
 # Generated blob containing a local web-editor password
 config/resourceful-config-web.json
+
+# Per-mod config that mods rewrite on every launch (defaults filled in,
+# options resaved) — pure noise, not intentional pack tuning.
+config/NoChatReports/
+config/attributefix/
+config/bettercombat/
+config/biomeswevegone/
+config/bountiful/
+config/cobblemon/
+config/euphoria_patcher/
+config/fabric/
+config/rarcompat/
+config/regions_unexplored/
+config/relics/
+config/relics.yaml
+config/xaero/
+config/betterfpsdist.json
+config/capture_xp.json
+config/catchrate-display.json
+config/chat_heads.json5
+config/chunksending.json
+config/continuity.json
+config/cubes_without_borders.json
+config/emi.css
+config/emi_ores-client.json
+config/entity_model_features.json
+config/entity_texture_features.json
+config/etf_warnings.json
+config/flerovium.json
+config/fml.toml
+config/ftbchunks-client.snbt
+config/immediatelyfast.json
+config/immersive_optimization.json
+config/immersiveui.yaml
+config/iris.properties
+config/lithostitched.json
+config/modernfix-mixins.properties
+config/runiclib.json
+config/simpletms/main.json
+config/sodium-options.json
+config/spawn_notification.json
+config/structure_layout_optimizer.jsonc
+config/tim_core.json
+
+# KubeJS's own regenerated runtime settings (not scripts/data)
+kubejs/config/
+
+# ProbeJS-generated autocomplete snippets (huge, regenerated on reload)
+.vscode/probejs.code-snippets
+
+# Per-shaderpack option state saved next to the pack
+shaderpacks/*.txt
