@@ -1,11 +1,8 @@
+//Scenes use our own structure instead of the default ponderjs:basic. It ships in
+//the CBResources pack at assets/chunkbound/ponder/basic.nbt
+const PONDER_STRUCTURE = "chunkbound:basic";
+
 Ponder.tags((event) => {
-    /**
-     * "kubejs:getting_started" -> the tag name
-     * "minecraft:paper"        -> the icon
-     * "Getting Started"        -> the title
-     * "This is a description"  -> the description
-     * [...items]               -> default items
-     */
     event.createTag("chunkbound:utils", "minecraft:grass_block", "Chunkbound.", "Pondering for Chunkbound!", [
         "bakery:baker_station"
     ]);
@@ -15,7 +12,7 @@ Ponder.registry((event) => {
 
     //Cake Function
     function simpleCakeScene(cakeId, jamItem, jamLabel, displayName) {
-        event.create(cakeId).scene("preping", `Baking a ${displayName}!`, (scene, util) => {
+        event.create(cakeId).scene("preping", `Baking a ${displayName}!`, PONDER_STRUCTURE, (scene, util) => {
             scene.showStructure();
             scene.world.setBlock([2.5, 1, 2.5], "bakery:baker_station", false);
             scene.idle(20);
@@ -51,7 +48,7 @@ Ponder.registry((event) => {
 
     //Cupcake Function
     function simpleCupcakeScene(cupcakeId, jamItem, jamLabel, displayName, blockName) {
-        event.create(cupcakeId).scene("preping", `Baking ${displayName}!`, (scene, util) => {
+        event.create(cupcakeId).scene("preping", `Baking ${displayName}!`, PONDER_STRUCTURE, (scene, util) => {
             scene.showStructure();
             scene.world.setBlock([2.5, 1, 2.5], "bakery:baker_station", false);
             scene.idle(20);
@@ -96,7 +93,7 @@ Ponder.registry((event) => {
 
     //Cookie Function
     function simpleCookieScene(cookieId, jamItem, jamLabel, displayName, blockName) {
-        event.create(cookieId).scene("preping", `Baking ${displayName}!`, (scene, util) => {
+        event.create(cookieId).scene("preping", `Baking ${displayName}!`, PONDER_STRUCTURE, (scene, util) => {
             scene.showStructure();
             scene.world.setBlock([2.5, 1, 2.5], "bakery:baker_station", false);
             scene.idle(20);
@@ -153,7 +150,7 @@ Ponder.registry((event) => {
     // Each entry: [resultId, jamItem, jamLabel, displayName]
     const simpleCakes = [
         ["bakery:strawberry_cake", "bakery:strawberry_jam", "Strawberry Jam", "Strawberry Cake"],
-        ["bakery:sweetberry_cake", "brewinandchewin:sweet_berry_jam", "Sweetberry Jam", "Sweetberry Cake"],
+        ["bakery:sweetberry_cake", "bakery:sweetberry_jam", "Sweetberry Jam", "Sweetberry Cake"],
         ["bakery:chocolate_cake", "bakery:chocolate_jam", "Chocolate Spread", "Chocolate Cake"],
         ["bakery:chocolate_gateau", "bakery:chocolate_truffle", "Chocolate Truffle", "Chocolate Gateau"]
     ];
@@ -161,14 +158,14 @@ Ponder.registry((event) => {
     //Each entry: [cupcakeId, jamItem, jamLabel, displayName, blockName]
     const simpleCupcakes = [
         ["bakery:strawberry_cupcake", "bakery:strawberry_jam", "Strawberry Jam", "Strawberry Cupcakes", "bakery:strawberry_cupcake_block"],
-        ["bakery:sweetberry_cupcake", "brewinandchewin:sweet_berry_jam", "Sweetberry Jam", "Sweetberry Cupcakes", "bakery:sweetberry_cupcake_block"],
-        ["bakery:apple_cupcake", "brewinandchewin:apple_jelly", "Apple Jelly", "Apple Cupcakes", "bakery:apple_cupcake_block"]
+        ["bakery:sweetberry_cupcake", "bakery:sweetberry_jam", "Sweetberry Jam", "Sweetberry Cupcakes", "bakery:sweetberry_cupcake_block"],
+        ["bakery:apple_cupcake", "bakery:apple_jam", "Apple Jam", "Apple Cupcakes", "bakery:apple_cupcake_block"]
     ];
 
     //Each entry: [cookieId, jamItem, jamLabel, displayName, blockName]
     const simpleCookies = [
         ["bakery:strawberry_glazed_cookie", "bakery:strawberry_jam", "Strawberry Jam", "Strawberry Glazed Cookies", "bakery:strawberry_cookie_block"],
-        ["bakery:sweetberry_glazed_cookie", "brewinandchewin:sweet_berry_jam", "Sweetberry Jam", "Sweetberry Glazed Cookies", "bakery:sweetberry_cookie_block"],
+        ["bakery:sweetberry_glazed_cookie", "bakery:sweetberry_jam", "Sweetberry Jam", "Sweetberry Glazed Cookies", "bakery:sweetberry_cookie_block"],
         ["bakery:chocolate_glazed_cookie", "bakery:chocolate_jam", "Chocolate Spread", "Chocolate Glazed Cookies", "bakery:chocolate_cookie_block"]
     ];
 

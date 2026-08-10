@@ -1,0 +1,24 @@
+{
+  "type": "farm_and_charm:pot_cooking",
+  "ingredients": [
+    {
+      "tag": "farm_and_charm:water_bottles"
+    },
+    {
+      "tag": "c:foods/strawberry"
+    },
+    {
+      "tag": "c:foods/strawberry"
+    }
+  ],
+  "requireContainer": true,
+  "container": {
+    "id": "minecraft:glass_bottle",
+    "count": 1
+  },
+  "result": {
+    "id": "farm_and_charm:strawberry_tea",
+    "count": 1
+  },
+  "requiresLearning": false
+}

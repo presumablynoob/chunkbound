@@ -2,7 +2,7 @@
   "type": "bakery:blank_cake_interaction",
   "stage": "CUPCAKE",
   "ingredient": {
-    "item": "brewinandchewin:apple_jelly"
+    "item": "bakery:apple_jam"
   },
   "result": {
     "set_block": "bakery:apple_cupcake_block",

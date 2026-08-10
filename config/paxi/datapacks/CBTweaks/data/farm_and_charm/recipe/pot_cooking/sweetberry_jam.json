@@ -1,3 +1,13 @@
 {
-    
+  "type": "farm_and_charm:pot_cooking",
+  "ingredients": [
+    { "item": "minecraft:sweet_berries" },
+    { "item": "minecraft:sweet_berries" },
+    { "item": "minecraft:sweet_berries" },
+    { "item": "minecraft:sugar" }
+  ],
+  "container": { "id": "minecraft:glass_bottle" },
+  "result": { "id": "bakery:sweetberry_jam" },
+  "requiresLearning": false,
+  "requireContainer": true
 }

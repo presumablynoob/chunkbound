@@ -2,7 +2,7 @@
   "type": "bakery:blank_cake_interaction",
   "stage": "COOKIE",
   "ingredient": {
-    "item": "brewinandchewin:sweet_berry_jam"
+    "item": "bakery:sweetberry_jam"
   },
   "result": {
     "set_block": "bakery:sweetberry_cookie_block",

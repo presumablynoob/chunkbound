@@ -1,3 +1,13 @@
 {
-    
+  "type": "farm_and_charm:pot_cooking",
+  "ingredients": [
+    { "item": "minecraft:apple" },
+    { "item": "minecraft:apple" },
+    { "item": "minecraft:apple" },
+    { "item": "minecraft:sugar" }
+  ],
+  "container": { "id": "minecraft:glass_bottle" },
+  "result": { "id": "bakery:apple_jam" },
+  "requiresLearning": false,
+  "requireContainer": true
 }
