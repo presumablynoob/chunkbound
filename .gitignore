@@ -6,6 +6,8 @@
 # --- Tracked: pack definition ---
 !/.gitignore
 !/.gitattributes
+# Loaded automatically at the start of every Claude Code session
+!/CLAUDE.md
 !/.github/
 !/.vscode/
 !/config/
