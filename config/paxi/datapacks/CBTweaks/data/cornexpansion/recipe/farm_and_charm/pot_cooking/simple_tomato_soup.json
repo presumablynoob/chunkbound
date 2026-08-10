@@ -1,24 +1,7 @@
 {
-  "type": "farm_and_charm:pot_cooking",
-  "ingredients": [
+  "neoforge:conditions": [
     {
-      "tag": "c:foods/tomato"
-    },
-    {
-      "tag": "c:foods/tomato"
-    },
-    {
-      "item": "cornexpansion:corn_syrup"
+      "type": "neoforge:false"
     }
-  ],
-  "requireContainer": true,
-  "container": {
-    "id": "minecraft:bowl",
-    "count": 1
-  },
-  "result": {
-    "id": "farm_and_charm:simple_tomato_soup",
-    "count": 1
-  },
-  "requiresLearning": false
+  ]
 }

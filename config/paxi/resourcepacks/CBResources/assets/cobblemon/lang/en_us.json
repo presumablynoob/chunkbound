@@ -1,0 +1,5 @@
+{
+  "effect.cobblemon.cleanse_all.description": "Immediately removes every active status effect, both good and bad.",
+  "effect.cobblemon.cleanse_negative.description": "Immediately removes all harmful status effects, leaving your buffs untouched.",
+  "effect.cobblemon.mental_restoration.description": "Resets your time since last rest, so phantoms stop hunting you as though you had slept."
+}

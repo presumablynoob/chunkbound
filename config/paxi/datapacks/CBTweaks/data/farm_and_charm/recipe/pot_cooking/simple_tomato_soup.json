@@ -8,7 +8,7 @@
       "tag": "c:foods/tomato"
     },
     {
-      "item": "minecraft:sugar"
+      "tag": "cornexpansion:sweet_ingredient"
     }
   ],
   "requireContainer": true,

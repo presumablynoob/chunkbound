@@ -11,7 +11,7 @@
       "tag": "candlelight:red_effect"
     },
     {
-      "item": "candlelight:mozzarella"
+      "tag": "brewinandchewin:foods/cheese_wedge"
     }
   ],
   "requireContainer": true,
