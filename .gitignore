@@ -26,6 +26,14 @@
 !/options.txt
 !/emi.json
 
+# Pack documentation: beneficial-effect reference, EMI biome thumbnail
+# worklist and its 4x sprite previews / reference screenshots
+!/chunkbound_info/
+# Full-res screenshot originals stay local; the 240px copies in shots/ are
+# what the doc embeds and what gets committed.
+chunkbound_info/biome-sprites/screenshots/
+chunkbound_info/tools/__pycache__/
+
 # --- Runtime junk inside tracked folders ---
 kubejs/exported/
 kubejs/logs/

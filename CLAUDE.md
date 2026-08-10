@@ -19,6 +19,7 @@ is broken, and before assuming something works.
 | `kubejs/client_scripts/` | Lang renames and Ponder scenes. |
 | `kubejs/server_scripts/` | Runtime tag/recipe edits. **Prefer a datapack over adding here.** |
 | `mods/` | Mod jars — the source of truth for what a mod actually does. |
+| `chunkbound_info/` | Pack documentation and its tooling. Not loaded by the game. |
 
 Overriding a mod's file means recreating its exact path under
 `CBTweaks/data/<namespace>/...`. Read the original out of the jar first.
@@ -222,6 +223,59 @@ to add one key under another mod's namespace.
 
 ---
 
+## EMI biome thumbnails
+
+`emi_ores` puts **every registered biome** into the EMI index
+(`add_biomes_to_index: true`) and looks up a 16×16 sprite at
+`assets/<biome_namespace>/textures/biome/<path>.png`. With none present it draws
+`emi_ores:biome/missing`, a checkerboard. emi_ores registers those into the
+blocks atlas via its own `assets/minecraft/atlases/blocks.json` directory
+source, which scans **all** namespaces — so a sprite added under CBResources is
+picked up with no atlas file of our own.
+
+It enumerates `registryOrThrow(Registries.BIOME).stream()`, with no filter for
+whether worldgen actually places the biome. **A biome disabled in config is
+still listed and still needs a sprite.** BWG's
+`config/biomeswevegone/world_generation.json` switches four off
+(`allium_shrubland`, `eroded_borealis`, `pumpkin_valley`, `shattered_glacier`) —
+they can never be visited or screenshotted, but they still show in EMI. That
+config file is gitignored, so those toggles don't reach a clone.
+
+Worklist and tooling live in `chunkbound_info/`; see
+[tools/README.md](chunkbound_info/tools/README.md).
+[BIOME_SPRITES.md](chunkbound_info/BIOME_SPRITES.md) tables every modded biome,
+its current sprite and its reference screenshot. Both scripts are stdlib-only
+and derive their paths from their own location:
+
+```bash
+python chunkbound_info/tools/downsize_screenshots.py   # after adding a screenshot
+python chunkbound_info/tools/build_biome_doc.py        # after adding a sprite
+```
+
+Screenshots are filed per mod as `screenshots/<mod>/<biome>.png`, and the
+filename **is** the biome id — a mismatch silently drops the row, so the
+generator warns about names matching no registered biome. Full-res originals
+(~8 MB each) stay in `screenshots/` and are gitignored; the 240px copies in
+`shots/` are what the doc embeds and what gets committed.
+
+**Three things that silently produce wrong art**, all found the hard way:
+
+- **Vanilla textures are 4-bit indexed PNGs.** An 8-bit-only reader fails on
+  every one of them, so vanilla blocks sample as "missing" with no error.
+- **Most modded leaf textures are greyscale**, tinted at runtime by the biome's
+  foliage colour. Sampling them directly gives grey trees. Treat a texture with
+  saturation below ~0.12 as a tint target.
+- **BoP gives a placed feature and its configured feature the same id.**
+  Resolving a feature reference as "placed, else configured" therefore loops
+  forever and finds no trees. Resolve the two namespaces separately.
+
+Biome JSONs carry `effects.grass_color` / `foliage_color` / `sky_color` /
+`water_color`, and the mods ship full biome tag sets (`c:is_cave`, `c:is_sandy`,
+`is_nether`, even RU's `surface/sand`, `surface/peat`, `surface/silt`) — enough
+to classify a biome from data instead of guessing from its name.
+
+---
+
 ## Effects
 
 **Read the category from bytecode, never the name.** Each effect class's
@@ -233,7 +287,7 @@ its `BaseEffect(int)` constructor hardcodes it — including Hinder and Flatulen
 `.probe/@special/types/index.d.ts`, the `type MobEffect = ...` union. 152 here.
 
 Compiled results:
-[BENEFICIAL_EFFECTS.md](config/paxi/datapacks/CBTweaks/BENEFICIAL_EFFECTS.md)
+[BENEFICIAL_EFFECTS.md](chunkbound_info/BENEFICIAL_EFFECTS.md)
 (also published to the repo wiki).
 
 ---
