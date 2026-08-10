@@ -6,16 +6,14 @@ Every modded biome EMI lists, its sprite as it stands today, and a slot for an i
 
 Sprites are shown at 4x. Reference screenshots are shown at 240px; the full-resolution originals are kept locally in `biome-sprites/screenshots/<mod>/<biome>.png` and are deliberately not tracked in git.
 
-Regenerate with `python tools/build_biome_doc.py` after adding sprites, or `python tools/downsize_screenshots.py` after adding screenshots.
 
-
-**149 of 212 modded biomes have a sprite; 63 still fall back to `missing.png`.**
+**152 of 212 modded biomes have a sprite; 60 still fall back to `missing.png`.**
 
 | Mod | Biomes | With sprite | Missing |
 |---|---:|---:|---:|
 | Biomes O' Plenty | 69 | 69 | 0 |
 | Regions Unexplored | 78 | 78 | 0 |
-| Oh The Biomes We've Gone | 55 | 2 | 53 |
+| Oh The Biomes We've Gone | 55 | 5 | 50 |
 | Spawn | 10 | 0 | 10 |
 
 ## Biomes O' Plenty — `biomesoplenty`
@@ -181,7 +179,7 @@ Regenerate with `python tools/build_biome_doc.py` after adding sprites, or `pyth
 
 ## Oh The Biomes We've Gone — `biomeswevegone`
 
-2 of 55 have a sprite.
+5 of 55 have a sprite.
 
 | Biome | Current sprite | Screenshot |
 |---|---|---|
@@ -214,11 +212,11 @@ Regenerate with `python tools/build_biome_doc.py` after adding sprites, or `pyth
 | `biomeswevegone:frosted_coniferous_forest` | ![](biome-sprites/current/_missing.png) |  |
 | `biomeswevegone:frosted_taiga` | ![](biome-sprites/current/_missing.png) |  |
 | `biomeswevegone:howling_peaks` | ![](biome-sprites/current/_missing.png) |  |
-| `biomeswevegone:ironwood_gour` | ![](biome-sprites/current/_missing.png) | ![](biome-sprites/shots/biomeswevegone/ironwood_gour.png) |
+| `biomeswevegone:ironwood_gour` | ![](biome-sprites/current/biomeswevegone__ironwood_gour.png) | ![](biome-sprites/shots/biomeswevegone/ironwood_gour.png) |
 | `biomeswevegone:jacaranda_jungle` | ![](biome-sprites/current/_missing.png) |  |
 | `biomeswevegone:lush_stacks` | ![](biome-sprites/current/_missing.png) |  |
 | `biomeswevegone:maple_taiga` | ![](biome-sprites/current/_missing.png) |  |
-| `biomeswevegone:mojave_desert` | ![](biome-sprites/current/_missing.png) | ![](biome-sprites/shots/biomeswevegone/mojave_desert.png) |
+| `biomeswevegone:mojave_desert` | ![](biome-sprites/current/biomeswevegone__mojave_desert.png) | ![](biome-sprites/shots/biomeswevegone/mojave_desert.png) |
 | `biomeswevegone:orchard` | ![](biome-sprites/current/_missing.png) |  |
 | `biomeswevegone:overgrowth_woodlands` | ![](biome-sprites/current/_missing.png) |  |
 | `biomeswevegone:pale_bog` | ![](biome-sprites/current/_missing.png) |  |
@@ -229,7 +227,7 @@ Regenerate with `python tools/build_biome_doc.py` after adding sprites, or `pyth
 | `biomeswevegone:red_rock_valley` | ![](biome-sprites/current/_missing.png) |  |
 | `biomeswevegone:redwood_thicket` | ![](biome-sprites/current/_missing.png) |  |
 | `biomeswevegone:rose_fields` | ![](biome-sprites/current/_missing.png) |  |
-| `biomeswevegone:rugged_badlands` | ![](biome-sprites/current/_missing.png) | ![](biome-sprites/shots/biomeswevegone/rugged_badlands.png) |
+| `biomeswevegone:rugged_badlands` | ![](biome-sprites/current/biomeswevegone__rugged_badlands.png) | ![](biome-sprites/shots/biomeswevegone/rugged_badlands.png) |
 | `biomeswevegone:sakura_grove` | ![](biome-sprites/current/_missing.png) |  |
 | `biomeswevegone:shattered_glacier` **(disabled in config — does not generate)** | ![](biome-sprites/current/_missing.png) |  |
 | `biomeswevegone:sierra_badlands` | ![](biome-sprites/current/_missing.png) |  |
