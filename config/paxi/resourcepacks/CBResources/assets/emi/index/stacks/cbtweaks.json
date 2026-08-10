@@ -1,0 +1,17 @@
+{
+  "removed": [
+    { "type": "emiffect:effect", "id": "xaeroworldmap:no_world_map" },
+    { "type": "emiffect:effect", "id": "xaeroworldmap:no_world_map_harmful" },
+    { "type": "emiffect:effect", "id": "xaeroworldmap:no_cave_maps" },
+    { "type": "emiffect:effect", "id": "xaeroworldmap:no_cave_maps_harmful" },
+
+    { "type": "emiffect:effect", "id": "xaerominimap:no_minimap" },
+    { "type": "emiffect:effect", "id": "xaerominimap:no_minimap_harmful" },
+    { "type": "emiffect:effect", "id": "xaerominimap:no_entity_radar" },
+    { "type": "emiffect:effect", "id": "xaerominimap:no_entity_radar_harmful" },
+    { "type": "emiffect:effect", "id": "xaerominimap:no_waypoints" },
+    { "type": "emiffect:effect", "id": "xaerominimap:no_waypoints_harmful" },
+    { "type": "emiffect:effect", "id": "xaerominimap:no_cave_maps" },
+    { "type": "emiffect:effect", "id": "xaerominimap:no_cave_maps_harmful" }
+  ]
+}
