@@ -1,0 +1,12 @@
+{
+  "type": "crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "farm_and_charm:tomato_bag"
+    }
+  ],
+  "result": {
+    "id": "farmersdelight:tomato",
+    "count": 9
+  }
+}

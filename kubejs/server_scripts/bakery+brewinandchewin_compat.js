@@ -48,14 +48,6 @@ ServerEvents.tags('item', event => {
     event.add('c:hidden_from_recipe_viewers', 'bakery:apple_jam')
 })
 
-//Jar Removal
-ServerEvents.tags('item', event => {
-  event.add('c:hidden_from_recipe_viewers', 'bakery:jar')
-})
-ServerEvents.recipes(event => {
-  event.remove({ output: 'bakery:jar' })
-})
-
 //Dough Compat
 ServerEvents.tags('item', event => {
   event.add('c:foods/dough', 'farm_and_charm:dough')

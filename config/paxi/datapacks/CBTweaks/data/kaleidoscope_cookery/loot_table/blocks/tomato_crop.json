@@ -23,11 +23,11 @@
                   }
                 }
               ],
-              "name": "farm_and_charm:tomato"
+              "name": "farmersdelight:tomato"
             },
             {
               "type": "minecraft:item",
-              "name": "farm_and_charm:tomato_seeds"
+              "name": "farmersdelight:tomato_seeds"
             }
           ]
         }
@@ -59,7 +59,7 @@
               }
             }
           ],
-          "name": "farm_and_charm:tomato_seeds"
+          "name": "farmersdelight:tomato_seeds"
         }
       ],
       "rolls": 1.0

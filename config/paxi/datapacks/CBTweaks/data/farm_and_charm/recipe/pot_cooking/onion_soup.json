@@ -1,0 +1,24 @@
+{
+  "type": "farm_and_charm:pot_cooking",
+  "ingredients": [
+    {
+      "tag": "c:bread"
+    },
+    {
+      "tag": "c:foods/onion"
+    },
+    {
+      "tag": "c:foods/onion"
+    }
+  ],
+  "requireContainer": true,
+  "container": {
+    "id": "minecraft:bowl",
+    "count": 1
+  },
+  "result": {
+    "id": "farm_and_charm:onion_soup",
+    "count": 1
+  },
+  "requiresLearning": false
+}

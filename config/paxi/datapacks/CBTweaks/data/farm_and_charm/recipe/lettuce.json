@@ -1,0 +1,12 @@
+{
+  "type": "crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "farm_and_charm:lettuce_bag"
+    }
+  ],
+  "result": {
+    "id": "farmersdelight:cabbage",
+    "count": 9
+  }
+}
