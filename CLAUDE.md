@@ -80,6 +80,15 @@ Follow `#tag` entries recursively or you will miss most usages.
 **`remove` is a NeoForge extension.** Include `"values": []` alongside it —
 vanilla's codec expects a `values` key.
 
+**An override file at the path does not mean *your* item is handled.** CBTweaks
+tag files are `remove` lists that merge with the jar's values, so
+`data/c/tags/item/seeds.json` existing says nothing about whether
+`kaleidoscope_cookery:wild_rice` is still in `c:seeds`. Checking "is there an
+override?" reports false negatives. Always resolve the merged tag: feed every
+jar's values, then apply CBTweaks' `values`/`remove` in load order, and inspect
+the result. Same for recipes and loot — read the CBTweaks file when one shadows
+the jar path, and skip anything containing `neoforge:false`.
+
 **Identical tags confuse recipe viewers.** When two tags contain exactly the
 same items, EMI may label an ingredient with either name. `c:crops/cabbage` and
 `c:foods/cabbage` both resolve to the same two items, so a recipe using
@@ -130,6 +139,26 @@ serializer references `Ingredient.CODEC` or `CODEC_NONEMPTY` before relying on i
 files and synthesises them at runtime via a `RecipeManagerMixin`. Its broken
 `simple_tomato_soup` cannot be fixed by any datapack; it needs a mod update.
 
+**Polymorph makes vanilla crafting conflicts harmless.** Two recipes with the
+same crafting-grid input normally mean first-match-wins and the loser becomes
+uncraftable. This pack ships `polymorph`, which shows a picker so the player
+chooses which result to take. Retargeting an ingredient onto a shape another mod
+already uses is therefore fine — e.g. `kaleidoscope_cookery:straw_block` and
+`farmersdelight:rice_bale` are both a 3×3 of `farmersdelight:rice_panicle`, and
+both stay obtainable.
+
+Still **report a conflict when you create one** — it is a real change to how
+crafting feels, just not a blocker. Say which recipes collide and that Polymorph
+resolves it.
+
+**This only covers `minecraft:crafting_shaped` and `minecraft:crafting_shapeless`.**
+Polymorph does not arbitrate modded recipe types — a cooking pot, millstone,
+stockpot, cutting board or similar picks one match with no player choice, so a
+collision there *does* silently make a recipe unobtainable. Always check for
+same-type collisions before retargeting an ingredient, and warn about those.
+Group by recipe `type` when checking; two recipes sharing an ingredient are only
+in conflict if they are the same type.
+
 ---
 
 ## Loot tables
@@ -167,6 +196,37 @@ then drop nothing.
 **Every `global_loot_modifiers.json` entry needs a real file.** A dangling
 `cbtweaks:seed_swapper` entry errored on every launch for a modifier that never
 existed.
+
+**Deleting a pool entry silently buffs everything left.** Loot weights are
+relative, so removing entries shrinks the denominator and every survivor gets
+more common. To take something out *without* changing anyone else's odds, add
+back the removed weight as an empty entry:
+
+```json
+{ "type": "minecraft:empty", "weight": 38 }
+```
+
+`minecraft:empty` is a real 1.21.1 entry type — vanilla uses it in 19 tables,
+e.g. `chests/ancient_city` at weight 75. KC's `village_chest` went from 104 total
+weight to 74 after four removals; a weight-38 empty restored all six survivors to
+their exact original per-roll chance. Entries with no `weight` key default to 1,
+so a uniform pool needs an empty of weight 1 per entry removed.
+
+**One chest rolls exactly one loot table.** The chest's block entity carries a
+single `LootTable` string baked in by the structure piece that placed it — there
+is no "merge every mod's table" step. The only way several mods land in one chest
+is NeoForge global loot modifiers, which run *after* the base table and can
+attach to any table id.
+
+So a mod's own chest table gets contributions from nobody unless a GLM names it.
+KC's `village_chest` is reached only through its five village kitchen houses
+(`data/kaleidoscope_cookery/structure/village/houses/*_kitchen.nbt`, injected
+into vanilla jigsaw pools); of the 125 loot modifiers across this pack's mods,
+every chest-targeting one points at `minecraft:chests/...`, so nothing adds to
+KC's table. Editing it does not touch ordinary village loot, and vice versa.
+
+Structure `.nbt` files are gzipped — searching the raw bytes for a loot table id
+finds nothing. Decompress first (`gzip.decompress`), then look for `LootTable`.
 
 ---
 
@@ -273,6 +333,83 @@ Biome JSONs carry `effects.grass_color` / `foliage_color` / `sky_color` /
 `water_color`, and the mods ship full biome tag sets (`c:is_cave`, `c:is_sandy`,
 `is_nether`, even RU's `surface/sand`, `surface/peat`, `surface/silt`) — enough
 to classify a biome from data instead of guessing from its name.
+
+---
+
+## EMI tab order
+
+Category order is data-driven. EMI's `emi:category_properties` reload listener
+reads `category/properties` and takes an `order` int per category; lower sorts
+earlier, and `getOrder` returns **0** for any category with no entry.
+
+Ours lives at
+`CBResources/assets/emi/category/properties/chunkbound.json`:
+
+```json
+{ "farmersdelight:cutting": { "order": -910 },
+  "ali:block_loot":         { "order": 700 } }
+```
+
+**The namespace must be `emi`, not ours.** The loader does
+`if (!id.getNamespace().equals("emi")) continue;` — a file under
+`assets/chunkbound/emi/...` is skipped with no error. The *filename* is free
+(EMI ships `emi.json`, emi_ores ships `emi_ores.json`); every file merges, so
+only declare the categories you care about and avoid redeclaring another pack's
+keys, which makes the winner depend on resource order.
+
+EMI's own baseline runs `minecraft:crafting` -1000 through `emi:tag` 1000, with
+`stonecutting` -800, `smithing` -750, `brewing` -650, `world_interaction` -600,
+`fuel` 900, `composting` 910, `info` 950. emi_ores sets its two at 400.
+Everything else in this pack — ~41 modded cooking categories and all 15 `ali:*`
+loot categories — shipped with no order at all, so they tied at 0 and fell back
+to registration order, which is why tabs moved around between launches.
+
+Current bands: cooking -910..-826 (kept ahead of stonecutting so the block stays
+contiguous), block drops 700, loot tables 720+, effects 800. Steps of 2 leave
+room to insert.
+
+Category ids are easiest to enumerate from lang keys — `emi.category.<ns>.<path>`
+across every mod jar. Note the loot tabs come from **AdvancedLootInfo** (`ali:`),
+not EMI Loot; `config/emi_loot_config.toml` is a leftover from a mod that is no
+longer installed.
+
+This is a *resource* pack, so it needs a client restart or F3+T.
+
+---
+
+## Retiring a duplicate item
+
+The pack folds KC's duplicates into Farmer's Delight. The full sequence, in
+order, is:
+
+1. Point every recipe that consumed it at the surviving tag or item.
+2. Disable every recipe that *produced* it (`neoforge:false`).
+3. Retarget or strip every loot table that dropped it.
+4. Strip it from every tag — resolve merged tags, do not trust file presence.
+5. Add it to `c:hidden_from_recipe_viewers` so EMI stops listing it.
+
+Retired so far: KC's `flour`, `raw_dough`, `lettuce`, `lettuce_seed`, `tomato`,
+`tomato_seed`, `rice`, `rice_panicle`, `wild_rice`, and the eight meat items
+(`raw`/`cooked` × `lamb_chops`, `cow_offal`, `pork_belly`, `cut_small_meats`).
+Each should end up in exactly one tag — the hidden one. Verify with a sweep that
+re-resolves recipes, loot and tags with overrides applied, rather than trusting
+that each individual edit landed.
+
+Two traps this sequence hits repeatedly:
+
+- **A tag can't be a recipe result.** Ingredients can move to `#c:foods/tomato`,
+  but a result needs a concrete item, so producing recipes either get retargeted
+  to the FD item or disabled.
+- **Stripping a leaf tag can empty it.** `c:crops/lettuce`, `c:grain/rice` and
+  `c:seeds/rice` had only the KC item, so they are now empty; any recipe still
+  pointing at them would become uncraftable. Check who references a tag before
+  emptying it. Where the leaf keeps other members (`c:crops/tomato` → FD tomato)
+  the strip alone is enough and recipes need no edit.
+
+Retiring an item can orphan neighbours — check for recipes that consumed it and
+now have no input, and for crops whose seed is gone. Planting is code-driven
+(`BlockItem`), so a seedless crop block stays placeable by command but cannot be
+obtained.
 
 ---
 

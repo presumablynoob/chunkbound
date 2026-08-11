@@ -1,0 +1,22 @@
+{
+  "values": [],
+  "remove": [
+    "kaleidoscope_cookery:flour",
+    "kaleidoscope_cookery:raw_dough",
+    "kaleidoscope_cookery:lettuce",
+    "kaleidoscope_cookery:lettuce_seed",
+    "kaleidoscope_cookery:tomato",
+    "kaleidoscope_cookery:tomato_seed",
+    "kaleidoscope_cookery:wild_rice",
+    "kaleidoscope_cookery:rice_panicle",
+    "kaleidoscope_cookery:rice",
+    "kaleidoscope_cookery:raw_lamb_chops",
+    "kaleidoscope_cookery:cooked_lamb_chops",
+    "kaleidoscope_cookery:raw_cow_offal",
+    "kaleidoscope_cookery:cooked_cow_offal",
+    "kaleidoscope_cookery:raw_pork_belly",
+    "kaleidoscope_cookery:cooked_pork_belly",
+    "kaleidoscope_cookery:raw_cut_small_meats",
+    "kaleidoscope_cookery:cooked_cut_small_meats"
+  ]
+}

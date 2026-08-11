@@ -3,6 +3,10 @@
   "remove": [
     "farm_and_charm:onion",
     "farm_and_charm:lettuce_seeds",
-    "farm_and_charm:tomato_seeds"
+    "farm_and_charm:tomato_seeds",
+    "kaleidoscope_cookery:lettuce_seed",
+    "kaleidoscope_cookery:tomato_seed",
+    "kaleidoscope_cookery:wild_rice",
+    "kaleidoscope_cookery:rice"
   ]
 }

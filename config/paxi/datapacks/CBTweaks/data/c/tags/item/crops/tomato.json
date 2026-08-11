@@ -1,6 +1,7 @@
 {
   "values": [],
   "remove": [
-    "farm_and_charm:tomato"
+    "farm_and_charm:tomato",
+    "kaleidoscope_cookery:tomato"
   ]
 }
