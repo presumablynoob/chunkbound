@@ -2,5 +2,6 @@
   "effect.kaleidoscope_cookery.hinder.description": "Anything you damage is afflicted with Slowness II for 5 seconds.",
   "effect.kaleidoscope_cookery.instant_smelting.description": "Ores you mine drop their smelted result instead of raw material.",
   "effect.kaleidoscope_cookery.projectile_dodge.description": "Incoming projectiles are negated and teleport you a short distance away. Each dodge uses up part of the effect.",
-  "effect.kaleidoscope_cookery.vitality.description": "Killing a grown mob leaves behind a baby of the same kind. Grown zombies rarely leave a baby villager instead."
+  "effect.kaleidoscope_cookery.vitality.description": "Killing a grown mob leaves behind a baby of the same kind. Grown zombies rarely leave a baby villager instead.",
+  "item.kaleidoscope_cookery.dumpling": "Jiaozi"
 }

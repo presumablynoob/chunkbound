@@ -1,0 +1,30 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "create"
+    },
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "farm_and_charm"
+    }
+  ],
+  "type": "create:mixing",
+  "ingredients": [
+    {
+      "tag": "farm_and_charm:flour"
+    },
+    {
+      "item": "farm_and_charm:yeast"
+    },
+    {
+      "tag": "farm_and_charm:water_bottles"
+    }
+  ],
+  "results": [
+    {
+      "id": "farm_and_charm:dough",
+      "count": 5
+    }
+  ]
+}

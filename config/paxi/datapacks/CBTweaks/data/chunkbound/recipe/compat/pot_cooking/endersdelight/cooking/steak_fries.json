@@ -1,0 +1,36 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "farm_and_charm"
+    },
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "endersdelight"
+    }
+  ],
+  "type": "farm_and_charm:pot_cooking",
+  "ingredients": [
+    {
+      "item": "endersdelight:voidpepper"
+    },
+    {
+      "item": "minecraft:beef"
+    },
+    {
+      "tag": "c:drinks/milk"
+    },
+    {
+      "item": "minecraft:potato"
+    }
+  ],
+  "requireContainer": true,
+  "container": {
+    "id": "endersdelight:shulker_bowl",
+    "count": 1
+  },
+  "result": {
+    "id": "endersdelight:steak_fries"
+  },
+  "requiresLearning": false
+}

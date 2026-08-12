@@ -1,0 +1,33 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "create"
+    },
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "candlelight"
+    }
+  ],
+  "type": "create:mixing",
+  "ingredients": [
+    {
+      "tag": "farm_and_charm:cabbage"
+    },
+    {
+      "tag": "farm_and_charm:tomato"
+    },
+    {
+      "tag": "candlelight:bowls"
+    },
+    {
+      "item": "minecraft:carrot"
+    }
+  ],
+  "results": [
+    {
+      "id": "candlelight:fresh_garden_salad",
+      "count": 2
+    }
+  ]
+}

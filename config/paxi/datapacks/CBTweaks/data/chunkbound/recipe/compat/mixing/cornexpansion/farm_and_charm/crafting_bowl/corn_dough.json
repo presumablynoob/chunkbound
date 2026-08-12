@@ -1,0 +1,30 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "create"
+    },
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "cornexpansion"
+    }
+  ],
+  "type": "create:mixing",
+  "ingredients": [
+    {
+      "item": "cornexpansion:corn_flour"
+    },
+    {
+      "item": "farm_and_charm:yeast"
+    },
+    {
+      "tag": "farm_and_charm:water_bottles"
+    }
+  ],
+  "results": [
+    {
+      "id": "cornexpansion:corn_dough",
+      "count": 5
+    }
+  ]
+}

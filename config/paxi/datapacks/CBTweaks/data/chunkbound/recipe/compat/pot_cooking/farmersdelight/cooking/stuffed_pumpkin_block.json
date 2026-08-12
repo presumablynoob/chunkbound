@@ -1,0 +1,49 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "farm_and_charm"
+    },
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "farmersdelight"
+    }
+  ],
+  "type": "farm_and_charm:pot_cooking",
+  "ingredients": [
+    {
+      "tag": "c:crops/rice"
+    },
+    {
+      "tag": "c:crops/onion"
+    },
+    {
+      "item": "minecraft:brown_mushroom"
+    },
+    {
+      "tag": "c:crops/potato"
+    },
+    {
+      "tag": "c:foods/berry"
+    },
+    {
+      "type": "neoforge:difference",
+      "base": {
+        "tag": "c:foods/vegetable"
+      },
+      "subtracted": {
+        "item": "minecraft:melon_slice"
+      }
+    }
+  ],
+  "requireContainer": true,
+  "container": {
+    "id": "minecraft:pumpkin",
+    "count": 1
+  },
+  "result": {
+    "count": 1,
+    "id": "farmersdelight:stuffed_pumpkin_block"
+  },
+  "requiresLearning": false
+}

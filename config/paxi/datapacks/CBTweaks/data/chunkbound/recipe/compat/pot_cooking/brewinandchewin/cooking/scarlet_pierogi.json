@@ -1,0 +1,40 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "farm_and_charm"
+    },
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "brewinandchewin"
+    }
+  ],
+  "type": "farm_and_charm:pot_cooking",
+  "ingredients": [
+    {
+      "item": "brewinandchewin:scarlet_cheese_wedge"
+    },
+    {
+      "tag": "c:crops/potato"
+    },
+    {
+      "tag": "c:foods/dough"
+    },
+    {
+      "item": "minecraft:nether_wart"
+    },
+    {
+      "tag": "c:foods/cabbage"
+    }
+  ],
+  "requireContainer": true,
+  "container": {
+    "id": "minecraft:bowl",
+    "count": 1
+  },
+  "result": {
+    "count": 1,
+    "id": "brewinandchewin:scarlet_pierogi"
+  },
+  "requiresLearning": false
+}

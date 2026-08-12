@@ -1,0 +1,28 @@
+{
+  "values": [
+    {
+      "id": "endersdelight:shulker_bowl",
+      "required": false
+    },
+    {
+      "id": "minecraft:bread",
+      "required": false
+    },
+    {
+      "id": "minecraft:cauldron",
+      "required": false
+    },
+    {
+      "id": "minecraft:pumpkin",
+      "required": false
+    },
+    {
+      "id": "minecraft:shulker_shell",
+      "required": false
+    },
+    {
+      "id": "minecraft:stick",
+      "required": false
+    }
+  ]
+}

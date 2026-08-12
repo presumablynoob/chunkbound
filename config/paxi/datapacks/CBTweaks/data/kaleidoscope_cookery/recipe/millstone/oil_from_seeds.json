@@ -1,7 +1,23 @@
 {
-  "neoforge:conditions": [
-    {
-      "type": "neoforge:false"
+  "type": "kaleidoscope_cookery:millstone",
+  "ingredient": {
+    "type": "neoforge:difference",
+    "base": {
+      "tag": "c:seeds"
+    },
+    "subtracted": {
+      "type": "neoforge:compound",
+      "children": [
+        {
+          "item": "farmersdelight:rice"
+        },
+        {
+          "tag": "cornexpansion:seeds/corn"
+        }
+      ]
     }
-  ]
+  },
+  "result": {
+    "id": "kaleidoscope_cookery:oil"
+  }
 }

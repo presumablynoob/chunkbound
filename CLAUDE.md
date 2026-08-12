@@ -124,6 +124,21 @@ optional, so it parses as an empty table and drops nothing, silently.
 nothing, so a recipe using it can never be crafted — and it does *not* error,
 because an undefined tag is just empty. Use `c:` equivalents (`c:tools/knife`).
 
+**A plausible-looking `c:` tag can be undefined too.** Cultural Delights asks
+for `c:foods/milk` in four cooking recipes; nothing in this pack defines that
+path, so all four were uncraftable in silence. The live tag is `c:drinks/milk`
+(NeoForge, FD and Cobblemon all contribute), resolving to
+`minecraft:milk_bucket`, `farmersdelight:milk_bottle` and
+`cobblemon:moomoo_milk` — and FD's own soups use it. Overrides live under
+`data/culturalrecipes/`, **not** `culturaldelights/`: the mod id and its data
+namespace differ. Dungeons Delight has the same bug in three recipes, left alone
+because all three are gated on `neoforge:mod_loaded: twilightforest`, which is
+not installed.
+
+When an ingredient tag moves from empty to populated it can collide with another
+recipe of the same type, which for a modded type is silent — resolve every
+recipe of that type to concrete item sets and compare before shipping the fix.
+
 **Matching a water bottle** needs a component ingredient, since `minecraft:potion`
 alone accepts every potion:
 
@@ -379,8 +394,8 @@ This is a *resource* pack, so it needs a client restart or F3+T.
 
 ## Retiring a duplicate item
 
-The pack folds KC's duplicates into Farmer's Delight. The full sequence, in
-order, is:
+The pack folds duplicates into one surviving item — usually KC's into Farmer's
+Delight, but not always. The full sequence, in order, is:
 
 1. Point every recipe that consumed it at the surviving tag or item.
 2. Disable every recipe that *produced* it (`neoforge:false`).
@@ -389,13 +404,26 @@ order, is:
 5. Add it to `c:hidden_from_recipe_viewers` so EMI stops listing it.
 
 Retired so far: KC's `flour`, `raw_dough`, `lettuce`, `lettuce_seed`, `tomato`,
-`tomato_seed`, `rice`, `rice_panicle`, `wild_rice`, and the eight meat items
-(`raw`/`cooked` × `lamb_chops`, `cow_offal`, `pork_belly`, `cut_small_meats`).
-Each should end up in exactly one tag — the hidden one. Verify with a sweep that
-re-resolves recipes, loot and tags with overrides applied, rather than trusting
-that each individual edit landed.
+`tomato_seed`, `rice`, `rice_panicle`, `wild_rice`, `cooked_rice`, and the eight
+meat items (`raw`/`cooked` × `lamb_chops`, `cow_offal`, `pork_belly`,
+`cut_small_meats`). Each should end up in exactly one tag — the hidden one.
+Verify with a sweep that re-resolves recipes, loot and tags with overrides
+applied, rather than trusting that each individual edit landed.
 
-Two traps this sequence hits repeatedly:
+**The survivor is not always the FD item.** `farmersdelight:dog_food` was
+retired in favour of `farm_and_charm:dog_food` — same display name, and the pack
+had already retargeted F&C's `crafting_bowl/dog_food` recipe onto `c:` tags.
+Check which version the pack already invested in before assuming the direction.
+
+Cooked rice is deliberately **stockpot-only**: KC's nine `stockpot/rice_N`
+recipes were retargeted to output `farmersdelight:cooked_rice` and FD's own
+`cooking/cooked_rice` is disabled. That is a gameplay choice, not an oversight —
+do not "fix" it by re-enabling the FD recipe. KC's `pot/egg_fried_rice` and
+`flex_pot/egg_fried_rice` already asked for `#c:foods/cooked_rice`, so stripping
+the KC item from that tag fixed them for free; the nine
+`cooked_rice_to_sticky_rice_cake_N` recipes needed the swap by hand.
+
+Three traps this sequence hits repeatedly:
 
 - **A tag can't be a recipe result.** Ingredients can move to `#c:foods/tomato`,
   but a result needs a concrete item, so producing recipes either get retargeted
@@ -405,6 +433,16 @@ Two traps this sequence hits repeatedly:
   pointing at them would become uncraftable. Check who references a tag before
   emptying it. Where the leaf keeps other members (`c:crops/tomato` → FD tomato)
   the strip alone is enough and recipes need no edit.
+- **Recipes and loot are not the only sources.** Bountiful hands items out as
+  villager bounty rewards from
+  `data/bountiful/bounty_pools/<namespace>/<profession>_rews.json` — how
+  `farmersdelight:dog_food` stayed obtainable long after its recipe was
+  disabled. It reads them with `ResourceManager.listResources`, so only the
+  highest-priority file per path is seen and a CBTweaks copy overrides the mod's
+  outright. Retarget the entry's `content` to the surviving item instead of
+  deleting the entry: a pool has no `minecraft:empty` equivalent, so removing
+  one raises every other reward's chance. (`config/bountiful/bounty_pools/` is a
+  separate user-config folder, empty in this pack.)
 
 Retiring an item can orphan neighbours — check for recipes that consumed it and
 now have no input, and for crops whose seed is gone. Planting is code-driven

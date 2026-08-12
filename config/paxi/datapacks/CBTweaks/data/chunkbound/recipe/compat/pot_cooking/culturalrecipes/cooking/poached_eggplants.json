@@ -1,0 +1,37 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "farm_and_charm"
+    },
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "culturaldelights"
+    }
+  ],
+  "type": "farm_and_charm:pot_cooking",
+  "ingredients": [
+    {
+      "tag": "c:crops/eggplant"
+    },
+    {
+      "tag": "c:crops/onion"
+    },
+    {
+      "item": "farmersdelight:tomato_sauce"
+    },
+    {
+      "tag": "c:eggs"
+    }
+  ],
+  "requireContainer": true,
+  "container": {
+    "id": "minecraft:bowl",
+    "count": 1
+  },
+  "result": {
+    "count": 1,
+    "id": "culturaldelights:poached_eggplants"
+  },
+  "requiresLearning": false
+}

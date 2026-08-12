@@ -1,0 +1,30 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "farm_and_charm"
+    },
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "endersdelight"
+    }
+  ],
+  "type": "farm_and_charm:pot_cooking",
+  "ingredients": [
+    {
+      "tag": "endersdelight:enderman_loot"
+    },
+    {
+      "item": "endersdelight:mite_crust"
+    }
+  ],
+  "requireContainer": true,
+  "container": {
+    "id": "endersdelight:shulker_bowl",
+    "count": 1
+  },
+  "result": {
+    "id": "endersdelight:endermite_stew"
+  },
+  "requiresLearning": false
+}

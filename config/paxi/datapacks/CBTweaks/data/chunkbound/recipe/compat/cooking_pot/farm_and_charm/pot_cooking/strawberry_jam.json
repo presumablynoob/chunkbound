@@ -1,0 +1,34 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "farmersdelight"
+    },
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "bakery"
+    }
+  ],
+  "type": "farmersdelight:cooking",
+  "recipe_book_tab": "meals",
+  "ingredients": [
+    {
+      "item": "farm_and_charm:strawberry"
+    },
+    {
+      "item": "farm_and_charm:strawberry"
+    },
+    {
+      "item": "farm_and_charm:strawberry"
+    },
+    {
+      "item": "minecraft:sugar"
+    }
+  ],
+  "container": {
+    "id": "minecraft:glass_bottle"
+  },
+  "result": {
+    "id": "bakery:strawberry_jam"
+  }
+}

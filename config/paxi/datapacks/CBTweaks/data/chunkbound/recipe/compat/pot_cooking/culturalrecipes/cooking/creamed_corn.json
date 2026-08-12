@@ -1,0 +1,34 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "farm_and_charm"
+    },
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "culturaldelights"
+    }
+  ],
+  "type": "farm_and_charm:pot_cooking",
+  "ingredients": [
+    {
+      "tag": "c:drinks/milk"
+    },
+    {
+      "tag": "c:crops/corn"
+    },
+    {
+      "tag": "c:crops/corn"
+    }
+  ],
+  "requireContainer": true,
+  "container": {
+    "id": "minecraft:bowl",
+    "count": 1
+  },
+  "result": {
+    "count": 1,
+    "id": "culturaldelights:creamed_corn"
+  },
+  "requiresLearning": false
+}

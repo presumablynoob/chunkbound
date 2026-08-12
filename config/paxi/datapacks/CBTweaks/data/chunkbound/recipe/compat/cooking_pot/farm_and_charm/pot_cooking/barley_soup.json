@@ -1,0 +1,36 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "farmersdelight"
+    },
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "farm_and_charm"
+    }
+  ],
+  "type": "farmersdelight:cooking",
+  "recipe_book_tab": "meals",
+  "ingredients": [
+    {
+      "tag": "farm_and_charm:barley"
+    },
+    {
+      "tag": "farm_and_charm:barley"
+    },
+    {
+      "tag": "farm_and_charm:water_bottles"
+    },
+    {
+      "item": "minecraft:egg"
+    }
+  ],
+  "container": {
+    "id": "minecraft:bowl",
+    "count": 1
+  },
+  "result": {
+    "id": "farm_and_charm:barley_soup",
+    "count": 1
+  }
+}

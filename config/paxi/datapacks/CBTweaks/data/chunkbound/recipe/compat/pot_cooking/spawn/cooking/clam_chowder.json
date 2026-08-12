@@ -1,0 +1,34 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "farm_and_charm"
+    },
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "spawn"
+    }
+  ],
+  "type": "farm_and_charm:pot_cooking",
+  "ingredients": [
+    {
+      "item": "spawn:cooked_clam"
+    },
+    {
+      "item": "minecraft:potato"
+    },
+    {
+      "item": "farmersdelight:milk_bottle"
+    }
+  ],
+  "requireContainer": true,
+  "container": {
+    "id": "minecraft:bowl",
+    "count": 1
+  },
+  "result": {
+    "id": "spawn:clam_chowder",
+    "count": 1
+  },
+  "requiresLearning": false
+}

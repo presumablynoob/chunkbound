@@ -1,0 +1,40 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "farm_and_charm"
+    },
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "spawn"
+    }
+  ],
+  "type": "farm_and_charm:pot_cooking",
+  "ingredients": [
+    {
+      "item": "spawn:coastal_crab_bucket"
+    },
+    {
+      "item": "minecraft:potato"
+    },
+    {
+      "item": "minecraft:potato"
+    },
+    {
+      "item": "farmersdelight:bacon"
+    },
+    {
+      "item": "farmersdelight:onion"
+    }
+  ],
+  "requireContainer": true,
+  "container": {
+    "id": "minecraft:bowl",
+    "count": 1
+  },
+  "result": {
+    "id": "spawn:crab_boil_block",
+    "count": 1
+  },
+  "requiresLearning": false
+}

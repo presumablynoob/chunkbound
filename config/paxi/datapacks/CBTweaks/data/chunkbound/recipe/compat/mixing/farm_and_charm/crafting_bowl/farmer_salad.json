@@ -1,0 +1,33 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "create"
+    },
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "farm_and_charm"
+    }
+  ],
+  "type": "create:mixing",
+  "ingredients": [
+    {
+      "tag": "c:foods/tomato"
+    },
+    {
+      "tag": "c:foods/onion"
+    },
+    {
+      "tag": "c:foods/cabbage"
+    },
+    {
+      "tag": "c:foods/strawberry"
+    }
+  ],
+  "results": [
+    {
+      "id": "farm_and_charm:farmer_salad",
+      "count": 2
+    }
+  ]
+}

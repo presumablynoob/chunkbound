@@ -16,6 +16,7 @@
     "farm_and_charm:bacon",
     "farm_and_charm:rope",
     "candlelight:mozzarella",
+    "farmersdelight:dog_food",
     "kaleidoscope_cookery:flour",
     "kaleidoscope_cookery:raw_dough",
     "kaleidoscope_cookery:lettuce",
@@ -32,6 +33,7 @@
     "kaleidoscope_cookery:raw_pork_belly",
     "kaleidoscope_cookery:cooked_pork_belly",
     "kaleidoscope_cookery:raw_cut_small_meats",
-    "kaleidoscope_cookery:cooked_cut_small_meats"
+    "kaleidoscope_cookery:cooked_cut_small_meats",
+    "kaleidoscope_cookery:cooked_rice"
   ]
 }

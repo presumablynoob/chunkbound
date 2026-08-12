@@ -1,0 +1,40 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "farm_and_charm"
+    },
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "brewinandchewin"
+    }
+  ],
+  "type": "farm_and_charm:pot_cooking",
+  "ingredients": [
+    {
+      "item": "brewinandchewin:scarlet_cheese_wedge"
+    },
+    {
+      "tag": "c:crops/beetroot"
+    },
+    {
+      "item": "farmersdelight:tomato_sauce"
+    },
+    {
+      "tag": "c:foods/pasta"
+    },
+    {
+      "tag": "brewinandchewin:foods/cheese_wedge"
+    }
+  ],
+  "requireContainer": true,
+  "container": {
+    "id": "minecraft:bowl",
+    "count": 1
+  },
+  "result": {
+    "count": 1,
+    "id": "brewinandchewin:horror_lasagna"
+  },
+  "requiresLearning": false
+}

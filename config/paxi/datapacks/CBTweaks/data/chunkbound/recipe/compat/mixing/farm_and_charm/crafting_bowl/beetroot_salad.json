@@ -1,0 +1,30 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "create"
+    },
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "candlelight"
+    }
+  ],
+  "type": "create:mixing",
+  "ingredients": [
+    {
+      "item": "minecraft:beetroot"
+    },
+    {
+      "tag": "candlelight:bowls"
+    },
+    {
+      "tag": "brewinandchewin:foods/cheese_wedge"
+    }
+  ],
+  "results": [
+    {
+      "id": "candlelight:beetroot_salad",
+      "count": 2
+    }
+  ]
+}
