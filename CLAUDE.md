@@ -94,6 +94,18 @@ same items, EMI may label an ingredient with either name. `c:crops/cabbage` and
 `c:foods/cabbage` both resolve to the same two items, so a recipe using
 `foods/cabbage` can display as `crops/cabbage`. That is cosmetic, not a bug.
 
+**A broken biome tag does not necessarily stop worldgen.** medieval_buildings
+lists 12 Terralith biomes plus a misspelled `biomeswevegone:skyrise_vale` (the
+real id is `skyris_vale`) as *required* entries in its four
+`has_structure/*` tags, so KubeJS logs `Couldn't load tag ... missing following
+references` and vanilla follows with `Not all defined tags ... are present in
+data pack`. Those two messages look conclusive. They are not — the structures
+still generate, most likely because Structurify's `StructureMixin` wraps
+`Structure.biomes()` and resolves the biome set itself. Do not infer "this never
+spawns" from tag errors; **check in game before writing a fix or a bug report.**
+An override for such a tag needs `"replace": true`, since a merging override
+leaves the broken entries in place and the tag still fails.
+
 ---
 
 ## Recipes
@@ -174,6 +186,13 @@ same-type collisions before retargeting an ingredient, and warn about those.
 Group by recipe `type` when checking; two recipes sharing an ingredient are only
 in conflict if they are the same type.
 
+**`recipes/` (plural) is not a recipe folder.** 1.21 reads
+`data/<ns>/recipe/`. Miner's Delight ships its Create integration at
+`data/minersdelight/recipes/create/filling/…`, so those four filling and
+emptying recipes have never loaded — no error, they are simply invisible to the
+recipe manager. Check the path before "fixing" a recipe that seems absent, and
+do not bother overriding one at a path nothing reads.
+
 ---
 
 ## Loot tables
@@ -243,6 +262,81 @@ KC's table. Editing it does not touch ordinary village loot, and vice versa.
 Structure `.nbt` files are gzipped — searching the raw bytes for a loot table id
 finds nothing. Decompress first (`gzip.decompress`), then look for `LootTable`.
 
+**`neoforge:can_tool_perform_action` is dead in NeoForge 1.21.** The ToolAction
+→ ItemAbility rename made it `neoforge:can_item_perform_ability`, and the field
+`action` became `ability`. Both changed:
+
+```json
+{ "condition": "neoforge:can_item_perform_ability", "ability": "pickaxe_dig" }
+```
+
+One bad condition kills the **whole** modifier — NeoForge logs
+`Could not decode GlobalLootModifier with json id ...` once and the drop simply
+never happens. Miner's Delight's `breaking_infested_blocks` shipped this way, so
+infested blocks never gave silverfish eggs. Only the 23 valid ItemAbilities are
+accepted; confirm against `ItemAbilities` in the NeoForge sources jar.
+
+**GLM files honour `neoforge:conditions`.** `LootModifierManager` parses through
+`IGlobalLootModifier.CONDITIONAL_CODEC`, so the usual `neoforge:false` stanza
+disables one cleanly and logs nothing — same pattern as recipes.
+
+**Mods overwrite vanilla entity loot outright.** Cultural Delights ships its own
+`data/minecraft/loot_table/entities/squid.json` and `glow_squid.json`, replacing
+the drop entirely — squid gave `culturaldelights:squid` *instead of* an ink sac,
+not alongside it. To undo that, copy the table back out of the 1.21.1 client jar
+rather than hand-writing it; diff the result against vanilla to prove it matches.
+Global loot modifiers layered on the same entity (Miner's Delight's knife
+scavenging) are unaffected and keep working.
+
+**A GLM may be invisible in EMI even when it works.** AdvancedLootInfo attributes
+a modifier to a block by looking for a loot-table-id condition it recognises. If
+the modifier gates on a mod's own condition — Miner's Delight uses
+`minersdelight:block_tag` — ALI cannot tell which blocks it applies to and logs
+`Unable to locate destination for GLM farmersdelight:add_item`. The drop happens;
+nothing advertises it. To make it discoverable, move the drop into the block loot
+tables themselves (it then shows under `ali:block_loot`) and disable the mod's
+GLM with `neoforge:false` so drops do not double. Resolve the modifier's block
+tag first — `minersdelight:infested_blocks` needed seven tables, including
+`minecraft:infested_cobblestone` via `#c:cobblestones/infested`.
+
+---
+
+## Data maps
+
+NeoForge data maps (`data/<ns>/data_maps/<registry>/<name>.json`) drive
+behaviour that looks code-only. Miner's Delight's copper pot fills and pours cups
+purely through `minersdelight:cup_variant`, which maps each soup item to its cup
+form. Emptying that map kills the whole mechanic at the source, which is far
+cleaner than disabling recipes and hoping the block stays unobtainable:
+
+```json
+{ "replace": true, "values": {} }
+```
+
+`DataMapFile` takes `replace` (bool, default false), `values` and `remove`.
+**Data maps merge across packs like tags**, and CBTweaks loads after mod data, so
+`replace: true` discards every earlier contribution — which matters because two
+different mods were both writing to that one file. That also makes the override
+source-agnostic: a future mod adding entries to the same map is cancelled too,
+with no list to maintain.
+
+**Mods register items into other mods' namespaces.** MyNethersDelight's compat
+cups are `minersdelight:rock_soup_cup`, `minersdelight:egg_soup_cup` and three
+more — Miner's Delight ids, shipped inside the MyNethersDelight jar, models under
+`assets/minersdelight/`. Enumerating one mod's jar therefore *misses* items that
+carry its namespace. When building a list of "every item mod X adds", scan
+`assets/<namespace>/models/item/` across **all** jars, not just that mod's:
+
+```bash
+python - <<'PY'
+import zipfile, glob, re
+for j in glob.glob("mods/*.jar"):
+    for n in zipfile.ZipFile(j).namelist():
+        m = re.match(r'assets/minersdelight/models/item/(.+)\.json$', n)
+        if m: print(j, m.group(1))
+PY
+```
+
 ---
 
 ## KubeJS
@@ -258,13 +352,63 @@ scene was opened. A clean startup log does not mean a script is correct.
 
 **Changing food properties** is `ItemEvents.modification` in `startup_scripts/`
 (food is an item component in 1.21, not datapack-editable). Use `modifyFood`,
-not `setFood`, to keep the existing nutrition and saturation:
+not `setFood`, to keep the existing nutrition.
+
+**`modifyFood` silently inflates saturation.** KubeJS's `FoodBuilder`
+constructor reads `FoodProperties.saturation()` — the *absolute* value — into
+its `saturation` field, but `build()` passes that same field to
+`FoodConstants.saturationByModifier(nutrition, value)`, which is
+`nutrition * value * 2`. Read as absolute, written as a modifier. So **any**
+`modifyFood` round-trip re-multiplies saturation, even one that only adds an
+effect. `candelight_food_effects.js` did exactly that on four dishes for months.
+
+Always set the saturation explicitly in the same call, and remember the value is
+a **modifier**, not the saturation:
 
 ```js
 event.modify('candlelight:lasagne', item => {
-  item.modifyFood(food => food.effect('farmersdelight:comfort', 4800, 0, 1.0))
+  item.modifyFood(food => {
+    food.saturation(0.7)   //Candlelight's own modifier -> 10 * 0.7 * 2 = 14.0
+    food.effect('farmersdelight:comfort', 4800, 0, 1.0)
+  })
 })
 ```
+
+`modifier = targetSaturation / (nutrition * 2)`. Nutrition needs no
+compensation — it round-trips as an int. Do **one** `modifyFood` per item; a
+second pass re-triggers the same inflation, so fold effects and values together.
+
+**Effect tooltips come from the item class, not the food component.** Farm &
+Charm's `ConsumableItem` and `EffectFoodItem` override `appendHoverText` to list
+a food's effects; a plain `net.minecraft.world.item.Item` renders nothing, so
+effects added via `modifyFood` work when eaten but are invisible in EMI. Mods
+mix both — Miner's Delight registers `seasoned_arthropods` and `weird_caviar` as
+FD `ConsumableItem` (tooltips appear) but `insect_wrap` and `insect_sandwich` as
+plain `Item` (nothing). Item class is fixed at registration and cannot be
+changed from a datapack or KubeJS. Draw the lines yourself in a *client* script,
+matching FD's placement — line 1, under the name and above the id — and its
+zero-padded `MM:SS`:
+
+```js
+ItemEvents.modifyTooltips(event => {
+  event.modify('minersdelight:insect_wrap', tooltip => {
+    tooltip.insert(1, [
+      Text.blue(Text.translate('effect.minecraft.haste').append(' (01:00)'))
+    ])
+  })
+})
+```
+
+`event.add()` appends *below* the id and the EMI hint lines, which looks nothing
+like the native rendering — use `modify` + `insert`. FD's own tooltips are gated
+on its `ENABLE_FOOD_EFFECT_TOOLTIP` config; hand-drawn ones are not.
+
+**Reading a mod's food values** means decompiling, since 1.21 food lives in
+code. Most delight-likes keep a `FoodValues`-style class (`MDFoodValues`,
+`CandlelightFoods`, `MNDFoodValues`, FD's `FoodValues`); parse `nutrition:(I)`
+and `saturationModifier:(F)` pairs out of its `<clinit>`. Watch for items that
+skip the class entirely — Candlelight's `chicken_with_vegetables` reuses vanilla
+`Foods.GOLDEN_CARROT`, so it appears in no food-values table at all.
 
 **Check whether a script block is even live.** Three server scripts here were
 100% commented out, so deleting them changed nothing — but the tags they *used*
@@ -489,6 +633,23 @@ CBTweaks both had `kaleidoscope_cookery/loot_table/chest/village_chest.json`;
 whichever loaded last silently won, and they had drifted apart. All datapack
 content now lives in CBTweaks.
 
+**Removing a mod strands its CBTweaks overrides.** Dungeons Delight was pulled
+but 13 files stayed under `data/dungeonsdelight/`, and its five
+`recipe/monster_cooking/*.json` then errored on every reload with
+`Unknown registry key ... recipe_serializer: dungeonsdelight:monster_cooking` —
+the serializer left with the jar. Sweep `data/<modid>/` and any
+`chunkbound/recipe/compat/**/<modid>/` when a mod goes.
+
+**Diff error counts against an older log before blaming an update.** Several
+errors that looked like fresh regressions after a mod bump were present at the
+same per-reload count weeks earlier. Normalise for reload count — one launch can
+reload resources three or four times, multiplying every message:
+
+```bash
+zcat logs/2026-08-10-6.log.gz | grep -c "same id:"   # baseline
+grep -c "same id:" logs/latest.log                    # now
+```
+
 ---
 
 ## Useful investigation commands
@@ -499,8 +660,19 @@ for j in mods/*.jar; do unzip -p "$j" "data/c/tags/item/foods/onion.json" 2>/dev
   && echo "  ^ $j"; done
 unzip -p .probe/source_jars/neoforge-*-sources.jar "data/c/tags/item/foods/onion.json"
 
-# an effect / recipe class's real behaviour
-javap -p -c -constants -cp mods/<mod>.jar <fully.qualified.Class>
+# an effect / recipe / food class's real behaviour.
+# javap is NOT on PATH in the bash tool - use the JDK's copy:
+JAVAP="/c/Program Files/Java/jdk-21/bin/javap.exe"
+"$JAVAP" -p -c -constants -cp mods/<mod>.jar <fully.qualified.Class>
+
+# static field values (food tables, effect categories) live in <clinit>
+"$JAVAP" -p -c -constants -cp mods/<mod>.jar <Class> | sed -n '/static {}/,$p'
+
+# which lambda backs an inline registration: read BootstrapMethods
+"$JAVAP" -v -p -cp mods/<mod>.jar <Class>   # then match InvokeDynamic #N
+
+# mod jars are readable by name; the vanilla client jar is obfuscated,
+# so javap on net.minecraft.* fails - use known values or the sources jar
 
 # vanilla reference data (loot tables, tags) - authoritative for 1.21.1
 unzip -p "$MC_INSTALL/versions/1.21.1/1.21.1.jar" data/minecraft/loot_table/entities/drowned.json

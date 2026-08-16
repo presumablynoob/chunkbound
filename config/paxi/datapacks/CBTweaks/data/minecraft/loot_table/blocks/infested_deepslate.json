@@ -1,0 +1,53 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:match_tool",
+          "predicate": {
+            "predicates": {
+              "minecraft:enchantments": [
+                {
+                  "enchantments": "minecraft:silk_touch",
+                  "levels": {
+                    "min": 1
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:deepslate"
+        }
+      ],
+      "rolls": 1.0
+    },
+    {
+      "rolls": 1.0,
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:random_chance",
+          "chance": 0.35
+        },
+        {
+          "condition": "neoforge:can_item_perform_ability",
+          "ability": "pickaxe_dig"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minersdelight:silverfish_eggs"
+        }
+      ]
+    }
+  ],
+  "random_sequence": "minecraft:blocks/infested_deepslate"
+}
