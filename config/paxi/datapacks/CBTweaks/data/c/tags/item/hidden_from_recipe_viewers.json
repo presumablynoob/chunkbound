@@ -1,7 +1,6 @@
 {
   "values": [
     "bakery:jar",
-    "relics:researching_table",
     "brewinandchewin:sweet_berry_jam",
     "brewinandchewin:glow_berry_marmalade",
     "brewinandchewin:apple_jelly",
@@ -73,6 +72,17 @@
     "kaleidoscope_cookery:cooked_pork_belly",
     "kaleidoscope_cookery:raw_cut_small_meats",
     "kaleidoscope_cookery:cooked_cut_small_meats",
-    "kaleidoscope_cookery:cooked_rice"
+    "kaleidoscope_cookery:cooked_rice",
+    "biomesoplenty:liquid_null",
+    "biomesoplenty:liquid_null_bucket",
+    "biomesoplenty:null_block",
+    "biomesoplenty:null_end_stone",
+    "biomesoplenty:null_leaves",
+    "biomesoplenty:null_plant",
+    "artifacts:aqua_dashers",
+    "artifacts:strider_shoes",
+    "#simpletms:tm_items",
+    "#simpletms:tr_items",
+    "simpletms:tm_blank"
   ]
 }

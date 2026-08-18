@@ -45,15 +45,8 @@ config/resourceful-config-web.json
 config/NoChatReports/
 config/attributefix/
 config/bettercombat/
-config/biomeswevegone/
-config/bountiful/
-config/cobblemon/
 config/euphoria_patcher/
 config/fabric/
-config/rarcompat/
-config/regions_unexplored/
-config/relics/
-config/relics.yaml
 config/xaero/
 config/betterfpsdist.json
 config/capture_xp.json
@@ -62,7 +55,6 @@ config/chat_heads.json5
 config/chunksending.json
 config/continuity.json
 config/cubes_without_borders.json
-config/emi.css
 config/emi_ores-client.json
 config/entity_model_features.json
 config/entity_texture_features.json
@@ -91,3 +83,10 @@ kubejs/config/
 
 # Per-shaderpack option state saved next to the pack
 shaderpacks/*.txt
+
+# spark's own scratch space (it documents these as temporary data)
+config/spark/tmp/
+config/spark/tmp-client/
+
+# Config-library backups written next to the file they back up
+config/*.toml.bak

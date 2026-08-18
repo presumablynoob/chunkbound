@@ -536,6 +536,56 @@ This is a *resource* pack, so it needs a client restart or F3+T.
 
 ---
 
+## EMI index editing
+
+`assets/emi/index/stacks/<name>.json` edits the item index — `removed` (drop
+stacks), `added` (`{"added": …, "after": …}`), `filters` (id strings, or a
+`/regex/`), `disable`. Same namespace rule as category properties: the loader
+does `getNamespace().equals("emi")`, so the file must sit under `assets/emi/`
+whatever we call it. Every file in the folder merges.
+
+**An ingredient string needs three parts.** `EmiStackSerializer`'s bare-string
+form is matched against
+
+```
+^([\w_\-./]+):([\w_\-.]+):([\w_\-./]+)(\{.*\})?$
+```
+
+— that is `type:namespace:path`, e.g. `item:artifacts:cowboy_hat`. A natural
+looking `"artifacts:cowboy_hat"` has only two parts, matches neither the regex
+nor the `isJsonObject` branch, and is **discarded with no log line** — the whole
+entry silently does nothing. Prefer the explicit object form, as
+`cbtweaks.json` already does for effects:
+
+```json
+{ "removed": [ { "type": "item", "id": "artifacts:cowboy_hat" } ] }
+```
+
+**EMI dedupes the index on item + `DataComponentPatch`**
+(`EmiStackList$StrictHashStrategy`), not on item alone. So one item occupies two
+index slots whenever two sources contribute stacks whose components differ, even
+though both render identically.
+
+**A duplicate whose stacks differ only by *random* NBT cannot be de-duplicated
+from a pack.** Relics and Reliquified Artifacts (both since removed) hit this:
+every Artifacts item registered into two creative tabs, and Relics rolled a
+**fresh random `relics:data` component per entry**, so the two stacks differed
+in NBT and the dedupe legitimately kept both. Each available lever failed for
+its own reason, so don't re-attempt this shape of fix:
+
+- `removed` compares **strictly, including NBT**, and rolled values change on
+  every index rebuild, so no fixed stack ever matches. In-game Ctrl+Click hides
+  (`edit-mode`) go stale for the same reason.
+- `filters` matches `EmiStack.getId().toString()` and does catch every copy, but
+  `EmiHidden.isDisabled()` re-applies filters at *render* time, which suppresses
+  an `added` replacement too — the items vanish entirely. Tested.
+- `c:hidden_from_recipe_viewers` is all-or-nothing, same result.
+
+EMI's data format cannot express "keep exactly one of two randomly-rolled
+stacks"; such a fix belongs upstream in the offending mod.
+
+---
+
 ## Retiring a duplicate item
 
 The pack folds duplicates into one surviving item — usually KC's into Farmer's
@@ -616,8 +666,15 @@ Compiled results:
 - `main` is the working branch. Commit and push only when asked.
 - `emi.json`, `minecraftinstance.json` and `options.txt` are tracked but
   rewritten every launch — leave them dirty, never commit them.
-- Per-mod runtime config (`config/attributefix/`, `xaero`, `relics`,
-  `sodium-options.json`, …) is gitignored and untracked on purpose.
+- Per-mod runtime config that's pure per-machine/user noise (`config/attributefix/`,
+  `xaero`, `sodium-options.json`, …) is gitignored and untracked on purpose.
+  Config holding actual gameplay/balance data we edit (`config/bountiful/`,
+  `config/biomeswevegone/`, `config/cobblemon/`, `config/artifacts/`,
+  `config/regions_unexplored/`) is tracked — don't add it back to `.gitignore`.
+- **Any config file an edit needs to touch gets un-gitignored, every time.**
+  If a task requires changing a value inside a currently-ignored `config/...`
+  path, remove that path from `.gitignore` as part of the same change — don't
+  make a gameplay-relevant edit to a file git can't see.
 - **`.gitignore` is whitelist-style**: everything under `/` is ignored unless
   explicitly `!`-listed. New root files need an entry or they silently never
   reach a clone.

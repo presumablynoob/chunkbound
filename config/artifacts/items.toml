@@ -26,7 +26,7 @@
 	enabled = true
 	#Whether this item can be found in structures or drop from entities
 	#Allowed Values: true, false
-	generateAsLoot = true
+	generateAsLoot = false
 
 [bunny_hoppers]
 	#How much the Bunny Hoppers reduce or increase fall damage
@@ -435,7 +435,7 @@
 	enabled = true
 	#Whether this item can be found in structures or drop from entities
 	#Allowed Values: true, false
-	generateAsLoot = true
+	generateAsLoot = false
 
 [superstitious_hat]
 	#Whether this item can be found in structures or drop from entities
