@@ -1,0 +1,17 @@
+[
+    {
+        "action": "remove",
+        "items": [
+            "kaleidoscope_cookery:flour",
+            "kaleidoscope_cookery:raw_dough",
+            "kaleidoscope_cookery:lettuce",
+            "kaleidoscope_cookery:lettuce_seed",
+            "kaleidoscope_cookery:tomato",
+            "kaleidoscope_cookery:tomato_seed",
+            "kaleidoscope_cookery:wild_rice",
+            "kaleidoscope_cookery:rice_panicle",
+            "kaleidoscope_cookery:rice",
+            "kaleidoscope_cookery:cooked_rice"
+        ]
+    }
+]

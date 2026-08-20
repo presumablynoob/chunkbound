@@ -588,8 +588,172 @@ stacks"; such a fix belongs upstream in the offending mod.
 
 ## Retiring a duplicate item
 
-The pack folds duplicates into one surviving item — usually KC's into Farmer's
-Delight, but not always. The full sequence, in order, is:
+**Removal now goes through Reliable Remover, not the datapack sequence below.**
+`reliable_remover` reads JSON rule files from `config/reliable_remover/` (not
+gitignored, so they reach a clone) and its `remove` action covers creative tabs,
+EMI/JEI/REI, loot tables, player inventories, storage, world drops and villager
+trades in one declaration:
+
+```json
+[ { "action": "remove", "items": [ "namespace:item_id" ] } ]
+```
+
+Beyond `items`, a rule can select with `blocks`, `fluids`, `effects`, `tags`,
+`mod` (a whole namespace), `patterns` (regex, `/.*_sword/`), `nbt`, `registry`,
+`tag_type`, `dimensions` and `advancements`, and `not` inverts a condition.
+Granular actions exist too — `remove_creative`, `remove_loot`,
+`remove_chest_loot`, `remove_trade`, `remove_enchantment`, `remove_potion` — 16
+in all. Global toggles live in `config/reliable_remover.json`. Docs:
+<https://moddedmc.wiki/en/project/reliable-remover/latest/docs/reliable-remover/usage>
+
+**None of Reliable Remover's 17 actions removes a recipe.** Verified against the
+jar: `RecipeManagerMixin` only calls `RuleManager.load()`, and the `Action` enum
+has no recipe entry. On its own it would leave a producing recipe running, with
+the result deleted again by `removeItemsFromInventories` — which reads as a
+broken craft. Recipe work belongs to its sibling, **Reliable Recipes** (below).
+
+`RemovalRule` does have a `replace_with` field (JSON is snake_case via
+`@SerializedName`; the Java fields are `replaceWith`/`tagType`) which forwards to
+`ReliableRecipesAPI.registerItemReplacement`, but that mapping is **global per
+item**, so it cannot express two different targets for one source item — and this
+pack needs exactly that (`raw_cut_small_meats` → `minecraft:mutton` in
+donkey_burger but a tag in stuffed_tiger_skin_pepper). Use Reliable Recipes'
+per-recipe `replace_input` for those, not `replace_with`.
+
+What Reliable Remover replaces cleanly: `c:hidden_from_recipe_viewers` entries,
+creative tab presence, loot, world drops, storage, trades and mob equipment —
+including sources a datapack sweep misses, like Bountiful bounty pools.
+
+### Reliable Replacer
+
+Block-level worldgen swaps, rule files in `config/reliable_replacer/` (a JSON
+array). `inputs` → `output`, filtered by `biomes`, `dimensions`, `structures`,
+`features`, coordinate bounds, `neighbors`, `probability` and `not`; `retrogen`
+applies the swap to **already-generated chunks**, and `player_blocks: false`
+spares anything a player placed. JSON keys are snake_case (`keep_states`,
+`output_state_properties`) via `@SerializedName`, as with the other two mods.
+There is also a `remove` boolean for deleting a block outright.
+
+Use it to stop a retired mod's blocks reaching the world at all, rather than
+patching their drops afterwards. `config/reliable_replacer/kc_crops.json` does
+this for KC's tomato crop.
+
+**KC's crops only enter the world through village kitchen houses.** KC ships no
+wild-crop feature and no biome modifier; `kaleidoscope_cookery:tomato_crop` is
+baked into three of its five structure NBTs (`plains`, `savanna`, `taiga`
+`_kitchen.nbt`), each at `age=7`. `lettuce_crop` and `rice_crop` appear in no
+structure, so they never generate. KC's `worldgen/processor_list/crop_replace`
+(which would diversify tomato into chili/lettuce) is referenced by nothing in any
+jar and appears vestigial. Structure NBTs are gzipped **and** a regex over the
+decompressed bytes bleeds between palette entries — parse the NBT properly before
+trusting a block state read out of one.
+
+Crop age ranges differ between mods: KC's is `age=0..7`, Farmer's Delight's is
+`age=0..3` plus `ropelogged`. So `keep_states` must be **false** on a cross-mod
+crop swap — copying `age=7` onto the FD block is an invalid state. Pin the age
+with `output_state_properties` instead.
+
+### Reliable Recipes
+
+Rule files live in `config/reliable_recipes/`, as a **flat top-level JSON array**
+of rules, each with an `action`. Read at server start and on data reload.
+
+Recipe actions (`RecipeRule$Action`): `remove`, `replace_input`,
+`replace_output`, `prevent_repair`, `set_repair_material` — the JSON action names
+are `remove_recipe`, `replace_input`, `replace_output`, `prevent_repair`,
+`set_repair_material`. Tag actions (`TagRule$Action`): `remove_from_tag`,
+`clear_tag`, `remove_all_tags`.
+
+```json
+[
+  { "action": "remove_recipe", "id": ["minecraft:wooden_pickaxe"] },
+  { "action": "replace_input", "target": "minecraft:stick",
+    "replacement": ["minecraft:bamboo"], "id": "examplemod:reinforced_sword" },
+  { "action": "remove_from_tag", "tag": "c:foods", "id": ["examplemod:x"] }
+]
+```
+
+Recipes are selected by `output`, `id`, `mod`, `type` or `input`; a `/…/` string
+is a regex, `+#` (or `{"expand": true}`) expands a tag to its members, and `not`
+/ `or` / `and` combine conditions. `remove_recipe` is what replaces a
+`neoforge:false` stanza, and `replace_input` replaces a hand-written retarget.
+
+**The two mods are wired together.** `reliable_remover`'s `CommonClass` calls
+`ReliableRecipesAPI.registerContextualItemHider(...)` at init, and Reliable
+Recipes' `TagModifier.applyHiddenItemRules()` then walks every registered item,
+asks `isItemHidden(stack, "tag:item")`, and strips every hidden item out of
+**every** item tag (and block tags via `"tag:block"`). It logs
+`Hidden items integration removed {} item-tag associations.`
+
+So with both installed, an item removed by Reliable Remover **is already gone
+from every tag** — the datapack's per-tag `remove` files for a retired item are
+redundant. Check that log line before deleting them, since this only holds while
+both mods are present.
+
+Items already retired the old way are being migrated to the reliable_* suite
+gradually, a few at a time, not in one sweep.
+
+**Done: all of Kaleidoscope Cookery** — the eight meats and the ten
+flour/dough/lettuce/tomato/rice items. Five rule files:
+
+| File | What |
+|---|---|
+| `reliable_remover/kc_meats.json` | `remove`, 8 meats |
+| `reliable_remover/kc_items.json` | `remove`, 10 items |
+| `reliable_recipes/kc_meats.json` | `remove_recipe` keyed on `output` |
+| `reliable_recipes/kc_recipes.json` | `remove_recipe` keyed on `id` |
+| `reliable_replacer/kc_crops.json` | `tomato_crop` → FD tomatoes, retrogen |
+
+That retired 93 CBTweaks files. **Key on `output` only when the result is itself
+a retired item** — the nine KC recipes needed `id` keying because their results
+include `minecraft:bone` and `kaleidoscope_cookery:sashimi`, and output-keying
+would have removed every bone recipe in the pack.
+
+What deliberately stays hand-written: the ~57 *retarget* recipes (stockpot rice,
+sticky rice cakes, the soups, `straw_block`, `tomato_platter`, and the five meat
+consumers). Reliable Recipes' `replace_input` could express simple swaps, but
+these are heterogeneous rewrites, and `replace_with` on the remover is global per
+item so it cannot handle two targets for one source. The three crop loot tables
+stay as `{}` — deleting them would fall back to KC's own table and drop the
+retired items again.
+
+Retiring these emptied seven leaf tags (`c:grain/rice`, `c:crops/lettuce`,
+`c:seeds/rice`, `c:seeds/lettuce`, `c:seeds/tomato`, `c:vegetables/lettuce`,
+`c:foods/lettuce`). Thirty jar recipes still name them, but **all thirty are
+shadowed by CBTweaks retargets**, so nothing live is broken. When checking this,
+resolve the live recipe — override if present, else jar — because scanning jar
+files alone reports thirty false alarms.
+
+Verified three ways, and these are the checks to repeat for the next batch:
+`Loaded 12430 recipes` unchanged before and after deleting the 58 (the mixin
+filters the JSON map at the head of `RecipeManager.apply`, so removals show up in
+that count); `Hidden items integration removed 4 item-tag associations.` after
+emptying one tag's `remove` list; and per-reload error count steady at 20.
+**EMI's tag view is not a valid check** — `EmiTagsMixin` hides removed items from
+tag listings whether or not they are still tag members.
+
+**Known conflict, accepted deliberately.** `stuffed_tiger_skin_pepper` asked for
+`c:foods/raw_meats` (plural), which *nothing* defines — NeoForge's real tag is
+`c:foods/raw_meat` (singular) and merely references the plural as an optional
+sub-tag, so the recipe silently resolved empty and was uncraftable. It now uses
+`c:foods/raw_meat`, which collides with same-type KC recipes because
+`green_chili` is in `c:crops/chilipepper`:
+
+| Variant | Colliding input | Loses to |
+|---|---|---|
+| `pot` (4+4) | chicken, `chicken_cuts` | `spicy_chicken` |
+| `flex_pot` (1+1) | chicken/beef/pork/rabbit and their cuts | `spicy_chicken`, `braised_beef`, `stir_fried_pork_with_peppers`, `spicy_rabbit_head` |
+
+`kaleidoscope_cookery:pot` is a modded type, so Polymorph does not arbitrate and
+one match silently wins. Mutton, `mutton_chops`, `tasty_tail`, shulker filet,
+arthropod, spider leg and minced strider are clean in both. This was chosen over
+a narrower tag on purpose — do not "fix" it back.
+
+### The legacy datapack sequence
+
+Kept for reading existing overrides, not as the default for new work. The pack
+folds duplicates into one surviving item — usually KC's into Farmer's Delight,
+but not always. The full sequence, in order, was:
 
 1. Point every recipe that consumed it at the surviving tag or item.
 2. Disable every recipe that *produced* it (`neoforge:false`).

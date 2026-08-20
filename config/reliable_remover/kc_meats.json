@@ -1,0 +1,15 @@
+[
+    {
+        "action": "remove",
+        "items": [
+            "kaleidoscope_cookery:raw_lamb_chops",
+            "kaleidoscope_cookery:cooked_lamb_chops",
+            "kaleidoscope_cookery:raw_cow_offal",
+            "kaleidoscope_cookery:cooked_cow_offal",
+            "kaleidoscope_cookery:raw_pork_belly",
+            "kaleidoscope_cookery:cooked_pork_belly",
+            "kaleidoscope_cookery:raw_cut_small_meats",
+            "kaleidoscope_cookery:cooked_cut_small_meats"
+        ]
+    }
+]

@@ -1,0 +1,14 @@
+[
+    {
+        "inputs": [
+            "kaleidoscope_cookery:tomato_crop"
+        ],
+        "output": "farmersdelight:tomatoes",
+        "output_state_properties": {
+            "age": "3"
+        },
+        "keep_states": false,
+        "retrogen": true,
+        "player_blocks": false
+    }
+]
