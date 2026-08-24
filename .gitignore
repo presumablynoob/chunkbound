@@ -45,6 +45,7 @@ config/resourceful-config-web.json
 config/NoChatReports/
 config/attributefix/
 config/bettercombat/
+config/bountiful/errors.log
 config/euphoria_patcher/
 config/fabric/
 config/xaero/
