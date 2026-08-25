@@ -22,9 +22,10 @@
 !/resourcepacks/
 !/shaderpacks/
 
-# Personal-but-worth-backing-up settings (remove if you don't want them)
-!/options.txt
-!/emi.json
+# options.txt and emi.json are deliberately NOT tracked - both are rewritten
+# every launch with per-user state. The pack's curated client defaults live in
+# config/defaultoptions/options.txt, which Default Options applies to a fresh
+# install; EMI hides belong in CBResources' emi index, not emi.json.
 
 # Pack documentation: beneficial-effect reference, EMI biome thumbnail
 # worklist and its 4x sprite previews / reference screenshots
@@ -71,6 +72,7 @@ config/lithostitched.json
 config/modernfix-mixins.properties
 config/runiclib.json
 config/simpletms/main.json
+config/sodium-fingerprint.json
 config/sodium-options.json
 config/spawn_notification.json
 config/structure_layout_optimizer.jsonc
