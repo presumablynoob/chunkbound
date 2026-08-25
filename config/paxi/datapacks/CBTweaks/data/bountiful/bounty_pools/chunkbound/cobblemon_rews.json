@@ -1,0 +1,154 @@
+{
+  "requires": [
+    "cobblemon"
+  ],
+  "content": {
+    "chunkbound_rew_poke_ball": {
+      "type": "item",
+      "content": "cobblemon:poke_ball",
+      "amount": {
+        "min": 6,
+        "max": 16
+      },
+      "unitWorth": 100
+    },
+    "chunkbound_rew_great_ball": {
+      "type": "item",
+      "content": "cobblemon:great_ball",
+      "amount": {
+        "min": 4,
+        "max": 12
+      },
+      "unitWorth": 200,
+      "rarity": "UNCOMMON"
+    },
+    "chunkbound_rew_ultra_ball": {
+      "type": "item",
+      "content": "cobblemon:ultra_ball",
+      "amount": {
+        "min": 3,
+        "max": 8
+      },
+      "unitWorth": 350,
+      "rarity": "RARE"
+    },
+    "chunkbound_rew_master_ball": {
+      "type": "item",
+      "content": "cobblemon:master_ball",
+      "amount": {
+        "min": 2,
+        "max": 2
+      },
+      "unitWorth": 6000,
+      "rarity": "LEGENDARY"
+    },
+    "chunkbound_rew_potion": {
+      "type": "item",
+      "content": "cobblemon:potion",
+      "amount": {
+        "min": 2,
+        "max": 6
+      },
+      "unitWorth": 150
+    },
+    "chunkbound_rew_super_potion": {
+      "type": "item",
+      "content": "cobblemon:super_potion",
+      "amount": {
+        "min": 2,
+        "max": 5
+      },
+      "unitWorth": 250,
+      "rarity": "UNCOMMON"
+    },
+    "chunkbound_rew_hyper_potion": {
+      "type": "item",
+      "content": "cobblemon:hyper_potion",
+      "amount": {
+        "min": 2,
+        "max": 5
+      },
+      "unitWorth": 400,
+      "rarity": "RARE"
+    },
+    "chunkbound_rew_max_potion": {
+      "type": "item",
+      "content": "cobblemon:max_potion",
+      "amount": {
+        "min": 2,
+        "max": 5
+      },
+      "unitWorth": 600,
+      "rarity": "EPIC"
+    },
+    "chunkbound_rew_revive": {
+      "type": "item",
+      "content": "cobblemon:revive",
+      "amount": {
+        "min": 1,
+        "max": 4
+      },
+      "unitWorth": 500,
+      "rarity": "RARE"
+    },
+    "chunkbound_rew_exp_candy_xs": {
+      "type": "item",
+      "content": "cobblemon:exp_candy_xs",
+      "amount": {
+        "min": 8,
+        "max": 24
+      },
+      "unitWorth": 25
+    },
+    "chunkbound_rew_exp_candy_s": {
+      "type": "item",
+      "content": "cobblemon:exp_candy_s",
+      "amount": {
+        "min": 3,
+        "max": 8
+      },
+      "unitWorth": 200,
+      "rarity": "UNCOMMON"
+    },
+    "chunkbound_rew_exp_candy_m": {
+      "type": "item",
+      "content": "cobblemon:exp_candy_m",
+      "amount": {
+        "min": 2,
+        "max": 4
+      },
+      "unitWorth": 750,
+      "rarity": "RARE"
+    },
+    "chunkbound_rew_exp_candy_l": {
+      "type": "item",
+      "content": "cobblemon:exp_candy_l",
+      "amount": {
+        "min": 1,
+        "max": 2
+      },
+      "unitWorth": 2500,
+      "rarity": "EPIC"
+    },
+    "chunkbound_rew_exp_candy_xl": {
+      "type": "item",
+      "content": "cobblemon:exp_candy_xl",
+      "amount": {
+        "min": 1,
+        "max": 1
+      },
+      "unitWorth": 7500,
+      "rarity": "EPIC"
+    },
+    "chunkbound_rew_rare_candy": {
+      "type": "item",
+      "content": "cobblemon:rare_candy",
+      "amount": {
+        "min": 1,
+        "max": 2
+      },
+      "unitWorth": 2500,
+      "rarity": "RARE"
+    }
+  }
+}

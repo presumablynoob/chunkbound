@@ -1,0 +1,94 @@
+{
+  "requires": [
+    "cobblemon"
+  ],
+  "content": {
+    "chunkbound_deliver_apricorns": {
+      "type": "item_tag",
+      "name": "Gather Apricorns",
+      "icon": "cobblemon:red_apricorn",
+      "content": "cobblemon:apricorns",
+      "amount": {
+        "min": 8,
+        "max": 24
+      },
+      "unitWorth": 120
+    },
+    "chunkbound_deliver_medicinal_leek": {
+      "type": "item",
+      "name": "Gather Medicinal Leeks",
+      "content": "cobblemon:medicinal_leek",
+      "amount": {
+        "min": 4,
+        "max": 12
+      },
+      "unitWorth": 150
+    },
+    "chunkbound_deliver_revival_herb": {
+      "type": "item",
+      "name": "Gather Revival Herbs",
+      "content": "cobblemon:revival_herb",
+      "amount": {
+        "min": 3,
+        "max": 8
+      },
+      "unitWorth": 300,
+      "rarity": "UNCOMMON"
+    },
+    "chunkbound_deliver_vivichoke_seeds": {
+      "type": "item",
+      "name": "Gather Vivichoke Seeds",
+      "content": "cobblemon:vivichoke_seeds",
+      "amount": {
+        "min": 4,
+        "max": 10
+      },
+      "unitWorth": 250,
+      "rarity": "UNCOMMON"
+    },
+    "chunkbound_deliver_mental_herb": {
+      "type": "item",
+      "name": "Gather Mental Herbs",
+      "content": "cobblemon:mental_herb",
+      "amount": {
+        "min": 2,
+        "max": 6
+      },
+      "unitWorth": 500,
+      "rarity": "RARE"
+    },
+    "chunkbound_deliver_fire_stone": {
+      "type": "item",
+      "name": "Deliver Fire Stones",
+      "rarity": "EPIC",
+      "content": "cobblemon:fire_stone",
+      "amount": {
+        "min": 2,
+        "max": 5
+      },
+      "unitWorth": 1600
+    },
+    "chunkbound_deliver_moon_stone": {
+      "type": "item",
+      "name": "Deliver Moon Stones",
+      "rarity": "EPIC",
+      "content": "cobblemon:moon_stone",
+      "amount": {
+        "min": 2,
+        "max": 5
+      },
+      "unitWorth": 1600
+    },
+    "chunkbound_deliver_dawn_stone": {
+      "type": "item",
+      "name": "Deliver Dawn Stones",
+      "rarity": "LEGENDARY",
+      "content": "cobblemon:dawn_stone",
+      "amount": {
+        "min": 3,
+        "max": 6
+      },
+      "unitWorth": 2200
+    }
+  }
+}

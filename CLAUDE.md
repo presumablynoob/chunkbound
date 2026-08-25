@@ -825,6 +825,99 @@ Compiled results:
 
 ---
 
+## Bountiful
+
+Bounties are **generated**, not authored. A *decree* is the category item a board
+draws from; a *bounty* is what the generator produces from that decree's pools.
+`initialCountPreference` and `fillerCountPreference` in `config/bountiful/bountiful.json`
+are both **1-2**, so one bounty is at most two objectives against two rewards.
+`BountyCreator` builds one side, takes the bounty's rarity from the highest-rarity
+initial entry, then fills the other side to matching worth. So the two sides don't
+need equal ceilings - their *worth ranges* just have to overlap, allowing up to two
+entries each.
+
+**Decrees merge by id, pools merge by filename.** `Decree.merged` does a set union
+on `objectives` and `rewards` keyed by the filename, gated by `replace`. A file at
+`bounty_decrees/<anything>/butcher.json` therefore *adds* pools to Bountiful's own
+butcher decree rather than replacing it. Same for pools: Bountiful ships
+`bounty_pools/farmersdelight/chef_rews.json` and `bounty_pools/supplementaries/chef_rews.json`,
+two files feeding one pool named `chef_rews`. Use a fresh filename for a new decree
+(ours is `cobblemon.json`), an existing one to extend.
+
+`canSpawn`, `canReveal` and `canWanderBuy` all default to **true**, so a decree with
+no `linkedProfessions` still reaches players.
+
+**Objective display names come from `name`, not lang.** `getTranslation()` keys off
+`contentToTranslationKey()` - the entry's *`content`* with `:` and `/` replaced by
+`.` - so every objective sharing a trigger collapses onto one key. Eighteen
+`cobblemon:catch_pokemon` objectives cannot have eighteen different lang strings;
+they all render as "Catch_pokemon". `BountyTypeCriteria.textOnBounty` checks
+`entry.getName()` first and only falls back to the translation, so set `name` per
+entry. (CobbledBounties ships `bountiful.entry.<entryId>` keys that do nothing for
+this reason.) Decree names *are* id-keyed, so `bountiful.decree.<id>.name` works -
+that one belongs in CBResources, being a resource.
+
+### Never use a Cobblemon trigger in a `criteria` objective
+
+**This hard-crashes the game.** Bountiful's `criteria` objective builds
+`{"trigger": content, "conditions": conditions}` and decodes it with vanilla's
+`Criterion.CODEC`, so `content` must be a registered criterion trigger and
+`conditions` is ordinary advancement-criterion JSON. To decide whether a firing
+trigger matches an objective, `registerCriterionStuff` compares
+`trigger.getClass()`. That is fine for vanilla, where each trigger has its own
+class - but **all 19 of Cobblemon's triggers are instances of one class**,
+`com.cobblemon.mod.common.advancement.criterion.SimpleCriterionTrigger`. So *any*
+Cobblemon trigger firing gets matched against *any* Cobblemon criteria objective,
+and the predicate is applied to a condition decoded for a different trigger.
+
+Every Cobblemon condition class then casts its context unguarded:
+
+| Objective's trigger | Condition class | Casts context to |
+|---|---|---|
+| `catch_pokemon` | `CaughtPokemonCriterion` | `CountablePokemonTypeContext` |
+| `pokemon_defeated`, `catch_shiny_pokemon` | `CountableCriterion` | `CountableContext` |
+
+Winning a battle fires `pokemon_defeated` with a plain `CountableContext`; held
+against a `catch_pokemon` objective that cast fails, the exception escapes
+`PokemonBattle.tick`, and Showdown is left mid-write - the visible crash is a Graal
+`TypeError: Cannot read property 'write' of undefined`, which points at Cobblemon
+and hides the real cause. Look for the `ClassCastException` earlier in the log.
+
+Dropping only the catch objectives does **not** help: `CountableContext` is not a
+supertype of `Pokemon`, `LevelUpContext`, `EvolvePokemonContext` and the rest, so a
+`pokemon_defeated` objective crashes on a level-up or an evolution instead. Kambrik
+guards this with `isSubclassOf` in `testAgainst`, but that is only on its `handlers`
+list; Bountiful registers via `subscribe()` and takes the unguarded `subscribers`
+path.
+
+**Safe ways to express Cobblemon objectives**, all used in `cobblemon_objs.json`:
+
+- `"type": "entity"` with `"content": "cobblemon:pokemon"` - Bountiful's own kill
+  hook, never touches the criteria system. No species detail.
+- `"type": "criteria"` on **`minecraft:player_killed_entity`** - vanilla
+  `KilledTrigger` is a different class, so Cobblemon triggers cannot class-match it.
+  Filter species with an NBT predicate on the entity:
+  `{"entity": {"type": "cobblemon:pokemon", "nbt": "{Pokemon:{Species:\"cobblemon:tauros\"}}"}}`.
+  Species lives directly in the `Pokemon` compound; verify with
+  `/data get entity @e[type=cobblemon:pokemon,limit=1,sort=nearest]`.
+- `"type": "item"` / `"item_tag"` deliveries.
+
+Note all of these track **killing** a Pokemon, never a battle defeat -
+`PokemonEntity` does not override `die()`, so weapon kills go through vanilla kill
+attribution while battle faints go through `recallWithAnimation()`/`remove()` and
+fire nothing vanilla. Type-filtered *catching* is unreachable from Bountiful; that
+belongs in **Cobblemon Quests**, whose `CobblemonTask` has `pokemons`,
+`pokemonTypes` and an `actions` list including `defeat` (battle) and `kill`
+(entity death), driven off `CobblemonEvents.BATTLE_VICTORY`.
+
+Cobblemon reference values, read from the jar rather than guessed: EXP candy yields
+are XS 100, S 800, M 3000, L 10000, XL 30000 (`CandyItem.DEFAULT_*_CANDY_YIELD`),
+and Rare Candy calls `getExperienceToNextLevel()` - one level, so 721 exp at lv15
+but 7651 at lv50. Levels are cubic, so lv1->15 costs *less* than lv15->20; price
+candy against a mid-level target, not a fresh one.
+
+---
+
 ## Git & repo conventions
 
 - `main` is the working branch. Commit and push only when asked.

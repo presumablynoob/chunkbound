@@ -1,0 +1,11 @@
+{
+  "requires": [
+    "cobblemon"
+  ],
+  "objectives": [
+    "cobblemon_objs"
+  ],
+  "rewards": [
+    "cobblemon_rews"
+  ]
+}
