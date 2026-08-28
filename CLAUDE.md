@@ -936,6 +936,59 @@ candy against a mid-level target, not a fresh one.
   explicitly `!`-listed. New root files need an entry or they silently never
   reach a clone.
 
+**Adding a mod: triage its generated config before doing anything else.** Every
+new mod drops files into `config/` on first launch. Decide each one:
+
+- **Contains toggles** — settings a pack author would plausibly tune (rates,
+  feature switches, balance numbers, mod-preference lists): **track it.**
+- **Pure regenerated runtime state** — no authored values, just whatever the
+  mod recomputes each launch: **gitignore it**, in the "mods rewrite on every
+  launch" block, alphabetically.
+
+Being rewritten every launch is *not* the test on its own — nearly all of them
+are, which is what the CRLF churn is about. The test is whether a human would
+ever want a value in there to reach a clone.
+
+**One carve-out, from `flywheel-client.toml`:** a file that has toggles but also
+embeds a *machine-derived* value gets gitignored anyway, because it produces a
+diff on every machine no matter what. Flywheel's is
+`defineInRange("workerThreads", -1, -1, Runtime.getRuntime().availableProcessors())`,
+so NeoForge writes `# Range: -1 ~ <this host's CPU count>` into the file and it
+churned 16 -> 32 -> 16 -> 32 -> 6 across four commits without ever carrying a
+real edit. Static bounds like `# Range: -1 ~ 100` are fine — the disqualifier is
+specifically a bound computed from the host. Confirm by reading the mod's
+`ModConfigSpec` builder in the jar, not by eyeballing the comment.
+
+Check line endings at the same time: if the new config is CRLF on disk, its
+path pattern needs an `eol=crlf` rule in `.gitattributes` (see below).
+
+### Line endings
+
+Every blob in the repo is **LF**. `.gitattributes` is `* text=auto eol=lf`, with
+`eol=crlf` overrides for the paths whose writers emit Windows endings — all
+`config/**/*.toml` (NeoForge's config writer), all `*.snbt` (FTB), plus
+`xaerohud.txt`, `badoptimizations.txt` and `defaultoptions/options.txt`. `eol`
+only affects the working directory; `text=auto` still normalizes to LF on commit.
+
+The point is to make checkout write exactly what the mods write. When it doesn't,
+files show as **modified with a completely empty `git diff`**: git records the
+on-disk size at checkout, the mod rewrites the file with different endings, the
+size shifts by one byte per line, and `ie_modified()` returns "changed" on the
+size mismatch *without hashing* — while `diff` applies the CRLF filter and finds
+nothing. `git update-index --refresh` will not clear it.
+
+Diagnose by comparing the recorded size to the real one — the delta equals the
+line count exactly:
+
+```bash
+git ls-files --debug config/terrablender.toml | grep size   # index
+wc -c < config/terrablender.toml                            # disk
+```
+
+`git add` on the affected files clears it (content is identical, so nothing
+stages — it just refreshes the stat cache). The durable fix is the `eol=crlf`
+rule, which is what keeps a fresh clone from hitting it once.
+
 **Non-JSON files in a datapack are harmless.** Verified two ways: the shipped
 `MSD item pack` zip contains `readme.txt` and `chud.jpeg` at its root and loads
 fine, and this pack launched cleanly with markdown files in the CBTweaks root.
@@ -953,6 +1006,17 @@ but 13 files stayed under `data/dungeonsdelight/`, and its five
 `Unknown registry key ... recipe_serializer: dungeonsdelight:monster_cooking` —
 the serializer left with the jar. Sweep `data/<modid>/` and any
 `chunkbound/recipe/compat/**/<modid>/` when a mod goes.
+
+**Delete its config files too.** `config/` should hold nothing but files a
+currently-installed mod reads. A departed mod's leftovers are dead weight that
+later reads as real setup — `config/emi_loot_config.toml` sat here long after
+EMI Loot was gone and was mistaken for the source of the loot tabs, which
+actually come from AdvancedLootInfo. Remove the config alongside the jar, in the
+same commit, and drop its `.gitignore` entry if it had one. Look wider than
+`config/<modid>.*`: mods also write `config/<modid>/` directories,
+`<modid>-client.toml` / `-common.toml` / `-server.toml` triples, and files under
+another mod's namespace, so list what the jar actually created rather than
+guessing from the id.
 
 **Diff error counts against an older log before blaming an update.** Several
 errors that looked like fresh regressions after a mod bump were present at the
