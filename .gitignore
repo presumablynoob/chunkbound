@@ -62,6 +62,7 @@ config/entity_model_features.json
 config/entity_texture_features.json
 config/etf_warnings.json
 config/flerovium.json
+config/flywheel-client.toml
 config/fml.toml
 config/ftbchunks-client.snbt
 config/immediatelyfast.json
