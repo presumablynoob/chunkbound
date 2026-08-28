@@ -1,2 +1,14 @@
 * text=auto eol=lf
+
+# NeoForge's config writer and FTB's SNBT writer emit Windows line endings on
+# every launch. Check these out as CRLF so the game's rewrite matches what git
+# recorded, instead of tripping the index size check and showing as modified
+# with an empty diff. Blobs stay LF -- text=auto still normalizes on commit.
+config/*.toml                     eol=crlf
+config/**/*.toml                  eol=crlf
+*.snbt                            eol=crlf
+config/xaerohud.txt               eol=crlf
+config/badoptimizations.txt       eol=crlf
+config/defaultoptions/options.txt eol=crlf
+
 mods/Cobblemon*.jar filter=lfs diff=lfs merge=lfs -text
