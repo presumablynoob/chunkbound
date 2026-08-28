@@ -86,6 +86,12 @@
   "balm": {
     "jade": true
   },
+  "productivebees": {
+    "bee": true,
+    "solitary_nest": true,
+    "canvas_beehive": true,
+    "bee_attributes": true
+  },
   "jadeaddons": {
     "equipment_requirement": ""
   },
