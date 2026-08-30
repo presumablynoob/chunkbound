@@ -1,0 +1,14 @@
+{
+  "type": "neoforge:add_spawn_costs",
+  "biomes": [
+    "minecraft:soul_sand_valley",
+    "incendium:weeping_valley",
+    "incendium:withered_forest",
+    "biomesoplenty:withered_abyss"
+  ],
+  "entity_types": "minecraft:phantom",
+  "spawn_cost": {
+    "energy_budget": 0.06,
+    "charge": 1.0
+  }
+}

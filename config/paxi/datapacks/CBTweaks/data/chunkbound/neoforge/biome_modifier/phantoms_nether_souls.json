@@ -1,0 +1,15 @@
+{
+  "type": "neoforge:add_spawns",
+  "biomes": [
+    "minecraft:soul_sand_valley",
+    "incendium:weeping_valley",
+    "incendium:withered_forest",
+    "biomesoplenty:withered_abyss"
+  ],
+  "spawners": {
+    "type": "minecraft:phantom",
+    "weight": 2,
+    "minCount": 1,
+    "maxCount": 1
+  }
+}

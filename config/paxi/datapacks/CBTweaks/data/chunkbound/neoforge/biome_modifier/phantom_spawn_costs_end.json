@@ -1,0 +1,9 @@
+{
+  "type": "neoforge:add_spawn_costs",
+  "biomes": "#minecraft:is_end",
+  "entity_types": "minecraft:phantom",
+  "spawn_cost": {
+    "energy_budget": 0.06,
+    "charge": 1.0
+  }
+}
