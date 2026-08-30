@@ -482,7 +482,10 @@ still listed and still needs a sprite.** BWG's
 `config/biomeswevegone/world_generation.json` switches four off
 (`allium_shrubland`, `eroded_borealis`, `pumpkin_valley`, `shattered_glacier`) —
 they can never be visited or screenshotted, but they still show in EMI. That
-config file is gitignored, so those toggles don't reach a clone.
+config file is **tracked** - it carries those four toggles and the three region
+weights, so it has to reach a clone. BWG rewrites it with a different key order
+whenever the mod list changes, which surfaces as a diff with no value changes;
+commit the reorder rather than reaching for `.gitignore`.
 
 Worklist and tooling live in `chunkbound_info/`; see
 [tools/README.md](chunkbound_info/tools/README.md).

@@ -40,6 +40,11 @@ chunkbound_info/biome-sprites/screenshots/
 chunkbound_info/tools/__pycache__/
 
 # --- Runtime junk inside tracked folders ---
+# Jade rebuilds sort-order.json as it discovers providers, so it grows every
+# time a mod is added and every entry is null - it holds no pack settings.
+# jade.json, plugins.json and the two hide-* lists DO hold settings and stay tracked.
+config/jade/sort-order.json
+
 kubejs/exported/
 kubejs/logs/
 # Generated blob containing a local web-editor password
@@ -54,7 +59,6 @@ config/bountiful/errors.log
 config/euphoria_patcher/
 config/fabric/
 config/xaero/
-config/betterfpsdist.json
 config/capture_xp.json
 config/catchrate-display.json
 config/chat_heads.json5
