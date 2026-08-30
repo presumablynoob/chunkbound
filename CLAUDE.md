@@ -94,6 +94,18 @@ same items, EMI may label an ingredient with either name. `c:crops/cabbage` and
 `c:foods/cabbage` both resolve to the same two items, so a recipe using
 `foods/cabbage` can display as `crops/cabbage`. That is cosmetic, not a bug.
 
+**Knife tags are unified - all three resolve to the same 12 items.** Farmer's
+Delight loot gates on `farmersdelight:tools/knives`, Kaleidoscope loot gates on
+`kaleidoscope_cookery:kitchen_knife`, and **102 recipe files** across FD, MND,
+Cultural Delights, Miner's Delight, Brewin' & Chewin', Starcatcher and Ender's
+Delight gate on `c:tools/knife`. As shipped these disagreed: KC already pulled
+`#farmersdelight:tools/knives` transitively, but `c:tools/knife` held only FD's
+own five knives, so no Kaleidoscope kitchen knife worked in any FD recipe. Two
+additive CBTweaks files fix it - `data/farmersdelight/tags/item/tools/knives.json`
+adds the two new knives, and `data/c/tags/item/tools/knife.json` adds
+`#farmersdelight:tools/knives` transitively so the sets stay equal as mods come
+and go. Side effect worth knowing: `bakery:bread_knife` now works for FD recipes.
+
 **A broken biome tag does not necessarily stop worldgen.** medieval_buildings
 lists 12 Terralith biomes plus a misspelled `biomeswevegone:skyrise_vale` (the
 real id is `skyris_vale`) as *required* entries in its four
@@ -185,6 +197,18 @@ collision there *does* silently make a recipe unobtainable. Always check for
 same-type collisions before retargeting an ingredient, and warn about those.
 Group by recipe `type` when checking; two recipes sharing an ingredient are only
 in conflict if they are the same type.
+
+**An item with no recipe may just be compat-gated.** Kaleidoscope Nether ships
+the only recipes for `mapo_tofu` and `mapo_tofu_rice` under
+`data/youkaishomecoming/recipe/pot/` behind `neoforge:mod_loaded:
+youkaishomecoming`, which is not installed. The items still register and still
+appear in EMI; only the recipes are conditional, so they read as "unviewable".
+Seven KN items are in this state across `youkaishomecoming`, `betternether` and
+`cataclysm`. Before calling an unobtainable item a bug, check every producing
+recipe for a `mod_loaded` condition. The full Kaleidoscope Nether / End audit -
+duplicate ingredients, empty tags, overlapping mob drops and 11 failing loot
+modifiers - is tracked in
+[issue #15](https://github.com/presumablynoob/chunkbound/issues/15).
 
 **`recipes/` (plural) is not a recipe folder.** 1.21 reads
 `data/<ns>/recipe/`. Miner's Delight ships its Create integration at
@@ -809,6 +833,71 @@ obtained.
 
 ---
 
+## Mob spawning
+
+**Phantoms are moved out of the Overworld.** They never spawn there; instead they
+spawn in four soul/undead Nether biomes (`minecraft:soul_sand_valley`,
+`incendium:weeping_valley`, `incendium:withered_forest`,
+`biomesoplenty:withered_abyss`) and throughout the End. The rule is split because
+neither mechanism can do the whole job:
+
+| Half | Where |
+|---|---|
+| Deny in the Overworld, cap Nether height | `kubejs/server_scripts/phantoms_no_overworld.js` |
+| Add to biome spawn lists, limit density | `CBTweaks/data/chunkbound/neoforge/biome_modifier/phantom*.json` |
+
+**Use `EntityEvents.spawned`, never `EntityEvents.checkSpawn`.** KubeJS's own docs
+say checkSpawn "only fires for entities from a `BaseSpawner` or world
+generation". The vanilla insomnia spawner is neither, so a checkSpawn gate never
+sees a phantom - the old `phantoms_end_only.js` was written that way and could
+not have worked. `spawned` fires for anything about to be added to a level, so it
+catches the insomnia spawner, spawn eggs and `/summon` alike. It also fires for
+entities loaded from a save, so cancelling removes existing mobs when their chunk
+loads.
+
+**KubeJS 2101 has no worldgen or biome API.** The server-side namespaces are
+BlockEvents, EntityEvents, FTB\*, ItemEvents, LevelEvents, LootJS, MoreJS,
+NetworkEvents, PlayerEvents, RecipeViewerEvents and ServerEvents - none edits a
+biome's spawn list. Biome spawn changes must be datapack `neoforge:add_spawns`
+files, and they belong in CBTweaks, not `kubejs/data/`.
+
+**Incendium rewrites the Nether to 192 blocks tall** - `min_y 0, height 192` in
+its `data/minecraft/worldgen/noise_settings/nether.json`, moving the bedrock roof
+from ~127 to ~191. That is 64 extra blocks of open air and it inflates flying-mob
+spawns. `neoforge:add_spawns` has **no height field**, so the cap is enforced in
+the KubeJS script instead (`NETHER_PHANTOM_MAX_Y`).
+
+**Weight alone cannot make a mob rare in the End.** The End's monster pool is
+enderman and nothing else (weight 10), so any addition takes a large share
+whatever its weight. Use `neoforge:add_spawn_costs`, which limits *density*
+rather than probability - the spawner sums a charge for nearby mobs of that type
+and refuses to spawn once the budget is exceeded. Ours is `charge 1.0` /
+`energy_budget 0.06`, far tighter than vanilla's own soul sand valley
+(`charge 0.7` / `energy_budget 0.15`).
+
+**Two spawn-control mods were tried and removed. Do not reinstall either.**
+
+- **Mob Control 2.0.0** - a rule with `type="control"` deleted *every* mob in the
+  world at spawn time: nothing spawned naturally, spawn eggs did nothing, and
+  `/summon` answered "Unable to summon entity". Its `SummonCommandMix` returns
+  null when the freshly built entity is not alive, and `MobMix` calls
+  `Mob.discard()` followed by `setHealth(0)` on the original as part of the
+  control path's rebuild. It does this with or without `set.*` options, and logs
+  nothing at all - the only visible symptom is the summon message.
+- **In Control 10.2.7** - works, but its spawner has no biome filter.
+  `SpawnerConditions` covers dimension, distance, height, day count, liquid and
+  mob caps; `PositionCheck` adds cave, structure, light, time, season and sky.
+  Biome conditions exist only on `spawn.json` rules, which can allow or deny a
+  spawn the game already attempts but cannot create one. So it can spawn per
+  dimension, never per biome.
+
+**Gamerules were not the problem, and are worth ruling out first.** Parse them
+straight out of the save rather than trusting the menu: `doMobSpawning`,
+`doInsomnia`, `Difficulty` and `DifficultyLocked` all live in
+`saves/<world>/level.dat`, gzipped NBT, with gamerule values stored as strings.
+
+---
+
 ## Effects
 
 **Read the category from bytecode, never the name.** Each effect class's
@@ -1057,6 +1146,9 @@ JAVAP="/c/Program Files/Java/jdk-21/bin/javap.exe"
 
 # mod jars are readable by name; the vanilla client jar is obfuscated,
 # so javap on net.minecraft.* fails - use known values or the sources jar
+
+# the GitHub CLI is installed but NOT on PATH
+GH="/c/Program Files/GitHub CLI/gh.exe"; "$GH" issue list
 
 # vanilla reference data (loot tables, tags) - authoritative for 1.21.1
 unzip -p "$MC_INSTALL/versions/1.21.1/1.21.1.jar" data/minecraft/loot_table/entities/drowned.json
