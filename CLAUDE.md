@@ -921,8 +921,14 @@ candy against a mid-level target, not a fresh one.
 ## Git & repo conventions
 
 - `main` is the working branch. Commit and push only when asked.
-- `emi.json`, `minecraftinstance.json` and `options.txt` are tracked but
-  rewritten every launch — leave them dirty, never commit them.
+- `emi.json`, `minecraftinstance.json` and `options.txt` are **untracked** —
+  each is rewritten every launch with per-user state. `minecraftinstance.json`
+  was tracked until it was noticed that it carries the installing machine's
+  `installPath`, `guid`, `playedCount` and `timePlayed`, so every pull rewrote
+  one contributor's manifest with another's; it also blocked pulls outright
+  whenever an incoming commit touched it. The cost is that a fresh clone is not
+  auto-detected as a CurseForge instance — create one on NeoForge 21.1.248 and
+  point it at the folder; `mods/` still supplies the jars.
 - Per-mod runtime config that's pure per-machine/user noise (`config/attributefix/`,
   `xaero`, `sodium-options.json`, …) is gitignored and untracked on purpose.
   Config holding actual gameplay/balance data we edit (`config/bountiful/`,

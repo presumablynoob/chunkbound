@@ -14,7 +14,6 @@
 !/defaultconfigs/
 !/datapacks/
 !/kubejs/
-!/minecraftinstance.json
 
 # Pack content for clone-and-play on another computer
 # (mods/Cobblemon*.jar is stored via Git LFS — over GitHub's 100MB limit)
@@ -22,10 +21,15 @@
 !/resourcepacks/
 !/shaderpacks/
 
-# options.txt and emi.json are deliberately NOT tracked - both are rewritten
-# every launch with per-user state. The pack's curated client defaults live in
-# config/defaultoptions/options.txt, which Default Options applies to a fresh
-# install; EMI hides belong in CBResources' emi index, not emi.json.
+# options.txt, emi.json and minecraftinstance.json are deliberately NOT tracked -
+# all three are rewritten every launch with per-user state. The pack's curated
+# client defaults live in config/defaultoptions/options.txt, which Default
+# Options applies to a fresh install; EMI hides belong in CBResources' emi
+# index, not emi.json. minecraftinstance.json is CurseForge's instance manifest
+# and carries the installing machine's absolute installPath, guid, playtime and
+# play count, so tracking it synced one contributor's paths onto another's disk
+# on every pull. A clone must create the CurseForge instance itself (NeoForge
+# 21.1.248) and point it at this folder; the mods themselves come from mods/.
 
 # Pack documentation: beneficial-effect reference, EMI biome thumbnail
 # worklist and its 4x sprite previews / reference screenshots
