@@ -717,6 +717,68 @@ from every tag** — the datapack's per-tag `remove` files for a retired item ar
 redundant. Check that log line before deleting them, since this only holds while
 both mods are present.
 
+**That log line cannot confirm a tag file *before* you delete it.** It counts
+memberships that survive datapack processing, so while a CBTweaks `remove` file
+is in place its item contributes 0 either way. The check only runs in one
+direction: delete the tag file first, relaunch, and confirm the number goes
+**up**. It resolves nested tags, so one item can move it by several — dropping
+`c:crops/corn.json` moved it 156 -> 162, `corn_cob` being reachable through
+`cornexpansion:corn`, `c:crops`, `farm_and_charm:corn`, `farm_and_charm:crops`
+and `tide:bait_plants`. Take "it went up" as the pass condition rather than
+predicting an exact delta.
+
+### An item id and a tag id can be the same string
+
+**Removing an item kills any item tag that shares its id, and every recipe using
+that tag is silently dropped from the recipe manager.** Farm & Charm registers
+both an item `farm_and_charm:tomato` and an item *tag* `farm_and_charm:tomato`
+(likewise `onion`). Putting the item in a Reliable Remover `remove` rule took the
+tag with it, and the 11 live recipes that asked for `#farm_and_charm:tomato` —
+Candlelight's `fresh_garden_salad`, `harvest_plate`, `salad`,
+`tomato_mozzarella_salad` and `tomato_soup`, `bakery:vegetable_sandwich`, both
+Create mixing variants — vanished. `Loaded NNNNN recipes` fell by exactly that
+count, and nothing was logged.
+
+The tag's *contents* are a red herring: `farm_and_charm:tomato` forwards to
+`#c:crops/tomato`, which still held `farmersdelight:tomato`. Restoring the
+datapack's tag `remove` files changed nothing, which is what ruled the tag
+contents out.
+
+**Check for the collision before removing anything** — look for the item's own
+id as a tag path, across every jar:
+
+```bash
+for j in mods/*.jar; do
+  unzip -Z1 "$j" "data/<ns>/tags/item*/<item_path>.json" 2>/dev/null \
+    && echo "  ^ collides, shipped by $j"
+done
+```
+
+The fix stays in the rule files. Point the recipes at the surviving tag with
+`replace_input`, and keep the item in the remover:
+
+```json
+{ "action": "replace_input", "target": "#farm_and_charm:tomato",
+  "replacement": [ "#c:crops/tomato" ] }
+```
+
+`RecipeRule` parses a `#`-prefixed string into `TagKey.create(Registries.ITEM,
+…)` for both `target` and `replacement`, so tag → tag is a supported shape, and
+with no selector it rewrites every recipe that names the tag — including jar
+recipes CBTweaks does not shadow. Verified: recipes returned to 13224, the count
+predicted for the batch.
+
+### Prefer a rule file over a datapack file
+
+Paxi datapacks carry a small but real runtime cost that the reliable_* mods do
+not, and this pack is being tuned for performance. **A datapack edit is the last
+resort, not the first.** `remove_recipe` replaces a `neoforge:false` stanza,
+`replace_input` replaces a hand-written retarget, `remove_from_tag` replaces a
+`remove` list, and Reliable Replacer replaces a worldgen override. Reach for
+CBTweaks only when no rule can express the change — the data map, the vanilla
+loot restorations, the `minecraft:empty` weight rebalance and the
+`neoforge:none` biome modifiers listed above.
+
 Items already retired the old way are being migrated to the reliable_* suite
 gradually, a few at a time, not in one sweep.
 
