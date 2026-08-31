@@ -662,7 +662,7 @@ spares anything a player placed. JSON keys are snake_case (`keep_states`,
 There is also a `remove` boolean for deleting a block outright.
 
 Use it to stop a retired mod's blocks reaching the world at all, rather than
-patching their drops afterwards. `config/reliable_replacer/kc_crops.json` does
+patching their drops afterwards. `config/reliable_replacer/kaleidoscope_cookery.json` does
 this for KC's tomato crop.
 
 **KC's crops only enter the world through village kitchen houses.** KC ships no
@@ -720,16 +720,46 @@ both mods are present.
 Items already retired the old way are being migrated to the reliable_* suite
 gradually, a few at a time, not in one sweep.
 
+### Rule file naming — one file per mod, per folder
+
+**A rule file is named after the mod its contents come from, and there is at most
+one per mod in each of the three folders.** `config/reliable_recipes/farm_and_charm.json`,
+`config/reliable_remover/culturaldelights.json`, and so on. Never name a file
+after the batch, the item, or the mechanic — `kc_meats.json`, `mincer.json` and
+`dried_corn.json` were all renamed away from that.
+
+Use the **mod id**, not the display name: `cornexpansion.json`, not
+`corn_expansion.json`.
+
+Two consequences worth knowing:
+
+- **"The mod it's from" means the jar that ships the content, not the namespace
+  of the id.** `minecraft:flour_from_{1..8}_wheat` are shipped by the KC jar, so
+  they live in `reliable_recipes/kaleidoscope_cookery.json`. The 17
+  `culturalrecipes:` ids are shipped by Cultural Delights, so they live in
+  `reliable_recipes/culturaldelights.json`. Mods register into other mods'
+  namespaces constantly here — file by jar.
+- **Different `action`s or keyings coexist in one file.** A rule file is a flat
+  top-level array, so a file can hold several rules.
+  `reliable_recipes/kaleidoscope_cookery.json` carries one `remove_recipe` keyed
+  on `output` (the eight meats) and a second keyed on `id` (the other 17). Do not
+  split a mod into two files to separate them.
+
+This keeps the mod-removal sweep trivial: when a mod goes, delete its file from
+each of the three folders alongside its `data/<modid>/` overrides.
+
+The mods' own shipped example files are kept but renamed to `.json.disabled`, the
+extension the loaders skip — `swapper.json` was live and logged two
+`examplemod:input_block` warnings every launch until it was disabled.
+
 **Done: all of Kaleidoscope Cookery** — the eight meats and the ten
-flour/dough/lettuce/tomato/rice items. Five rule files:
+flour/dough/lettuce/tomato/rice items, plus its crop worldgen swap:
 
 | File | What |
 |---|---|
-| `reliable_remover/kc_meats.json` | `remove`, 8 meats |
-| `reliable_remover/kc_items.json` | `remove`, 10 items |
-| `reliable_recipes/kc_meats.json` | `remove_recipe` keyed on `output` |
-| `reliable_recipes/kc_recipes.json` | `remove_recipe` keyed on `id` |
-| `reliable_replacer/kc_crops.json` | `tomato_crop` → FD tomatoes, retrogen |
+| `reliable_remover/kaleidoscope_cookery.json` | `remove`, 18 items |
+| `reliable_recipes/kaleidoscope_cookery.json` | `remove_recipe` × 2 — 8 by `output`, 17 by `id` |
+| `reliable_replacer/kaleidoscope_cookery.json` | `tomato_crop` → FD tomatoes, retrogen |
 
 That retired 93 CBTweaks files. **Key on `output` only when the result is itself
 a retired item** — the nine KC recipes needed `id` keying because their results
