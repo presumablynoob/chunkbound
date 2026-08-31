@@ -1,0 +1,17 @@
+[
+    {
+        "action": "remove",
+        "items": [
+            "culturaldelights:squid",
+            "culturaldelights:glow_squid",
+            "culturaldelights:cooked_squid",
+            "culturaldelights:raw_calamari",
+            "culturaldelights:cooked_calamari",
+            "culturaldelights:corn_cob",
+            "culturaldelights:corn_dough",
+            "culturaldelights:corn_kernels",
+            "culturaldelights:popcorn",
+            "culturaldelights:wild_corn"
+        ]
+    }
+]

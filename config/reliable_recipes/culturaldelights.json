@@ -1,0 +1,24 @@
+[
+    {
+        "action": "remove_recipe",
+        "id": [
+            "culturalrecipes:corn_dough",
+            "culturalrecipes:cutting/corn_kernels",
+            "culturalrecipes:cutting/wild_corn",
+            "culturalrecipes:smelting/popcorn",
+            "culturalrecipes:smelting/popcorn_from_campfire",
+            "culturalrecipes:smelting/popcorn_from_smoking",
+            "culturalrecipes:cutting/raw_calamari",
+            "culturalrecipes:cutting/raw_calamari_from_glowsquid",
+            "culturalrecipes:smelting/cooked_calamari",
+            "culturalrecipes:smelting/cooked_calamari_from_campfire",
+            "culturalrecipes:smelting/cooked_calamari_from_smoking",
+            "culturalrecipes:smelting/cooked_squid",
+            "culturalrecipes:smelting/cooked_squid_from_campfire",
+            "culturalrecipes:smelting/cooked_squid_from_smoking",
+            "culturalrecipes:smelting/cooked_glowsquid",
+            "culturalrecipes:smelting/cooked_glowsquid_from_campfire",
+            "culturalrecipes:smelting/cooked_glowsquid_from_smoking"
+        ]
+    }
+]
