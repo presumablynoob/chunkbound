@@ -1,8 +1,5 @@
 {
   "values": [
     "farmersdelight:onion"
-  ],
-  "remove": [
-    "farm_and_charm:onion"
   ]
 }

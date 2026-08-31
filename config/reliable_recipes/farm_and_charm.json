@@ -51,5 +51,30 @@
             "farm_and_charm:mincer/stripped_warped_log",
             "farm_and_charm:mincer/stripped_warped_wood"
         ]
+    },
+    {
+        "action": "remove_recipe",
+        "id": [
+            "farm_and_charm:rope",
+            "farm_and_charm:seeds_lettuce",
+            "farm_and_charm:seeds_tomato",
+            "farm_and_charm:drying/bone_meal_from_wild_tomatoes",
+            "farm_and_charm:drying/bone_meal_from_wild_onions",
+            "farm_and_charm:drying/bone_meal_from_wild_lettuce"
+        ]
+    },
+    {
+        "action": "replace_input",
+        "target": "#farm_and_charm:tomato",
+        "replacement": [
+            "#c:crops/tomato"
+        ]
+    },
+    {
+        "action": "replace_input",
+        "target": "#farm_and_charm:onion",
+        "replacement": [
+            "#c:crops/onion"
+        ]
     }
 ]
