@@ -1,0 +1,8 @@
+[
+    {
+        "action": "remove_recipe",
+        "output": [
+            "cornexpansion:dried_corn"
+        ]
+    }
+]
