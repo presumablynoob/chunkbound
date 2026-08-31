@@ -366,7 +366,64 @@ PY
 
 ## KubeJS
 
-**Zero-arg Java methods are properties in Rhino.** `SceneBuildingUtil.select()`
+Installed: **KubeJS 2101.7.2**, Rhino 2101.2.7, plus **kubejs-create 2101.3.1**.
+Docs at <https://kubejs.com/wiki> — but it spans every MC version, so confirm
+anything version-sensitive against the jar before relying on it.
+
+### What is available here
+
+Event namespaces: `StartupEvents` (`init`, `postInit`, `registry`,
+`modifyCreativeTab`), `ServerEvents` (`recipes`, `afterRecipes`, `tags`,
+`compostableRecipes`, `recipeTypeRegistry`, `specialRecipeSerializers`,
+`command`, `commandRegistry`, `generateData`, `loaded`, `tick`), `ItemEvents`
+(`modification`, `modifyTooltips`, `dynamicTooltips`, `foodEaten`, `crafted`,
+`smelted`, `pickedUp`, `rightClicked`, `toolTierRegistry`, `armorTierRegistry`),
+`BlockEvents`, `PlayerEvents`, `EntityEvents` (`spawned`, `checkSpawn`, `death`,
+`hurt`), `LevelEvents`, `NetworkEvents`, `ClientEvents` (`lang`, `tick`,
+`paintScreen`, debug info), `RecipeViewerEvents` (`removeEntries`,
+`removeRecipes`, `addEntries`, `groupEntries`, …).
+
+**Worldgen is still not usable on 1.21.1.** The wiki's worldgen support stops at
+1.20.1 and says outright it does not work there. Biome spawn lists, features and
+the `neoforge:none` cancellations stay datapack files — see the phantom section
+below.
+
+### Recipes
+
+**Vanilla types have builders — do not reach for `event.custom` first.**
+`event.shaped`, `event.shapeless`, `event.smelting`, `event.blasting`,
+`event.smoking`, `event.campfireCooking`, `event.stonecutting`,
+`event.smithing`, each chainable with `.xp()`, `.id()` and friends.
+
+**Builders come from data-driven recipe schemas**, shipped at
+`data/<namespace>/kubejs/recipe_schema/<type>.json` — a `keys` list of
+name/role/type entries, with `parent` for inheritance and `functions` for extra
+builder methods. So `event.recipes.<namespace>.<type>(…)` exists only where some
+jar ships a schema. Checked here: KubeJS itself ships 36 (vanilla), kubejs-create
+ships ~20 for Create, and **Farm & Charm, Farmer's Delight and Kaleidoscope
+Cookery ship none.**
+
+**For a modded type with no schema, `event.custom({…})` takes the raw recipe
+JSON** — the same object the datapack file holds. That is the route for
+`farm_and_charm:pot_cooking`, `farmersdelight:cooking`,
+`kaleidoscope_cookery:millstone` and the rest. Authoring a schema is possible but
+rarely worth it for a handful of recipes.
+
+Removal and retargeting take a **filter** object — `{output, input, mod, type,
+id}`, combinable, with `not:` for negation and an array for OR:
+
+```js
+event.remove({ type: 'minecraft:campfire_cooking', output: 'minecraft:cooked_chicken' })
+event.replaceInput({ id: 'examplemod:x' }, 'minecraft:stick', '#minecraft:saplings')
+```
+
+Because `replaceInput` is filter-scoped, KubeJS *can* express the one case
+Reliable Recipes cannot — the same source going to two different targets in
+different recipes. Rules still come first; this is the fallback for that shape.
+
+### Zero-arg Java methods are properties in Rhino
+
+`SceneBuildingUtil.select()`
 is `util.select`, not `util.select()`. Calling it throws
 `TypeError: Cannot call property select ... it is not a function`. Same applies
 to `util.vector` and `util.grid`.
@@ -1020,6 +1077,8 @@ its `BaseEffect(int)` constructor hardcodes it — including Hinder and Flatulen
 
 **Effect ids come from the ProbeJS dump**, which is the only complete list:
 `.probe/@special/types/index.d.ts`, the `type MobEffect = ...` union. 152 here.
+**That dump is not currently on disk** — `.probe/` holds only `source_jars`, so
+regenerate it in game (ProbeJS 8.0.3 is installed) before relying on the path.
 
 Compiled results:
 [BENEFICIAL_EFFECTS.md](chunkbound_info/BENEFICIAL_EFFECTS.md)
