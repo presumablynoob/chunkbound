@@ -395,19 +395,32 @@ below.
 `event.smoking`, `event.campfireCooking`, `event.stonecutting`,
 `event.smithing`, each chainable with `.xp()`, `.id()` and friends.
 
-**Builders come from data-driven recipe schemas**, shipped at
-`data/<namespace>/kubejs/recipe_schema/<type>.json` — a `keys` list of
-name/role/type entries, with `parent` for inheritance and `functions` for extra
-builder methods. So `event.recipes.<namespace>.<type>(…)` exists only where some
-jar ships a schema. Checked here: KubeJS itself ships 36 (vanilla), kubejs-create
-ships ~20 for Create, and **Farm & Charm, Farmer's Delight and Kaleidoscope
-Cookery ship none.**
+**Modded types get `event.recipes.<namespace>.<type>(…)` only where a recipe
+schema is registered, and the authoritative list for this install is
+`DocumentedRecipes` in the ProbeJS dump** —
+`.probe/@side-only/server/events/recipes/index.d.ts`. Exactly **four namespaces**
+have builders here:
 
-**For a modded type with no schema, `event.custom({…})` takes the raw recipe
-JSON** — the same object the datapack file holds. That is the route for
-`farm_and_charm:pot_cooking`, `farmersdelight:cooking`,
-`kaleidoscope_cookery:millstone` and the rest. Authoring a schema is possible but
-rarely worth it for a handful of recipes.
+| Namespace | Builders |
+|---|---|
+| `minecraft` | the 9 vanilla types |
+| `kubejs` | `shaped`, `shapeless` |
+| `create` | 17 — mixing, crushing, milling, pressing, filling, emptying, … |
+| `kaleidoscope_cookery` | 7 — `pot`, `flex_pot`, `stockpot`, `flex_stockpot`, `millstone`, `chopping_board`, `steamer` |
+
+**Do not test this by grepping jars for `kubejs/recipe_schema`.** A schema
+arrives two different ways and that path only catches one. Create's come from
+kubejs-create as data (`data/create/kubejs/recipe_schema/*.json`, a `keys` list
+with `parent` inheritance and `functions` for extra builder methods).
+Kaleidoscope Cookery's come from a **code plugin inside the KC jar itself** —
+`kubejs.plugins.txt` plus `compat/kubejs/recipe/*RecipeSchema.class` — with no
+data file anywhere. Read `DocumentedRecipes` instead; it reflects whatever
+actually registered.
+
+**Everything else needs `event.custom({…})`**, which takes the raw recipe JSON —
+the same object the datapack file holds. Farm & Charm and Farmer's Delight ship
+no KubeJS integration, so `farm_and_charm:pot_cooking`, `farmersdelight:cooking`
+and `farmersdelight:cutting` all go that route.
 
 Removal and retargeting take a **filter** object — `{output, input, mod, type,
 id}`, combinable, with `not:` for negation and an array for OR:
@@ -1076,9 +1089,9 @@ registry, and Kaleidoscope Cookery registers *everything* as BENEFICIAL because
 its `BaseEffect(int)` constructor hardcodes it — including Hinder and Flatulence.
 
 **Effect ids come from the ProbeJS dump**, which is the only complete list:
-`.probe/@special/types/index.d.ts`, the `type MobEffect = ...` union. 152 here.
-**That dump is not currently on disk** — `.probe/` holds only `source_jars`, so
-regenerate it in game (ProbeJS 8.0.3 is installed) before relying on the path.
+`.probe/@special/types/index.d.ts`, the `type MobEffect = ...` union. **171 here**
+(was 152 when BENEFICIAL_EFFECTS.md was generated — regenerate it before trusting
+that list).
 
 Compiled results:
 [BENEFICIAL_EFFECTS.md](chunkbound_info/BENEFICIAL_EFFECTS.md)
