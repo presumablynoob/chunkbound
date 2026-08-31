@@ -13,11 +13,12 @@ is broken, and before assuming something works.
 
 | Path | What it is |
 |---|---|
-| `config/paxi/datapacks/CBTweaks/` | The pack's datapack. All recipe/tag/loot overrides go here. |
+| `config/reliable_recipes/`, `reliable_remover/`, `reliable_replacer/` | Rule files, one per mod per folder. **First choice for any change.** |
+| `config/paxi/datapacks/CBTweaks/` | The pack's datapack. Recipe/tag/loot overrides that no rule or script can express. |
 | `config/paxi/resourcepacks/CBResources/` | The pack's resourcepack. Textures, lang, ponder structures. |
 | `kubejs/startup_scripts/` | Item component edits (food effects, stack sizes) — not datapack-able. |
 | `kubejs/client_scripts/` | Lang renames and Ponder scenes. |
-| `kubejs/server_scripts/` | Runtime tag/recipe edits. **Prefer a datapack over adding here.** |
+| `kubejs/server_scripts/` | Runtime tag/recipe edits, and the only way to *add* a recipe. Second choice after a `reliable_*` rule, ahead of a datapack. |
 | `mods/` | Mod jars — the source of truth for what a mod actually does. |
 | `chunkbound_info/` | Pack documentation and its tooling. Not loaded by the game. |
 
@@ -768,16 +769,33 @@ with no selector it rewrites every recipe that names the tag — including jar
 recipes CBTweaks does not shadow. Verified: recipes returned to 13224, the count
 predicted for the batch.
 
-### Prefer a rule file over a datapack file
+### Where a change belongs — reliable_*, then KubeJS, then the datapack
 
-Paxi datapacks carry a small but real runtime cost that the reliable_* mods do
-not, and this pack is being tuned for performance. **A datapack edit is the last
-resort, not the first.** `remove_recipe` replaces a `neoforge:false` stanza,
-`replace_input` replaces a hand-written retarget, `remove_from_tag` replaces a
-`remove` list, and Reliable Replacer replaces a worldgen override. Reach for
-CBTweaks only when no rule can express the change — the data map, the vanilla
-loot restorations, the `minecraft:empty` weight rebalance and the
-`neoforge:none` biome modifiers listed above.
+This pack is being tuned for performance, and the three mechanisms do not cost
+the same. **Use the highest one on this list that can express the change:**
+
+1. **A `reliable_*` rule file.** `remove_recipe` for a `neoforge:false` stanza,
+   `replace_input` for a hand-written ingredient retarget, `replace_output` for
+   a result swap, `remove` for an item retirement, `remove_from_tag` for a tag
+   `remove` list, Reliable Replacer for a worldgen block override.
+2. **A KubeJS script.** Chiefly *adding* a recipe, which no reliable_* action
+   can do — `RecipeRule$Action` is only `remove`, `replace_input`,
+   `replace_output`, `prevent_repair`, `set_repair_material`. `event.custom({…})`
+   in `ServerEvents.recipes` takes arbitrary JSON, so modded recipe types work,
+   and `Platform.isLoaded('modid')` stands in for a `neoforge:mod_loaded`
+   condition. Also the only home for item-component edits (food, stack size) and
+   client-side lang/tooltip work.
+3. **A CBTweaks datapack file.** Last resort, for what neither of the above can
+   express: the data map, the vanilla loot restorations, the `minecraft:empty`
+   weight rebalance, the `neoforge:none` biome modifiers, and the bakery
+   `give_item` retargets.
+
+**Two things not to forget when moving work up to KubeJS.** `ServerEvents.tags`
+runs *after* datapacks, so a script `add()` silently overwrites a datapack
+`remove` — the failure documented at the top of this file. And a script that
+loads cleanly has not necessarily run; `3/3 scripts loaded, 0 errors` says
+nothing about whether a recipe callback threw. Verify with `Loaded NNNNN
+recipes`, not with the script log.
 
 Items already retired the old way are being migrated to the reliable_* suite
 gradually, a few at a time, not in one sweep.
