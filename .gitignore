@@ -65,6 +65,8 @@ config/chat_heads.json5
 config/chunksending.json
 config/continuity.json
 config/cubes_without_borders.json
+config/emi-accelerator/reload-timings.json
+config/emi-accelerator/stack-cache.emic
 config/emi_ores-client.json
 config/entity_model_features.json
 config/entity_texture_features.json
