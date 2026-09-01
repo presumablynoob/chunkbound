@@ -69,5 +69,26 @@
         "replacement": [
             "#c:foods/onion"
         ]
+    },
+    {
+        "action": "replace_input",
+        "target": "farm_and_charm:onion",
+        "replacement": [
+            "#c:foods/onion"
+        ]
+    },
+    {
+        "action": "replace_input",
+        "target": "farm_and_charm:tomato",
+        "replacement": [
+            "#c:foods/tomato"
+        ]
+    },
+    {
+        "action": "replace_input",
+        "target": "#farm_and_charm:strawberry",
+        "replacement": [
+            "#c:foods/strawberry"
+        ]
     }
 ]

@@ -27,5 +27,26 @@
         "replacement": [
             "cornexpansion:corn_dough"
         ]
+    },
+    {
+        "action": "replace_input",
+        "target": "culturaldelights:corn_cob",
+        "replacement": [
+            "#c:crops/corn"
+        ]
+    },
+    {
+        "action": "replace_input",
+        "target": "#culturaldelights:cooked_chickens",
+        "replacement": [
+            "#c:foods/cooked_chicken"
+        ]
+    },
+    {
+        "action": "replace_input",
+        "target": "#c:foods/milk",
+        "replacement": [
+            "#c:drinks/milk"
+        ]
     }
 ]

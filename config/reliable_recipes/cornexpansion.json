@@ -4,5 +4,12 @@
         "output": [
             "cornexpansion:dried_corn"
         ]
+    },
+    {
+        "action": "replace_input",
+        "target": "#cornexpansion:cheese",
+        "replacement": [
+            "#brewinandchewin:foods/cheese_wedge"
+        ]
     }
 ]

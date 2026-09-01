@@ -1,0 +1,9 @@
+[
+    {
+        "action": "replace_input",
+        "target": "#candlelight:cheeses",
+        "replacement": [
+            "#brewinandchewin:foods/cheese_wedge"
+        ]
+    }
+]
