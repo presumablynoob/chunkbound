@@ -894,6 +894,33 @@ after the batch, the item, or the mechanic — `kc_meats.json`, `mincer.json` an
 Use the **mod id**, not the display name: `cornexpansion.json`, not
 `corn_expansion.json`.
 
+**The one exception is `global.json`, for rules that are genuinely pack-wide.**
+A `replace_input` rule is unscoped, so it rewrites every recipe naming its
+target no matter which mod ships it — filing that under one mod misrepresents
+what it touches. The test is factual rather than a judgement call: **resolve the
+target across every jar and count the distinct recipe namespaces.** More than
+one, it belongs in `global.json`; exactly one, it belongs in that mod's file.
+
+```bash
+grep -rl '"c:crops/tomato"' <extracted-jar-recipes>/ \
+  | sed 's|.*/data/||' | cut -d/ -f1 | sort -u    # >1 namespace -> global.json
+```
+
+Measuring beat guessing here. `#farm_and_charm:tomato` looks like a Farm & Charm
+rule and reaches `bakery` and `cornexpansion` recipes; `kaleidoscope_cookery:cooked_rice`
+reaches Kaleidoscope Nether. Both had been filed under a mod that understated
+them. Meanwhile `#farm_and_charm:onion`, `#c:crops/lettuce` and
+`culturaldelights:corn_dough` really are single-namespace and stay put.
+
+Scoping a cross-mod rule with `"mod": "<namespace>"` to keep it in a mod file is
+the *wrong* fix — it was tried and reverted. It duplicates one rule across every
+affected mod (14 rules where 4 would do, five of them new files holding a single
+cosmetic rewrite), and it makes correctness depend on whether `mod` matches the
+recipe id's namespace or the shipping jar, which is not established.
+
+**Cost to accept:** a departed mod's sweep now has to check `global.json` too, not
+just `<modid>.json` and `data/<modid>/`.
+
 Two consequences worth knowing:
 
 - **"The mod it's from" means the jar that ships the content, not the namespace
@@ -921,7 +948,7 @@ flour/dough/lettuce/tomato/rice items, plus its crop worldgen swap:
 | File | What |
 |---|---|
 | `reliable_remover/kaleidoscope_cookery.json` | `remove`, 18 items |
-| `reliable_recipes/kaleidoscope_cookery.json` | `remove_recipe` × 2 — 8 by `output`, 17 by `id` |
+| `reliable_recipes/kaleidoscope_cookery.json` | `remove_recipe` × 2 — 8 by `output`, 17 by `id` — plus `replace_input` for `#c:crops/lettuce` |
 | `reliable_replacer/kaleidoscope_cookery.json` | `tomato_crop` → FD tomatoes, retrogen |
 
 That retired 93 CBTweaks files. **Key on `output` only when the result is itself
