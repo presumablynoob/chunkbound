@@ -40,12 +40,5 @@
         "replacement": [
             "#c:foods/cabbage"
         ]
-    },
-    {
-        "action": "replace_input",
-        "target": "kaleidoscope_cookery:cooked_rice",
-        "replacement": [
-            "#c:foods/cooked_rice"
-        ]
     }
 ]

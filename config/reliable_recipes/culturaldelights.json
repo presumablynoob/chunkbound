@@ -20,5 +20,12 @@
             "culturalrecipes:smelting/cooked_glowsquid_from_campfire",
             "culturalrecipes:smelting/cooked_glowsquid_from_smoking"
         ]
+    },
+    {
+        "action": "replace_input",
+        "target": "culturaldelights:corn_dough",
+        "replacement": [
+            "cornexpansion:corn_dough"
+        ]
     }
 ]

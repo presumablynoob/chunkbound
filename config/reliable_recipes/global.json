@@ -1,0 +1,37 @@
+[
+    {
+        "action": "replace_input",
+        "target": "#c:crops/tomato",
+        "replacement": [
+            "#c:foods/tomato"
+        ]
+    },
+    {
+        "action": "replace_input",
+        "target": "#c:crops/cabbage",
+        "replacement": [
+            "#c:foods/cabbage"
+        ]
+    },
+    {
+        "action": "replace_input",
+        "target": "#farm_and_charm:tomato",
+        "replacement": [
+            "#c:foods/tomato"
+        ]
+    },
+    {
+        "action": "replace_input",
+        "target": "#farm_and_charm:cabbage",
+        "replacement": [
+            "#c:foods/cabbage"
+        ]
+    },
+    {
+        "action": "replace_input",
+        "target": "kaleidoscope_cookery:cooked_rice",
+        "replacement": [
+            "#c:foods/cooked_rice"
+        ]
+    }
+]
