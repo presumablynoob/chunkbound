@@ -11,5 +11,11 @@
         "replacement": [
             "#c:foods/raw_bacon"
         ]
+    },
+    {
+        "action": "remove_recipe",
+        "id": [
+            "farm_and_charm:pot_cooking/beetroot_soup"
+        ]
     }
 ]
