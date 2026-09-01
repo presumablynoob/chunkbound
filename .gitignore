@@ -47,6 +47,14 @@ config/jade/sort-order.json
 
 kubejs/exported/
 kubejs/logs/
+# ProbeJS regenerates these for IDE type hints every time it dumps. They hold
+# no pack settings - package.json is just {"type": "commonjs"} - and the
+# jsconfig files only point at .probe/, which is itself untracked, so in a
+# clone they reference a directory that does not exist.
+kubejs/package.json
+kubejs/client_scripts/jsconfig.json
+kubejs/server_scripts/jsconfig.json
+kubejs/startup_scripts/jsconfig.json
 # Generated blob containing a local web-editor password
 config/resourceful-config-web.json
 
