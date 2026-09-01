@@ -1,0 +1,24 @@
+[
+    {
+        "action": "remove_recipe",
+        "id": [
+            "farmersdelight:cutting/wild_onions",
+            "farmersdelight:cutting/wild_tomatoes",
+            "farmersdelight:tomato_seeds"
+        ]
+    },
+    {
+        "action": "remove_recipe",
+        "id": [
+            "farmersdelight:cooking/dog_food"
+        ]
+    },
+    {
+        "action": "remove_recipe",
+        "id": [
+            "farmersdelight:cooking/cooked_rice",
+            "farmersdelight:wheat_dough_from_egg",
+            "farmersdelight:wheat_dough_from_water"
+        ]
+    }
+]
