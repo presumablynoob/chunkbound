@@ -839,6 +839,19 @@ with no selector it rewrites every recipe that names the tag — including jar
 recipes CBTweaks does not shadow. Verified: recipes returned to 13224, the count
 predicted for the batch.
 
+**`target` matches on the ingredient as written, not on what the tag resolves
+to** — so an **empty** tag is a perfectly good target. That matters because
+retiring an item empties its leaf tags, and the recipes still naming them are
+exactly the ones needing a rewrite. Confirmed in game: `#c:crops/lettuce` holds
+nothing since KC's lettuce was retired, and a rule targeting it still rewrote all
+20 stockpot recipes onto `#c:foods/cabbage`. A removed **item** works as a target
+the same way.
+
+**The recipe count cannot verify a `replace_input` batch.** A rewritten recipe is
+still a recipe, and so is one whose rule silently failed to match — both count
+the same. The count only catches a rule matching *too much*. Whether it matched
+at all is an in-game or EMI check, every time.
+
 ### Where a change belongs — reliable_*, then KubeJS, then the datapack
 
 This pack is being tuned for performance, and the three mechanisms do not cost
