@@ -839,6 +839,18 @@ with no selector it rewrites every recipe that names the tag — including jar
 recipes CBTweaks does not shadow. Verified: recipes returned to 13224, the count
 predicted for the batch.
 
+**The same string can be both a tag and an item, and `#` is the only thing
+telling them apart.** A rule targeting `#farm_and_charm:onion` does *not* touch a
+recipe asking for the bare item `farm_and_charm:onion`, and both forms appear in
+this pack — `pot_cooking/potato_soup` uses the tag, `onion_bag` uses the item.
+Retiring the item leaves the item-form recipes broken while the tag-form ones
+look fine, so **check which form each recipe uses before assuming one rule covers
+them**; the two bag recipes were nearly shipped broken on that assumption:
+
+```bash
+grep -rhoE '"(tag|item)"[[:space:]]*:[[:space:]]*"farm_and_charm:onion"' <jars>/ | sort -u
+```
+
 **`target` matches on the ingredient as written, not on what the tag resolves
 to** — so an **empty** tag is a perfectly good target. That matters because
 retiring an item empties its leaf tags, and the recipes still naming them are
@@ -898,13 +910,21 @@ Use the **mod id**, not the display name: `cornexpansion.json`, not
 A `replace_input` rule is unscoped, so it rewrites every recipe naming its
 target no matter which mod ships it — filing that under one mod misrepresents
 what it touches. The test is factual rather than a judgement call: **resolve the
-target across every jar and count the distinct recipe namespaces.** More than
-one, it belongs in `global.json`; exactly one, it belongs in that mod's file.
+target across every jar and count the distinct jars that ship a matching
+recipe.** More than one, it belongs in `global.json`; exactly one, it belongs in
+that mod's file.
 
 ```bash
 grep -rl '"c:crops/tomato"' <extracted-jar-recipes>/ \
-  | sed 's|.*/data/||' | cut -d/ -f1 | sort -u    # >1 namespace -> global.json
+  | sed 's|.*/jr/||' | cut -d/ -f1 | sort -u    # >1 jar -> global.json
 ```
+
+**Count jars, not namespaces.** `culturaldelights:corn_cob` appears under two
+namespaces, `culturalrecipes` and `farmersdelight` — but the Cultural Delights
+jar ships both recipes, so the rule is not pack-wide and lives in
+`culturaldelights.json`. Namespaces mislead because mods register into each
+other's constantly here; the jar is what actually leaves when a mod is removed,
+which is the property the filing convention exists to serve.
 
 Measuring beat guessing here. `#farm_and_charm:tomato` looks like a Farm & Charm
 rule and reaches `bakery` and `cornexpansion` recipes; `kaleidoscope_cookery:cooked_rice`
