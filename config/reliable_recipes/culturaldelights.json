@@ -48,5 +48,12 @@
         "replacement": [
             "#c:drinks/milk"
         ]
+    },
+    {
+        "action": "replace_input",
+        "target": "culturaldelights:raw_calamari",
+        "replacement": [
+            "minersdelight:tentacles"
+        ]
     }
 ]

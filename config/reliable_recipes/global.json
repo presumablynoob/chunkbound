@@ -33,5 +33,33 @@
         "replacement": [
             "#c:foods/cooked_rice"
         ]
+    },
+    {
+        "action": "replace_input",
+        "target": "farm_and_charm:bacon",
+        "replacement": [
+            "#c:foods/raw_bacon"
+        ]
+    },
+    {
+        "action": "replace_input",
+        "target": "farm_and_charm:chicken_parts",
+        "replacement": [
+            "farmersdelight:chicken_cuts"
+        ]
+    },
+    {
+        "action": "replace_input",
+        "target": "farm_and_charm:minced_beef",
+        "replacement": [
+            "farmersdelight:minced_beef"
+        ]
+    },
+    {
+        "action": "replace_input",
+        "target": "#farm_and_charm:dough",
+        "replacement": [
+            "#c:foods/dough"
+        ]
     }
 ]

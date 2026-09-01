@@ -6,6 +6,12 @@
         ]
     },
     {
+        "action": "remove_recipe",
+        "id": [
+            "cornexpansion:farm_and_charm/pot_cooking/simple_tomato_soup"
+        ]
+    },
+    {
         "action": "replace_input",
         "target": "#cornexpansion:cheese",
         "replacement": [

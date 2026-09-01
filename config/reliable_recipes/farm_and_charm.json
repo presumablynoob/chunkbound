@@ -90,5 +90,12 @@
         "replacement": [
             "#c:foods/strawberry"
         ]
+    },
+    {
+        "action": "replace_input",
+        "target": "farm_and_charm:lettuce",
+        "replacement": [
+            "farmersdelight:cabbage"
+        ]
     }
 ]

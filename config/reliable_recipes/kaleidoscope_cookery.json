@@ -40,5 +40,61 @@
         "replacement": [
             "#c:foods/cabbage"
         ]
+    },
+    {
+        "action": "replace_input",
+        "target": "#c:grain/rice",
+        "replacement": [
+            "#c:crops/rice"
+        ]
+    },
+    {
+        "action": "replace_input",
+        "target": "kaleidoscope_cookery:rice",
+        "replacement": [
+            "#c:crops/rice"
+        ]
+    },
+    {
+        "action": "replace_input",
+        "target": "kaleidoscope_cookery:rice_panicle",
+        "replacement": [
+            "farmersdelight:rice_panicle"
+        ]
+    },
+    {
+        "action": "replace_input",
+        "target": "kaleidoscope_cookery:tomato",
+        "replacement": [
+            "#c:foods/tomato"
+        ]
+    },
+    {
+        "action": "replace_input",
+        "target": "kaleidoscope_cookery:cooked_pork_belly",
+        "replacement": [
+            "farmersdelight:cooked_bacon"
+        ]
+    },
+    {
+        "action": "replace_input",
+        "target": "kaleidoscope_cookery:raw_cut_small_meats",
+        "replacement": [
+            "minecraft:mutton"
+        ],
+        "id": [
+            "kaleidoscope_cookery:flex_pot/donkey_burger"
+        ]
+    },
+    {
+        "action": "replace_input",
+        "target": "kaleidoscope_cookery:raw_cut_small_meats",
+        "replacement": [
+            "#c:foods/raw_meat"
+        ],
+        "id": [
+            "kaleidoscope_cookery:flex_pot/stuffed_tiger_skin_pepper",
+            "kaleidoscope_cookery:pot/stuffed_tiger_skin_pepper"
+        ]
     }
 ]

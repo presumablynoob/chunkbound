@@ -4,5 +4,12 @@
         "id": [
             "bakery:jar"
         ]
+    },
+    {
+        "action": "replace_input",
+        "target": "#farm_and_charm:raw_bacon",
+        "replacement": [
+            "#c:foods/raw_bacon"
+        ]
     }
 ]
