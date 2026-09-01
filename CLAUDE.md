@@ -1255,6 +1255,9 @@ candy against a mid-level target, not a fresh one.
 ## Git & repo conventions
 
 - `main` is the working branch. Commit and push only when asked.
+- **Never commit `CLAUDE.md` on its own.** Its edits are almost always findings
+  from a change being made anyway, so fold them into that change's commit —
+  a separate docs commit per batch just clutters the history.
 - `emi.json`, `minecraftinstance.json` and `options.txt` are **untracked** —
   each is rewritten every launch with per-user state. `minecraftinstance.json`
   was tracked until it was noticed that it carries the installing machine's

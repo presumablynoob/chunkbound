@@ -1,0 +1,10 @@
+[
+    {
+        "action": "remove_recipe",
+        "id": [
+            "brewinandchewin:cooking/sweet_berry_jam",
+            "brewinandchewin:cooking/glow_berry_marmalade",
+            "brewinandchewin:cooking/apple_jelly"
+        ]
+    }
+]

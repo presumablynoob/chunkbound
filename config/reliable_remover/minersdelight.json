@@ -1,0 +1,32 @@
+[
+    {
+        "action": "remove",
+        "items": [
+            "minersdelight:baked_cod_stew_cup",
+            "minersdelight:bat_soup_cup",
+            "minersdelight:beef_stew_cup",
+            "minersdelight:beetroot_soup_cup",
+            "minersdelight:bone_broth_cup",
+            "minersdelight:cave_soup_cup",
+            "minersdelight:chicken_soup_cup",
+            "minersdelight:copper_cup",
+            "minersdelight:copper_pot",
+            "minersdelight:egg_soup_cup",
+            "minersdelight:fish_stew_cup",
+            "minersdelight:insect_stew_cup",
+            "minersdelight:milk_cup",
+            "minersdelight:mushroom_stew_cup",
+            "minersdelight:noodle_soup_cup",
+            "minersdelight:onion_soup_cup",
+            "minersdelight:powder_snow_cup",
+            "minersdelight:pumpkin_soup_cup",
+            "minersdelight:rabbit_stew_cup",
+            "minersdelight:rock_soup_cup",
+            "minersdelight:spicy_hoglin_stew_cup",
+            "minersdelight:spicy_noodle_soup_cup",
+            "minersdelight:strider_stew_cup",
+            "minersdelight:vegetable_soup_cup",
+            "minersdelight:water_cup"
+        ]
+    }
+]

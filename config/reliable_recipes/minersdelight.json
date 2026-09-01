@@ -1,0 +1,9 @@
+[
+    {
+        "action": "remove_recipe",
+        "id": [
+            "minersdelight:copper_cup",
+            "minersdelight:copper_pot"
+        ]
+    }
+]

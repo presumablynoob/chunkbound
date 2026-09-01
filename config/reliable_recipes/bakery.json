@@ -1,0 +1,8 @@
+[
+    {
+        "action": "remove_recipe",
+        "id": [
+            "bakery:jar"
+        ]
+    }
+]
