@@ -33,5 +33,19 @@
             "minecraft:flour_from_7_wheat",
             "minecraft:flour_from_8_wheat"
         ]
+    },
+    {
+        "action": "replace_input",
+        "target": "#c:crops/lettuce",
+        "replacement": [
+            "#c:foods/cabbage"
+        ]
+    },
+    {
+        "action": "replace_input",
+        "target": "kaleidoscope_cookery:cooked_rice",
+        "replacement": [
+            "#c:foods/cooked_rice"
+        ]
     }
 ]
