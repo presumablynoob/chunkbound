@@ -97,5 +97,40 @@
         "replacement": [
             "farmersdelight:cabbage"
         ]
+    },
+    {
+        "action": "replace_input",
+        "target": "#farm_and_charm:cooked_beef",
+        "replacement": [
+            "#c:foods/cooked_beef"
+        ]
+    },
+    {
+        "action": "replace_input",
+        "target": "#farm_and_charm:raw_chicken",
+        "replacement": [
+            "#c:foods/raw_chicken"
+        ]
+    },
+    {
+        "action": "replace_input",
+        "target": "#farm_and_charm:raw_pork",
+        "replacement": [
+            "#c:foods/raw_pork"
+        ]
+    },
+    {
+        "action": "replace_input",
+        "target": "#farm_and_charm:raw_beef",
+        "replacement": [
+            "#c:foods/raw_beef"
+        ]
+    },
+    {
+        "action": "replace_input",
+        "target": "#farm_and_charm:bread",
+        "replacement": [
+            "#c:bread"
+        ]
     }
 ]

@@ -864,6 +864,53 @@ still a recipe, and so is one whose rule silently failed to match — both count
 the same. The count only catches a rule matching *too much*. Whether it matched
 at all is an in-game or EMI check, every time.
 
+### `replace_output` is unusable for most modded recipe types
+
+**It rewrites the result correctly and then wraps it in an array.** A rule
+retargeting `kaleidoscope_cookery:cooked_rice` produced
+`"result": [{"count": 9, "id": "farmersdelight:cooked_rice"}]` where
+`kaleidoscope_cookery:stockpot` expects a single object, so the codec threw
+`Not a JSON object: [...]` and the recipe failed to load *entirely* — the right
+item in the wrong shape is worse than no rule at all.
+
+Eleven such rules cost 16 recipes and added 16 parse errors in one launch. FD
+cooked rice vanished from the game, because the stockpot is deliberately its only
+source. **Use a datapack override or KubeJS for a result swap**; `replace_input`
+is unaffected, since it preserves the entry shape it replaces.
+
+**No rule can change a result's count or an ingredient's arity either.** Those
+were the other blockers in the retarget sweep — `mincer/minced_beef` goes 1 -> 2,
+the four jams go from 2 ingredients to 4. `event.custom` in KubeJS handles all of
+it, since it takes the whole recipe JSON.
+
+### Loot belongs in LootJS
+
+**LootJS and MoreJS are installed** — `lootjs-neoforge-1.21.1-3.7.0` and
+`morejs-neoforge-1.21.1-0.16.0` — and they extend KubeJS into areas core KubeJS
+does not reach. Confirm the surface from the ProbeJS dump
+(`.probe/@side-only/server/events/index.d.ts`), which lists `LootJS` and `MoreJS`
+alongside the core namespaces.
+
+| Namespace | Use for |
+|---|---|
+| `LootJS.lootTables` | `getLootTable`, `getBlockTable`, `getEntityTable`, `clearLootTables`, `forEachTable` |
+| `LootJS.modifiers` | `addBlockModifier`, `addTableModifier`, `removeGlobalModifiers` |
+| `MoreJS` | villager and wanderer trades, potion brewing, enchanting, structure load |
+
+`removeGlobalModifiers` logs what it did — `[LootJS] Removed 1 global loot
+modifiers: ...` — which is rare and worth using as the verification.
+
+**LootJS has no raw-JSON entry point.** There is no loot equivalent of
+`event.custom`; `MutableLootTable` is a builder, so a datapack table has to be
+re-expressed by hand rather than moved across verbatim. Only convert a table
+whose intent survives that translation exactly.
+
+**Loot is much harder to verify than recipes.** A recipe is either in EMI or it
+is not; a mistranslated table may only show up one break in twenty, or only with
+a particular tool, or only on one half of a double-tall plant. Convert a few at a
+time, grouped by shape, and prefer leaving a hand-written table alone over a
+translation you cannot check.
+
 ### Where a change belongs — reliable_*, then KubeJS, then the datapack
 
 This pack is being tuned for performance, and the three mechanisms do not cost
@@ -873,7 +920,7 @@ the same. **Use the highest one on this list that can express the change:**
    `replace_input` for a hand-written ingredient retarget, `replace_output` for
    a result swap, `remove` for an item retirement, `remove_from_tag` for a tag
    `remove` list, Reliable Replacer for a worldgen block override.
-2. **A KubeJS script.** Chiefly *adding* a recipe, which no reliable_* action
+2. **A KubeJS script (or LootJS / MoreJS).** Chiefly *adding* a recipe, which no reliable_* action
    can do — `RecipeRule$Action` is only `remove`, `replace_input`,
    `replace_output`, `prevent_repair`, `set_repair_material`. `event.custom({…})`
    in `ServerEvents.recipes` takes arbitrary JSON, so modded recipe types work,

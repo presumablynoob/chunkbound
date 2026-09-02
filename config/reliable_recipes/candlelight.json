@@ -11,5 +11,12 @@
         "replacement": [
             "#brewinandchewin:foods/cheese_wedge"
         ]
+    },
+    {
+        "action": "replace_input",
+        "target": "candlelight:mozzarella",
+        "replacement": [
+            "#brewinandchewin:foods/cheese_wedge"
+        ]
     }
 ]

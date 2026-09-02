@@ -83,7 +83,8 @@
             "minecraft:mutton"
         ],
         "id": [
-            "kaleidoscope_cookery:flex_pot/donkey_burger"
+            "kaleidoscope_cookery:flex_pot/donkey_burger",
+            "kaleidoscope_cookery:pot/donkey_burger"
         ]
     },
     {
@@ -95,6 +96,17 @@
         "id": [
             "kaleidoscope_cookery:flex_pot/stuffed_tiger_skin_pepper",
             "kaleidoscope_cookery:pot/stuffed_tiger_skin_pepper"
+        ]
+    },
+    {
+        "action": "replace_input",
+        "target": "#c:dough",
+        "replacement": [
+            "#c:foods/dough"
+        ],
+        "id": [
+            "kaleidoscope_cookery:flex_pot/donkey_burger",
+            "kaleidoscope_cookery:pot/donkey_burger"
         ]
     }
 ]

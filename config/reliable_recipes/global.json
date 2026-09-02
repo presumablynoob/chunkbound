@@ -61,5 +61,12 @@
         "replacement": [
             "#c:foods/dough"
         ]
+    },
+    {
+        "action": "replace_input",
+        "target": "#farm_and_charm:pasta",
+        "replacement": [
+            "#c:foods/pasta"
+        ]
     }
 ]
