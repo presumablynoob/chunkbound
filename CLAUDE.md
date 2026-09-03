@@ -911,6 +911,23 @@ a particular tool, or only on one half of a double-tall plant. Convert a few at 
 time, grouped by shape, and prefer leaving a hand-written table alone over a
 translation you cannot check.
 
+**One bad call silently skips every table after it.** An exception inside
+`LootJS.lootTables` aborts the whole handler — the tables already processed keep
+their changes, the rest are never touched, and the only sign is one line in the
+log. `Loaded N/N KubeJS server scripts ... 0 errors` refers to *load* and is
+printed before the handler runs, so it says nothing; grep for
+`Error in 'LootJS` instead.
+
+Seen here: `addAlternativesLoot` exists, but on the loot **modifier** builder
+(`LootJS.modifiers`), not on a pool. Calling it on a `MutableLootPool` throws
+`Cannot find function addAlternativesLoot`, which left one barley table cleared
+mid-build and two later tables untouched. In a pool, alternatives go through
+`pool.addEntry(LootEntry.alternative(a, b))`.
+
+**`ItemFilter` is not a global binding**, so a `match_tool` predicate carrying an
+enchantment — silk touch, say — has no obvious expression. The BoP lavender table
+stays a datapack file for that reason.
+
 ### Where a change belongs — reliable_*, then KubeJS, then the datapack
 
 This pack is being tuned for performance, and the three mechanisms do not cost
