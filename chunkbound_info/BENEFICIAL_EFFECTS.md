@@ -3,7 +3,7 @@
 A reference for every **beneficial** status effect in Chunkbound, and what each
 one actually does.
 
-**89 beneficial** &nbsp;·&nbsp; 63 neutral or harmful &nbsp;·&nbsp; **152 total**
+**87 beneficial** &nbsp;·&nbsp; 58 neutral or harmful &nbsp;·&nbsp; **145 total**
 
 ---
 
@@ -18,10 +18,10 @@ one actually does.
 ### Survival
 
 - **Hunger** — Well Served · Nourishment · Satiation · Sustenance · Feast · Satiation Shield · Vigor · Saturation · Sweet Heart · Vitality *(Bakery)*
-- **Healing** — Comfort · Regeneration · Instant Health · Warmth · Pyromaniac · Balanced · Bonding · Jellie · Immortality
+- **Healing** — Comfort · Regeneration · Instant Health · Warmth · Pyromaniac · Balanced · Bonding · Jellie
 - **Hazards** — Fire Resistance · Water Breathing · Slow Falling · Preservation · Tundra Strider
 - **Cleansing** — Farmers Blessing · Grandma's Blessing · Effect Cleanse · Negative Effect Cleanse
-- **Threat avoidance** — Invisibility · Vanishing · Mustard *(creepers)* · Sulfur *(phantoms)* · Mental Restoration *(phantoms)*
+- **Threat avoidance** — Invisibility · Mustard *(creepers)* · Sulfur *(phantoms)* · Mental Restoration *(phantoms)*
 
 ### Utility
 
@@ -44,7 +44,7 @@ one actually does.
 [Cobblemon](#cobblemon-3) · [Dungeons Delight](#dungeons-delight-2) ·
 [Ender's Delight](#enders-delight-1) · [Farm & Charm](#farm--charm-9) ·
 [Farmer's Delight](#farmers-delight-2) · [Herbal Brews](#herbal-brews-6) ·
-[Kaleidoscope Cookery](#kaleidoscope-cookery-12) · [Relics](#relics-2) ·
+[Kaleidoscope Cookery](#kaleidoscope-cookery-12) ·
 [RunicLib](#runiclib-13) · [Vinery](#vinery-13)
 
 Also: [effects that are *not* beneficial](#not-beneficial) ·
@@ -182,13 +182,6 @@ Also: [effects that are *not* beneficial](#not-beneficial) ·
 | **Sulfur** | Phantoms flee from you. |
 | **Flatulence** | Sneak to induce flatulence and gain elevation. |
 
-## Relics (2)
-
-| Effect | What it does |
-|---|---|
-| **Immortality** `+` | Cheat death while active. From the Holy Locket. |
-| **Vanishing** `+` | Hostile mobs can't see you. From relics such as the Midnight Robe and Leafy Ring. |
-
 ## RunicLib (13)
 
 | Effect | What it does |
@@ -236,7 +229,6 @@ Also: [effects that are *not* beneficial](#not-beneficial) ·
 | **Minecraft** (20) | Slowness · Mining Fatigue · Instant Damage · Nausea · Blindness · Hunger · Weakness · Poison · Wither · Levitation · Bad Luck · Darkness · Wind Charged · Weaving · Oozing · Infested · Glowing · Bad Omen · Trial Omen · Raid Omen |
 | **RunicLib** (11) | *Harmful:* Bleeding · Blood Clot · Caffeine Crash · Confusion · Creative Shock · Heartbreak · Lesser Weakness · Shatterspleen · Venom<br>*Neutral:* Chronos · Tempus |
 | **Dungeons Delight** (10) | *Harmful:* Serrated · Putrid Scent<br>*Neutral:* Pouncing · Exudation · Swift Step · Rotgut · Decisive · Voracity · Tenacity · Burrow Gut |
-| **Relics** (5) | Anti-Heal · Bleeding · Confusion · Paralysis · Stun |
 | **Brewin' and Chewin'** (2) | Intoxication *(harmful)* · Tipsy *(neutral)* |
 | **Vinery** (2) | Creeper *(harmful)* · Frosty Armor *(neutral)* |
 | **Herbal Brews** (1) | Tough *(neutral)* |
@@ -256,7 +248,6 @@ reads.
 | `assets/artifacts/lang/en_us.json` | `magnetism` |
 | `assets/cobblemon/lang/en_us.json` | `cleanse_all` · `cleanse_negative` · `mental_restoration` |
 | `assets/kaleidoscope_cookery/lang/en_us.json` | `hinder` · `instant_smelting` · `projectile_dodge` · `vitality` |
-| `assets/relics/lang/en_us.json` | `immortality` · `vanishing` |
 
 Language files merge key by key, so these sit alongside each mod's own
 translations without replacing anything.

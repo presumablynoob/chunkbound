@@ -31,12 +31,8 @@
 # on every pull. A clone must create the CurseForge instance itself (NeoForge
 # 21.1.248) and point it at this folder; the mods themselves come from mods/.
 
-# Pack documentation: beneficial-effect reference, EMI biome thumbnail
-# worklist and its 4x sprite previews / reference screenshots
+# Pack documentation: beneficial-effect reference and the recipe-compat tooling
 !/chunkbound_info/
-# Full-res screenshot originals stay local; the 240px copies in shots/ are
-# what the doc embeds and what gets committed.
-chunkbound_info/biome-sprites/screenshots/
 chunkbound_info/tools/__pycache__/
 
 # --- Runtime junk inside tracked folders ---
@@ -75,7 +71,6 @@ config/continuity.json
 config/cubes_without_borders.json
 config/emi-accelerator/reload-timings.json
 config/emi-accelerator/stack-cache.emic
-config/emi_ores-client.json
 config/entity_model_features.json
 config/entity_texture_features.json
 config/etf_warnings.json
@@ -106,9 +101,11 @@ kubejs/config/
 # Per-shaderpack option state saved next to the pack
 shaderpacks/*.txt
 
-# spark's own scratch space (it documents these as temporary data)
+# spark's own scratch space (it documents these as temporary data), plus the
+# per-user log of profiler uploads — profile URLs and the uploader's name/UUID
 config/spark/tmp/
 config/spark/tmp-client/
+config/spark/activity.json
 
 # Config-library backups written next to the file they back up
 config/*.toml.bak

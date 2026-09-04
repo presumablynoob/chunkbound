@@ -537,62 +537,6 @@ to add one key under another mod's namespace.
 
 ---
 
-## EMI biome thumbnails
-
-`emi_ores` puts **every registered biome** into the EMI index
-(`add_biomes_to_index: true`) and looks up a 16×16 sprite at
-`assets/<biome_namespace>/textures/biome/<path>.png`. With none present it draws
-`emi_ores:biome/missing`, a checkerboard. emi_ores registers those into the
-blocks atlas via its own `assets/minecraft/atlases/blocks.json` directory
-source, which scans **all** namespaces — so a sprite added under CBResources is
-picked up with no atlas file of our own.
-
-It enumerates `registryOrThrow(Registries.BIOME).stream()`, with no filter for
-whether worldgen actually places the biome. **A biome disabled in config is
-still listed and still needs a sprite.** BWG's
-`config/biomeswevegone/world_generation.json` switches four off
-(`allium_shrubland`, `eroded_borealis`, `pumpkin_valley`, `shattered_glacier`) —
-they can never be visited or screenshotted, but they still show in EMI. That
-config file is **tracked** - it carries those four toggles and the three region
-weights, so it has to reach a clone. BWG rewrites it with a different key order
-whenever the mod list changes, which surfaces as a diff with no value changes;
-commit the reorder rather than reaching for `.gitignore`.
-
-Worklist and tooling live in `chunkbound_info/`; see
-[tools/README.md](chunkbound_info/tools/README.md).
-[BIOME_SPRITES.md](chunkbound_info/BIOME_SPRITES.md) tables every modded biome,
-its current sprite and its reference screenshot. Both scripts are stdlib-only
-and derive their paths from their own location:
-
-```bash
-python chunkbound_info/tools/downsize_screenshots.py   # after adding a screenshot
-python chunkbound_info/tools/build_biome_doc.py        # after adding a sprite
-```
-
-Screenshots are filed per mod as `screenshots/<mod>/<biome>.png`, and the
-filename **is** the biome id — a mismatch silently drops the row, so the
-generator warns about names matching no registered biome. Full-res originals
-(~8 MB each) stay in `screenshots/` and are gitignored; the 240px copies in
-`shots/` are what the doc embeds and what gets committed.
-
-**Three things that silently produce wrong art**, all found the hard way:
-
-- **Vanilla textures are 4-bit indexed PNGs.** An 8-bit-only reader fails on
-  every one of them, so vanilla blocks sample as "missing" with no error.
-- **Most modded leaf textures are greyscale**, tinted at runtime by the biome's
-  foliage colour. Sampling them directly gives grey trees. Treat a texture with
-  saturation below ~0.12 as a tint target.
-- **BoP gives a placed feature and its configured feature the same id.**
-  Resolving a feature reference as "placed, else configured" therefore loops
-  forever and finds no trees. Resolve the two namespaces separately.
-
-Biome JSONs carry `effects.grass_color` / `foliage_color` / `sky_color` /
-`water_color`, and the mods ship full biome tag sets (`c:is_cave`, `c:is_sandy`,
-`is_nether`, even RU's `surface/sand`, `surface/peat`, `surface/silt`) — enough
-to classify a biome from data instead of guessing from its name.
-
----
-
 ## EMI tab order
 
 Category order is data-driven. EMI's `emi:category_properties` reload listener
@@ -610,13 +554,13 @@ Ours lives at
 **The namespace must be `emi`, not ours.** The loader does
 `if (!id.getNamespace().equals("emi")) continue;` — a file under
 `assets/chunkbound/emi/...` is skipped with no error. The *filename* is free
-(EMI ships `emi.json`, emi_ores ships `emi_ores.json`); every file merges, so
+(EMI ships `emi.json`, and any mod may ship its own); every file merges, so
 only declare the categories you care about and avoid redeclaring another pack's
 keys, which makes the winner depend on resource order.
 
 EMI's own baseline runs `minecraft:crafting` -1000 through `emi:tag` 1000, with
 `stonecutting` -800, `smithing` -750, `brewing` -650, `world_interaction` -600,
-`fuel` 900, `composting` 910, `info` 950. emi_ores sets its two at 400.
+`fuel` 900, `composting` 910, `info` 950.
 Everything else in this pack — ~41 modded cooking categories and all 15 `ali:*`
 loot categories — shipped with no order at all, so they tied at 0 and fell back
 to registration order, which is why tabs moved around between launches.
@@ -665,11 +609,11 @@ index slots whenever two sources contribute stacks whose components differ, even
 though both render identically.
 
 **A duplicate whose stacks differ only by *random* NBT cannot be de-duplicated
-from a pack.** Relics and Reliquified Artifacts (both since removed) hit this:
-every Artifacts item registered into two creative tabs, and Relics rolled a
-**fresh random `relics:data` component per entry**, so the two stacks differed
-in NBT and the dedupe legitimately kept both. Each available lever failed for
-its own reason, so don't re-attempt this shape of fix:
+from a pack.** A pair of mods since removed hit this here: one item registered
+into two creative tabs, and one contributor rolled a **fresh random data
+component per entry**, so the two stacks differed in NBT and the dedupe
+legitimately kept both. Each available lever failed for its own reason, so don't
+re-attempt this shape of fix:
 
 - `removed` compares **strictly, including NBT**, and rolled values change on
   every index rebuild, so no fixed stack ever matches. In-game Ctrl+Click hides
@@ -1335,6 +1279,13 @@ candy against a mid-level target, not a fresh one.
   Config holding actual gameplay/balance data we edit (`config/bountiful/`,
   `config/biomeswevegone/`, `config/cobblemon/`, `config/artifacts/`,
   `config/regions_unexplored/`) is tracked — don't add it back to `.gitignore`.
+- **BWG's `config/biomeswevegone/world_generation.json` produces empty diffs.**
+  It is tracked because it carries four biome on/off toggles
+  (`allium_shrubland`, `eroded_borealis`, `pumpkin_valley`, `shattered_glacier`)
+  and three region weights, so it has to reach a clone. BWG rewrites it with a
+  different key order whenever the mod list changes, which surfaces as a diff
+  with no value changes; commit the reorder rather than reaching for
+  `.gitignore`.
 - **Any config file an edit needs to touch gets un-gitignored, every time.**
   If a task requires changing a value inside a currently-ignored `config/...`
   path, remove that path from `.gitignore` as part of the same change — don't
