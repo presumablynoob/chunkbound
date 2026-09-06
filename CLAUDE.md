@@ -1320,7 +1320,55 @@ specifically a bound computed from the host. Confirm by reading the mod's
 Check line endings at the same time: if the new config is CRLF on disk, its
 path pattern needs an `eol=crlf` rule in `.gitattributes` (see below).
 
+**Check a fat jar for package overlap before committing it.** A mod that shades
+its dependencies can ship a library another mod already ships, and two JPMS
+modules exporting the same package is a *split package* — the JVM refuses to
+build the module layer and the game dies in `BootstrapLauncher` before a single
+mod initialises:
+
+```
+java.lang.module.ResolutionException: Modules cobblemon and cobblemon_quests
+export package org.bson.assertions to module fabric_loot_api_v3
+```
+
+**No crash report is written**, because nothing has started yet. The only symptom
+is `logs/latest.log` ending right after the mod list at a fraction of its usual
+size — 82 KB against the normal ~470 KB here. Diff the size against a working log
+before hunting elsewhere.
+
+Seen with `cobblemon_quests-reloaded` 1.3.6, a 2.5 MB jar carrying 398
+`org/bson/**` classes; Cobblemon ships 403 of its own including the same
+`org/bson/assertions/Assertions`. The 65 KB 1.2.0 build bundles none, which is why
+that one boots. **A jar that is suddenly far larger than the build it replaces is
+the tell** — check what it shades before trusting it:
+
+```bash
+python - <<'EOF'
+import zipfile, glob, os, collections
+owners = collections.defaultdict(list)
+for j in glob.glob("mods/*.jar"):
+    for n in zipfile.ZipFile(j).namelist():
+        if n.endswith(".class") and "/" in n:
+            owners[n.rsplit("/", 1)[0]].append(os.path.basename(j))
+for pkg, js in owners.items():
+    if len(set(js)) > 1 and not pkg.startswith(("net/minecraft", "assets", "data")):
+        print(pkg, sorted(set(js)))
+EOF
+```
+
+This is not fixable from the pack side — the overlap is inside a distributed jar,
+so it needs a slim build from the mod or the older version.
+
 ### Line endings
+
+**`.gitattributes` patterns match case-insensitively on Windows.** The LFS rule
+was `mods/Cobblemon*.jar`, which quietly swept in `cobblemon_quests-*.jar` as
+well — `git check-attr filter -- <file>` is what shows it. Only
+`Cobblemon-neoforge-*.jar` genuinely needs LFS (123 MB, over GitHub's 100 MB hard
+limit); the rule is now `mods/Cobblemon-*.jar`, which still covers
+`cobblemon-battle-extras` but no longer the underscore-named Quests jar. After
+narrowing a filter rule, `git add --renormalize <file>` restores the affected
+file as a real blob — otherwise it stays an LFS pointer in the index.
 
 Every blob in the repo is **LF**. `.gitattributes` is `* text=auto eol=lf`, with
 `eol=crlf` overrides for the paths whose writers emit Windows endings — all
