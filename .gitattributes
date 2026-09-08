@@ -11,5 +11,6 @@ config/xaerohud.txt               eol=crlf
 config/badoptimizations.txt       eol=crlf
 config/defaultoptions/options.txt eol=crlf
 config/emi-accelerator/emi-accelerator.txt eol=crlf
+config/lootintegrations.json      eol=crlf
 
 mods/Cobblemon-*.jar filter=lfs diff=lfs merge=lfs -text
