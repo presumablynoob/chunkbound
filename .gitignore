@@ -84,7 +84,6 @@ config/immersiveui.yaml
 config/iris.properties
 config/lithostitched.json
 config/modernfix-mixins.properties
-config/runiclib.json
 config/simpletms/main.json
 config/sodium-fingerprint.json
 config/sodium-options.json

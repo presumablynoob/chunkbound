@@ -3,7 +3,7 @@
 A reference for every **beneficial** status effect in Chunkbound, and what each
 one actually does.
 
-**87 beneficial** &nbsp;·&nbsp; 58 neutral or harmful &nbsp;·&nbsp; **145 total**
+**74 beneficial** &nbsp;·&nbsp; 47 neutral or harmful &nbsp;·&nbsp; **121 total**
 
 ---
 
@@ -44,8 +44,7 @@ one actually does.
 [Cobblemon](#cobblemon-3) · [Dungeons Delight](#dungeons-delight-2) ·
 [Ender's Delight](#enders-delight-1) · [Farm & Charm](#farm--charm-9) ·
 [Farmer's Delight](#farmers-delight-2) · [Herbal Brews](#herbal-brews-6) ·
-[Kaleidoscope Cookery](#kaleidoscope-cookery-12) ·
-[RunicLib](#runiclib-13) · [Vinery](#vinery-13)
+[Kaleidoscope Cookery](#kaleidoscope-cookery-12) · [Vinery](#vinery-13)
 
 Also: [effects that are *not* beneficial](#not-beneficial) ·
 [descriptions this pack added](#descriptions-this-pack-added) ·
@@ -182,24 +181,6 @@ Also: [effects that are *not* beneficial](#not-beneficial) ·
 | **Sulfur** | Phantoms flee from you. |
 | **Flatulence** | Sneak to induce flatulence and gain elevation. |
 
-## RunicLib (13)
-
-| Effect | What it does |
-|---|---|
-| **Adrenaline** | Movement speed rises as your health falls. |
-| **Berserk** | Attack damage rises as your health falls. |
-| **Caffeinated** | Small boost to all major stats. |
-| **Lesser Strength** | +1.0 attack damage. |
-| **Burning Thorns** | Attackers catch fire. |
-| **Retaliation** | Attackers take damage. |
-| **Pyromaniac** | Slowly heals you while you stand in fire. |
-| **Brimstone Vision** | See clearly inside lava. |
-| **Perception** | Nearby entities glow. |
-| **Water Walking** | Walk on water. |
-| **Lava Walking** | Walk on lava. |
-| **Trail Blazing** | Leaves a trail of fire behind you unless you sneak. |
-| **Traversal** | Teleports you to your spawn point, or world spawn if you have none. |
-
 ## Vinery (13)
 
 | Effect | What it does |
@@ -227,7 +208,6 @@ Also: [effects that are *not* beneficial](#not-beneficial) ·
 | Source | Effects |
 |---|---|
 | **Minecraft** (20) | Slowness · Mining Fatigue · Instant Damage · Nausea · Blindness · Hunger · Weakness · Poison · Wither · Levitation · Bad Luck · Darkness · Wind Charged · Weaving · Oozing · Infested · Glowing · Bad Omen · Trial Omen · Raid Omen |
-| **RunicLib** (11) | *Harmful:* Bleeding · Blood Clot · Caffeine Crash · Confusion · Creative Shock · Heartbreak · Lesser Weakness · Shatterspleen · Venom<br>*Neutral:* Chronos · Tempus |
 | **Dungeons Delight** (10) | *Harmful:* Serrated · Putrid Scent<br>*Neutral:* Pouncing · Exudation · Swift Step · Rotgut · Decisive · Voracity · Tenacity · Burrow Gut |
 | **Brewin' and Chewin'** (2) | Intoxication *(harmful)* · Tipsy *(neutral)* |
 | **Vinery** (2) | Creeper *(harmful)* · Frosty Armor *(neutral)* |
