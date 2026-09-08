@@ -1,0 +1,46 @@
+[
+  {
+    "when": "position",
+    "spawntype": [ "natural" ],
+    "hostile": true,
+    "mincount": { "amount": 25, "hostile": true, "perplayer": true },
+    "result": "deny"
+  },
+  {
+    "when": "position",
+    "spawntype": [ "natural" ],
+    "passive": true,
+    "mod": "minecraft",
+    "mincount": { "amount": 25, "passive": true, "mod": "minecraft", "perplayer": true },
+    "result": "deny"
+  },
+  {
+    "when": "position",
+    "spawntype": [ "natural" ],
+    "mob": [
+      "minecraft:squid",
+      "minecraft:glow_squid",
+      "minecraft:cod",
+      "minecraft:salmon",
+      "minecraft:tropical_fish",
+      "minecraft:pufferfish",
+      "minecraft:dolphin",
+      "minecraft:tadpole"
+    ],
+    "mincount": {
+      "amount": 15,
+      "perplayer": true,
+      "mob": [
+        "minecraft:squid",
+        "minecraft:glow_squid",
+        "minecraft:cod",
+        "minecraft:salmon",
+        "minecraft:tropical_fish",
+        "minecraft:pufferfish",
+        "minecraft:dolphin",
+        "minecraft:tadpole"
+      ]
+    },
+    "result": "deny"
+  }
+]

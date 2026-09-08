@@ -1126,26 +1126,160 @@ and refuses to spawn once the budget is exceeded. Ours is `charge 1.0` /
 `energy_budget 0.06`, far tighter than vanilla's own soul sand valley
 (`charge 0.7` / `energy_budget 0.15`).
 
-**Two spawn-control mods were tried and removed. Do not reinstall either.**
+**Mob Control 2.0.0 was tried and removed. Do not reinstall it.** A rule with
+`type="control"` deleted *every* mob in the world at spawn time: nothing spawned
+naturally, spawn eggs did nothing, and `/summon` answered "Unable to summon
+entity". Its `SummonCommandMix` returns null when the freshly built entity is not
+alive, and `MobMix` calls `Mob.discard()` followed by `setHealth(0)` on the
+original as part of the control path's rebuild. It does this with or without
+`set.*` options, and logs nothing at all - the only visible symptom is the summon
+message.
 
-- **Mob Control 2.0.0** - a rule with `type="control"` deleted *every* mob in the
-  world at spawn time: nothing spawned naturally, spawn eggs did nothing, and
-  `/summon` answered "Unable to summon entity". Its `SummonCommandMix` returns
-  null when the freshly built entity is not alive, and `MobMix` calls
-  `Mob.discard()` followed by `setHealth(0)` on the original as part of the
-  control path's rebuild. It does this with or without `set.*` options, and logs
-  nothing at all - the only visible symptom is the summon message.
-- **In Control 10.2.7** - works, but its spawner has no biome filter.
-  `SpawnerConditions` covers dimension, distance, height, day count, liquid and
-  mob caps; `PositionCheck` adds cave, structure, light, time, season and sky.
-  Biome conditions exist only on `spawn.json` rules, which can allow or deny a
-  spawn the game already attempts but cannot create one. So it can spawn per
-  dimension, never per biome.
+**In Control is installed (10.3.0), for mob caps only.** It cannot *create* a
+spawn per biome - its own spawner (`spawner.json`) has no biome filter
+(`SpawnerConditions` covers dimension, distance, height, day count, liquid and
+mob caps; `PositionCheck` adds cave, structure, light, time, season and sky), and
+biome conditions exist only on `spawn.json` rules, which can allow or deny a
+spawn the game already attempts. Denying is exactly what a cap needs, so that is
+all we use it for. See "Mob caps" below.
 
 **Gamerules were not the problem, and are worth ruling out first.** Parse them
 straight out of the save rather than trusting the menu: `doMobSpawning`,
 `doInsomnia`, `Difficulty` and `DifficultyLocked` all live in
 `saves/<world>/level.dat`, gzipped NBT, with gamerule values stored as strings.
+
+### Mob caps
+
+`config/incontrol/spawn.json` holds three deny rules: 25 hostile mobs per player,
+25 vanilla passive mobs per player, and 15 aquatic mobs per player - all natural
+spawns only. Everything below was read out of `incontrol-1.21-10.3.0.jar`; the
+mod's wiki is thin and several of these are the opposite of what the key names
+suggest.
+
+**`mincount`, not `maxcount`, is what a cap wants.** `maxcount` matches while
+`count < amount`; `mincount` matches once `count >= amount`. A deny rule must
+fire *at* the cap, so it takes `mincount`.
+
+**`perplayer` scales the threshold, it does not scope the count.** Counting is
+dimension-wide over every loaded entity (`RuleCache$CachePerWorld.count` walks
+`ServerLevel.getEntities().getAll()`); `perplayer: true` just multiplies `amount`
+by `getValidPlayers()`, the non-spectator players in that level. So "25 per
+player" means 25 x N across the whole dimension, refreshed every
+`cacheRetentionTicks` (10).
+
+**Hostile and passive are Java `instanceof` tests, not tags.** `hostile` is
+`Enemy`, `passive` is `Animal && !Enemy`. Everything else is *neutral*, and
+`CountInfo` has **no neutral counter** - `parseCountInfo` accepts only `hostile`,
+`passive`, `all`, `mod` and `mob`, even though `RuleCache` tracks a neutral total
+internally. So a neutral cap has to be written as an explicit `mob` list.
+
+**Water mobs are neutral, which is why the third rule exists.** `Squid` and
+`AbstractFish` (-> `Cod`, `Salmon`, `TropicalFish`, `Pufferfish`) both extend
+`WaterAnimal extends PathfinderMob` - neither `Animal` nor `Enemy` - as do
+`Dolphin`, `GlowSquid` and `Tadpole`, so all eight escaped both of the first two
+rules and were a large share of the spawn budget. `Turtle`, `Axolotl` and `Frog`
+*do* extend `Animal` and are already covered by the passive rule; `Guardian` and
+`ElderGuardian` are `Enemy` and covered by the hostile one. Bats
+(`AmbientCreature`) and villagers stay uncapped, deliberately - they are few.
+
+**Resolve these against the 1.21.1 srg jar, not the patched NeoForge jar.**
+`neoforge-<ver>-client.jar` carries only the ~1562 classes NeoForge actually
+patches, so `javap` on `Squid` there fails; the full deobfuscated hierarchy is in
+`Install/libraries/net/minecraft/client/1.21.1-*/client-1.21.1-*-srg.jar`.
+
+**`minecraft:aquatic` is the wrong tag for this** - it also holds `turtle`,
+`axolotl`, `guardian` and `elder_guardian`, which the other two rules already
+cap, so it would double-count. And **`CountInfo`'s `mob` does not take tags at
+all**: `parseCountInfo` handles a primitive or an array of ids through
+`findEntity`, and its "Bad entity tag in count description!" branch is just the
+fallback for anything else. An explicit id list is the only option.
+
+**`when` defaults to `position`**, i.e. `MobSpawnEvent$PositionCheck`, which
+vanilla fires only from `NaturalSpawner` and from spawner blocks; `spawntype:
+["natural"]` drops the spawner blocks. Breeding never reaches it, so breeding
+needs no exemption. `MobSpawnType.valueOf` is called with no try/catch at rule
+parse time, so a misspelled spawn type throws.
+
+**Rules with unknown keys are rejected** - `GenericAttributeMapFactory.validate`
+errors on any key it does not know, so there is no room for a `_comment`. That is
+why this section exists.
+
+`mincount`/`maxcount` are `Type.JSON`: the object is `toString()`ed and re-parsed
+by `CountInfo.parseCountInfo`, so a JSON object literal works directly. Inside it,
+`mod` restricts the count to one namespace and combines with `hostile`/`passive`
+(`RuleCache$CountPerMod`). Multi-valued keys go through `JSonTools.asArrayOrSingle`,
+so `"spawntype": "natural"` and `["natural"]` are equivalent.
+
+**Wild Pokemon are `Animal`s, which is why the passive cap is scoped to
+`minecraft`.** `PokemonEntity extends ShoulderRidingEntity -> TamableAnimal ->
+Animal`, so an unscoped passive count is dominated by Cobblemon and vanilla
+animals would stop spawning entirely. A jar-wide scan for direct `Animal`
+subclasses found only `PokemonEntity` and BWG's `ManOWar`, so `mod: "minecraft"`
+covers every farm animal in the pack bar that one.
+
+**In Control cannot cap Cobblemon at all - do not try.** Two independent reasons:
+
+- Cobblemon's `SingleEntitySpawnAction` calls `Mob.finalizeSpawn` directly.
+  NeoForge only rewrites that call into `EventHooks.finalizeMobSpawn` for the 23
+  vanilla classes listed in the coremods jar's `finalize_spawn_targets.json`, so
+  **`FinalizeSpawnEvent` never fires for a Pokemon** - and `PositionCheck` does
+  not either, since that is `NaturalSpawner`'s.
+- `when: "onjoin"` *does* see them, but `EntityJoinLevelEvent` also fires from
+  `PersistentEntitySectionManager#addNewEntity` for entities **loaded from disk**,
+  and In Control never checks `loadedFromDisk()`. A deny there deletes saved wild
+  Pokemon as their chunks load. Gating on `spawntype` does not help: `Mob`
+  persists its spawn type to NBT as `neoforge:spawn_type`, so a disk-loaded mob
+  still reports `NATURAL`. This is the same trap as `EntityEvents.spawned` in
+  KubeJS, documented above.
+
+**Cobblemon's own limiter is the Pokemon cap, and it is already tighter than 25.**
+`Spawner.calculateSpawnActionsForArea` counts `PokemonEntity`s with
+`getCountsTowardsSpawnCap()` in a 96 x 1000 x 96 box around the spawning zone and
+bails when `nearby / 9 >= max(pokemonPerChunk, spawner.maxPokemonPerChunk)`. Tune
+it in `config/cobblemon/main.json`, not In Control.
+
+### Cobblemon spawn tuning
+
+**The pack ships these at stock.** A tightening pass was tried for server
+performance and reverted - every intermediate setting read as too sparse in play,
+so Cobblemon's own defaults are the baseline. The reference below is kept because
+every value was read out of the jar and the arithmetic is not what the names
+suggest; get these wrong and a change does nothing, or does the opposite.
+
+| Key | Stock | What it actually does |
+|---|---|---|
+| `pokemonPerChunk` | 1.0 | `Spawner.calculateSpawnActionsForArea` counts `PokemonEntity`s with `getCountsTowardsSpawnCap()` in a 96 x 1000 x 96 box around the spawning zone and bails when `nearby / 9 >= max(pokemonPerChunk, spawner.maxPokemonPerChunk)`. 1.0 therefore allows 8 wild Pokemon in that column. |
+| `pokeSnackPokemonPerChunk` | 2.0 | Same formula for `PokeSnackBlockEntity`'s `FixedAreaSpawner`. **A derived value, not an independent one:** because of the `max(...)`, anything at or below `pokemonPerChunk` does nothing at all. Move it whenever `pokemonPerChunk` moves. |
+| `ticksBetweenSpawnAttempts` | 30.0 | `PlayerSpawner` runs one pass **per player** this often. Each pass does the 96 x 1000 x 96 `getEntitiesOfClass` plus zone generation, so this is the most expensive knob of the set. |
+| `maximumSpawnsPerPass` | 4 | Passed as the `max` argument to `SpawningSelector.select`. Spawn throughput is `maximumSpawnsPerPass / ticksBetweenSpawnAttempts`, and **this is the cheap half of that ratio** - the expensive scan has already happened by the time it applies, so changing it adds or removes spawns at near-zero CPU. Tune this before touching the interval. |
+| `minimumDistanceBetweenEntities` | 14.0 | Inflates the zone AABB in `CobblemonSpawningZoneGenerator`; `AreaSpawnablePositionResolver` then rejects positions within it of an existing entity. It interacts with `pokemonPerChunk`: at 20-block spacing a 96 x 96 area only fits about 23 positions, so a raised spacing can make a raised density ceiling unreachable. Tune the two together. |
+| `despawnerNearDistance` / `despawnerMinAgeTicks` | 32.0 / 600 | **Leave these alone.** Together they are the only thing stopping a Pokemon vanishing while a player walks toward it. |
+| `despawnerFarDistance` / `despawnerMaxAgeTicks` | 96.0 / 3600 | The outer bounds of the despawn ramp below. |
+
+`CobblemonAgingDespawner.shouldDespawn` reads:
+
+```
+age < despawnerMinAgeTicks            -> keep
+PokemonEntity.isBusy() or isPassenger -> keep
+dist = distance to the nearest player in the level
+dist < despawnerNearDistance          -> keep
+age > despawnerMaxAgeTicks
+  or dist > despawnerFarDistance      -> despawn
+otherwise despawn once
+  age > (1 - (dist - near) / (far - near)) * (maxAge - minAge)
+```
+
+so the further out a Pokemon is, the sooner it goes. Note `despawnerFarDistance`
+should stay clear of `maximumSpawningZoneDistanceFromPlayer` (64): set equal, a
+freshly spawned Pokemon becomes despawn-eligible 30s later without the player
+moving, which is spawn/despawn churn that costs more than it saves.
+
+**`BasicSpawner` copies `pokemonPerChunk` into its own field at construction**, and
+`PlayerSpawner` is built when a player joins, so a mid-session config change does
+not reach existing spawners. Restart to test.
+
+**If tuning is retried, move one knob at a time.** The reverted pass changed seven
+at once and there was no way to attribute the sparseness to any of them.
 
 ---
 
