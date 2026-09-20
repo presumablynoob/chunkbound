@@ -195,7 +195,7 @@ ServerEvents.recipes(event => {
     requiresLearning: false
   })
 
-  when(["culturaldelights", "farm_and_charm"], 'chunkbound:compat/pot_cooking/culturalrecipes/cooking/creamed_corn', {
+  when(["culturaldelights", "farm_and_charm"], 'chunkbound:compat/pot_cooking/culturaldelights/cooking/creamed_corn', {
     type: "farm_and_charm:pot_cooking",
     ingredients: [
       {
@@ -220,7 +220,7 @@ ServerEvents.recipes(event => {
     requiresLearning: false
   })
 
-  when(["culturaldelights", "farm_and_charm"], 'chunkbound:compat/pot_cooking/culturalrecipes/cooking/eggplant_parmesan_block', {
+  when(["culturaldelights", "farm_and_charm"], 'chunkbound:compat/pot_cooking/culturaldelights/cooking/eggplant_parmesan_block', {
     type: "farm_and_charm:pot_cooking",
     ingredients: [
       {
@@ -254,7 +254,7 @@ ServerEvents.recipes(event => {
     requiresLearning: false
   })
 
-  when(["culturaldelights", "farm_and_charm"], 'chunkbound:compat/pot_cooking/culturalrecipes/cooking/elote', {
+  when(["culturaldelights", "farm_and_charm"], 'chunkbound:compat/pot_cooking/culturaldelights/cooking/elote', {
     type: "farm_and_charm:pot_cooking",
     ingredients: [
       {
@@ -279,7 +279,7 @@ ServerEvents.recipes(event => {
     requiresLearning: false
   })
 
-  when(["culturaldelights", "farm_and_charm"], 'chunkbound:compat/pot_cooking/culturalrecipes/cooking/poached_eggplants', {
+  when(["culturaldelights", "farm_and_charm"], 'chunkbound:compat/pot_cooking/culturaldelights/cooking/poached_eggplants', {
     type: "farm_and_charm:pot_cooking",
     ingredients: [
       {
@@ -307,7 +307,7 @@ ServerEvents.recipes(event => {
     requiresLearning: false
   })
 
-  when(["culturaldelights", "farm_and_charm"], 'chunkbound:compat/pot_cooking/culturalrecipes/cooking/spicy_curry', {
+  when(["culturaldelights", "farm_and_charm"], 'chunkbound:compat/pot_cooking/culturaldelights/cooking/spicy_curry', {
     type: "farm_and_charm:pot_cooking",
     ingredients: [
       {

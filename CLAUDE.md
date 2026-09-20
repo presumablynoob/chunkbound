@@ -158,15 +158,32 @@ path, so all four were uncraftable in silence. The live tag is `c:drinks/milk`
 same bug in three recipes, left alone because all three are gated on
 `neoforge:mod_loaded: twilightforest`, which is not installed.
 
-**Cultural Delights consolidated its data namespace in 0.18.1.** Up to 0.17.8 its
-mod id and its data namespace differed, so most of its content shipped under
-`data/culturalrecipes/` and an override had to match that path. 0.18.1 drops the
-namespace entirely and moves all 273 data files under `data/culturaldelights/`,
-so anything keyed on a `culturalrecipes:` id now matches nothing - silently, as
-usual. Three places in this pack still are:
-`config/reliable_recipes/culturaldelights.json`,
-`kubejs/server_scripts/compat_pot_cooking.js` and
-`CBTweaks/data/culturalrecipes/recipe/from_crate/corn_cob.json`.
+**A mod update can rename every hook an override depends on, silently.** Cultural
+Delights 0.18.1 is the worst case seen here: it dropped the `culturalrecipes`
+data namespace its recipes had always shipped under and folded all 273 files
+into `culturaldelights`, renamed the `add_corn` biome modifier to
+`add_wild_corn`, merged the two-block `corn` / `corn_upper` crop into one `corn`
+block with a `height` property, and deleted the `culturaldelights:cooked_chickens`
+tag outright. Five separate pack overrides pointed at the old names, and not one
+of them logged anything - a `remove_recipe` id that matches nothing, an override
+at a path no mod reads, and a `neoforge:none` cancelling a biome modifier that no
+longer exists all fail exactly as quietly as they would succeed.
+
+**Key `remove_recipe` on `output` rather than `id` wherever the results are
+themselves retired items.** That is what this pack now does for Cultural
+Delights, and it is what would have made the rename a non-event: an output rule
+does not care what a recipe is called or which folder it moved to, and it picked
+up the new `culturaldelights:corn_kernels` crafting recipe 0.18.1 added without
+anyone noticing it existed. The constraint from the Kaleidoscope batch still
+applies - only do this where every listed result is retired, or an output rule
+takes out half the pack.
+
+**After any content-mod bump, re-resolve the overrides against the new jar.**
+Recipe ids, loot table paths, block names, tag names and biome modifier file
+names are all part of a mod's data surface, and none of them are stable across
+versions. The sweep that catches this is: list `data/<ns>/` in the old and new
+jars, diff the two listings, and check every path this pack shadows or names
+against the new side.
 
 When an ingredient tag moves from empty to populated it can collide with another
 recipe of the same type, which for a modded type is silent — resolve every
