@@ -154,11 +154,19 @@ for `c:foods/milk` in four cooking recipes; nothing in this pack defines that
 path, so all four were uncraftable in silence. The live tag is `c:drinks/milk`
 (NeoForge, FD and Cobblemon all contribute), resolving to
 `minecraft:milk_bucket`, `farmersdelight:milk_bottle` and
-`cobblemon:moomoo_milk` — and FD's own soups use it. Overrides live under
-`data/culturalrecipes/`, **not** `culturaldelights/`: the mod id and its data
-namespace differ. Dungeons Delight has the same bug in three recipes, left alone
-because all three are gated on `neoforge:mod_loaded: twilightforest`, which is
-not installed.
+`cobblemon:moomoo_milk` — and FD's own soups use it. Dungeons Delight has the
+same bug in three recipes, left alone because all three are gated on
+`neoforge:mod_loaded: twilightforest`, which is not installed.
+
+**Cultural Delights consolidated its data namespace in 0.18.1.** Up to 0.17.8 its
+mod id and its data namespace differed, so most of its content shipped under
+`data/culturalrecipes/` and an override had to match that path. 0.18.1 drops the
+namespace entirely and moves all 273 data files under `data/culturaldelights/`,
+so anything keyed on a `culturalrecipes:` id now matches nothing - silently, as
+usual. Three places in this pack still are:
+`config/reliable_recipes/culturaldelights.json`,
+`kubejs/server_scripts/compat_pot_cooking.js` and
+`CBTweaks/data/culturalrecipes/recipe/from_crate/corn_cob.json`.
 
 When an ingredient tag moves from empty to populated it can collide with another
 recipe of the same type, which for a modded type is silent — resolve every

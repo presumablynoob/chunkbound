@@ -99,6 +99,10 @@ kubejs/config/
 
 # Per-shaderpack option state saved next to the pack
 shaderpacks/*.txt
+# EuphoriaPatcher writes this placeholder pack, and the error log beside it,
+# when it cannot find the Complementary version it was built against. It is
+# failure output, not a shaderpack the pack ships.
+shaderpacks/_0EuphoriaPatches_ErrorShader/
 
 # spark's own scratch space (it documents these as temporary data), plus the
 # per-user log of profiler uploads — profile URLs and the uploader's name/UUID
@@ -106,5 +110,8 @@ config/spark/tmp/
 config/spark/tmp-client/
 config/spark/activity.json
 
-# Config-library backups written next to the file they back up
+# Config-library backups, and the dumps of a mod's own defaults, written next
+# to the file they belong to. Regenerated whenever the live file changes.
 config/*.toml.bak
+config/**/*.json.bak
+config/**/*.defaults.json

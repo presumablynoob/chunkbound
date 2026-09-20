@@ -89,6 +89,10 @@
   "jadeaddons": {
     "equipment_requirement": ""
   },
+  "exposure": {
+    "lightroom": true,
+    "photograph_frame": true
+  },
   "jadeaddons.lootr": {
     "info": true
   },
@@ -107,6 +111,9 @@
   },
   "waystones": {
     "waystone": true
+  },
+  "exposure_space": {
+    "analyzer": true
   },
   "mega_showdown": {
     "jade": true
