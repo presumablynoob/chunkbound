@@ -104,6 +104,11 @@ shaderpacks/*.txt
 # failure output, not a shaderpack the pack ships.
 shaderpacks/_0EuphoriaPatches_ErrorShader/
 
+# On a successful patch it renames the pack it supersedes rather than deleting
+# it, leaving the previous build on disk as a local fallback. Only the current
+# pack is tracked.
+shaderpacks/Outdated */
+
 # spark's own scratch space (it documents these as temporary data), plus the
 # per-user log of profiler uploads — profile URLs and the uploader's name/UUID
 config/spark/tmp/
