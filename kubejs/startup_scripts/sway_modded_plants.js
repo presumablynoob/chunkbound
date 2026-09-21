@@ -19,23 +19,23 @@
 //and MushroomBlock all extend it), and regions_unexplored:windswept_grass is a
 //RuDoublePlantBlock -> DoublePlantBlock -> BushBlock.
 //
-//THIS HAS TO RUN BEFORE MODEL BAKING, which is why it is a startup script rather
-//than a client script on ClientEvents.loggedIn. Interactive Foliage's
-//NeoforgeFoliageHooks.wrapModels listens to ModelEvent.ModifyBakingResult and,
-//for every block that is interactive *at bake time*, swaps that block's baked
-//models for wrapped ones. Register later than the bake and the block gets the
-//deformed/GPU treatment while its model is still the unwrapped one, so the plant
-//renders twice - once static from the chunk mesh and once animated. That is
-//exactly what registering at loggedIn produced on windswept grass.
-//GpuFoliageSplit.isFoliage has the same shape of problem: it snapshots
-//SwayAPI.isInteractive across the whole block registry on first use and never
-//invalidates it.
+//postInit is the latest hook that still has full block registries, and it is
+//too late for the models to be wrapped: the reload that bakes them starts before
+//it. That matters more than it sounds, because ALL the bending lives in the
+//wrapped model - SwayModel is a BakedModel wrapper that calls
+//SwayBehaviorDeformer.deform. A block whose model was not wrapped never bends,
+//and the plant instead draws twice: the static unwrapped model from the chunk
+//mesh, plus the bending copy from Interactive Foliage's GPU renderer.
 //
-//Startup scripts load about 13 seconds before the atlases are built on this
-//machine, so postInit is comfortably ahead of the bake. It is also after
-//Interactive Foliage's own two registries - ModTemplate.onInitialize does Sway's
-//vanilla set and onRegistriesReady does the compat lists - so the isInteractive
-//check below really does skip everything already covered.
+//So the plants registered here need one resource reload before they look right.
+//F3+T does it. Turning off the GPU renderer does NOT - that removes the bending
+//copy and leaves the static one, so the plants stop reacting altogether. Tried
+//in game; see the Sway section in CLAUDE.md before reaching for it again.
+//
+//postInit does run after Interactive Foliage's own two registries -
+//ModTemplate.onInitialize does Sway's vanilla set and onRegistriesReady does the
+//compat lists - so the isInteractive check below really does skip everything
+//already covered.
 //
 //1.0 is the multiplier every vanilla block and every Interactive Foliage compat
 //entry uses, so this gives modded plants the same strength as their vanilla

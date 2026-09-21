@@ -582,19 +582,47 @@ those hardcoded lists already demonstrate. `BushBlock` is the common ancestor of
 essentially everything Sway registers by hand. Sugar cane and the vines have
 their own pipelines and are not `BushBlock`s, so the sweep cannot disturb them.
 
-**Registration has to happen before model baking, and getting that wrong renders
-every affected plant twice.** Interactive Foliage's
+**All the bending lives in the wrapped model, which is why registering late is
+not a cosmetic problem.** `SwayModel` is a `BakedModel` wrapper that calls
+`SwayBehaviorDeformer.deform`; Sway's own `ModelBlockRendererMixin` only records
+the current block position for it. Interactive Foliage's
 `NeoforgeFoliageHooks.wrapModels` listens to `ModelEvent.ModifyBakingResult` and
-swaps the baked models of every block interactive *at bake time* for wrapped
-ones. Register later and the block gets the deformed treatment while its model is
-still unwrapped, so it draws once static from the chunk mesh and once animated.
-`ClientEvents.loggedIn` is too late; `StartupEvents.postInit` is not. Measured on
-this machine: startup scripts finish at 12:32:44, the block atlas is built at
-12:32:57.
+swaps in those wrappers for every block interactive **at bake time**. A block
+registered after the bake therefore has an unwrapped model that can never bend,
+and the plant draws twice: the static unwrapped model from the chunk mesh, plus a
+bending copy from the GPU renderer.
+
+**Turning off Interactive Foliage's GPU renderer is not the fix, though it looks
+like one.** `"gpuRenderer": false` does remove the second copy, and the teardown
+is clean - `GpuFoliageRenderer.drawFrame` reads the toggle and the false branch
+calls `deactivate`, which does `clearArea()`, re-meshes the affected columns and
+`discardAll()`. But the copy it removes is the *bending* one, so the modded
+plants stop reacting to the player entirely. Confirmed in game. The GPU renderer
+is not the cause of anything here; an unwrapped model is.
+
+**So the only fix is to get the model wrapped: register before the bake, or
+re-bake afterwards.** Nothing KubeJS exposes lands between the block registries
+being complete and the models being baked. `ClientEvents.loggedIn` is obviously
+too late. `StartupEvents.postInit` is the latest hook that still has full
+registries and is *also* too late, which is easy to get wrong: compared against
+the atlas upload it looks early enough, but the reload that bakes the models
+**starts** before it. Measured here - reload begins 18:56:36.918, postInit runs
+18:56:44.685, atlas uploads about half a second later - with the bake on worker
+threads inside that window. **Compare a registration against the start of the
+reload, not the atlas line.** `ClientEvents.atlasSpriteRegistry` looks like the
+answer and is not: `ATLAS_SPRITE_REGISTRY` is declared in KubeJS's `ClientEvents`
+and referenced nowhere else in the jar, so it never fires.
+
+That leaves two, and both have been used here: press F3+T once a session, or call
+`Minecraft.getInstance().reloadResourcePacks()` on the first world join from a
+client script, which is the same thing automated at the cost of freezing that
+join for about four seconds.
 
 `GpuFoliageSplit.isFoliage` has the same shape of problem - it snapshots
 `SwayAPI.isInteractive` across the whole block registry on first use and there is
 exactly one write to that field in the class, so it is **never invalidated**.
+That is also how you tell the two apart: F3+T repairs a doubled plant, and it
+could not do that if the snapshot were to blame, so the model wrapping is.
 
 **F3+T is the diagnostic.** A resource reload re-fires `ModifyBakingResult`, so
 if a doubled plant resolves itself after one, the registration was simply too
