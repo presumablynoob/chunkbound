@@ -833,6 +833,14 @@ still a recipe, and so is one whose rule silently failed to match — both count
 the same. The count only catches a rule matching *too much*. Whether it matched
 at all is an in-game or EMI check, every time.
 
+**And it drifts on its own, so a small delta proves nothing either way.** Adding
+Dungeons and Taverns, which ships **zero** recipe files, moved it from 12890 to
+12891. So jar recipe-file counts do not predict the loaded total, and an attempt
+to confirm a `remove_recipe` batch by subtracting the two was wrong by enough to
+look like the rule had failed. Treat the count as a smoke alarm for a rule
+matching far too much - dozens, as the `#farm_and_charm:tomato` collapse was -
+and use EMI for anything finer.
+
 ### `replace_output` is unusable for most modded recipe types
 
 **It rewrites the result correctly and then wraps it in an array.** A rule
@@ -1596,6 +1604,18 @@ grep -c "same id:" logs/latest.log                    # now
 ---
 
 ## Useful investigation commands
+
+**`unzip`'s `*` does not cross a `/`, so `data/*` matches nothing at all.** A
+sweep written as `unzip -p "$j" 'data/*'` greps an empty stream and reports every
+jar clean; `data/*/recipe/*.json` silently sees only the recipes one level deep,
+missing every `smelting/…` and `cutting/…` file. Both shapes were used here and
+both produced confident, wrong "no other jar does this" answers. Use `data/**`,
+and sanity-check a new pattern against a jar you know contains a hit:
+
+```bash
+unzip -p mods/<known>.jar 'data/**' | wc -c   # 0 means the pattern is wrong,
+                                              # not that the jar is empty
+```
 
 ```bash
 # what actually defines / contributes to a tag (include NeoForge!)
