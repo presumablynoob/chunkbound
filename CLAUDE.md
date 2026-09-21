@@ -562,6 +562,51 @@ to add one key under another mod's namespace.
 
 ---
 
+## Foliage interaction (Sway + Interactive Foliage)
+
+Sway is what makes plants bend away from the player. **It has no tags and no
+block list in its config** - `SwayAPI.isInteractive` is just "is this block in
+the registry", and `SwayRegistry.initialize()` fills it with about 90 hardcoded
+vanilla blocks. Modded coverage comes from **Interactive Foliage**, which Sway
+depends on: its `ModCompatRegistry` calls `SwayAPI.register(block, 1.0f)` for
+hardcoded id lists covering Biomes O' Plenty (74), Serene Shrubbery (37), No
+Man's Land (36) and Farmer's Delight (15). Regions Unexplored, Oh The Biomes
+We've Gone and Eternal Starlight are on nobody's list, which is what "this plant
+does not react" always turns out to mean.
+
+`kubejs/startup_scripts/sway_modded_plants.js` fills the gap by sweeping the
+block registry for `BushBlock` subclasses and making the same
+`SwayAPI.register(block, 1.0)` call, skipping anything already interactive. By
+class rather than by id, so a plant mod added later needs no edit - the failure
+those hardcoded lists already demonstrate. `BushBlock` is the common ancestor of
+essentially everything Sway registers by hand. Sugar cane and the vines have
+their own pipelines and are not `BushBlock`s, so the sweep cannot disturb them.
+
+**Registration has to happen before model baking, and getting that wrong renders
+every affected plant twice.** Interactive Foliage's
+`NeoforgeFoliageHooks.wrapModels` listens to `ModelEvent.ModifyBakingResult` and
+swaps the baked models of every block interactive *at bake time* for wrapped
+ones. Register later and the block gets the deformed treatment while its model is
+still unwrapped, so it draws once static from the chunk mesh and once animated.
+`ClientEvents.loggedIn` is too late; `StartupEvents.postInit` is not. Measured on
+this machine: startup scripts finish at 12:32:44, the block atlas is built at
+12:32:57.
+
+`GpuFoliageSplit.isFoliage` has the same shape of problem - it snapshots
+`SwayAPI.isInteractive` across the whole block registry on first use and there is
+exactly one write to that field in the class, so it is **never invalidated**.
+
+**F3+T is the diagnostic.** A resource reload re-fires `ModifyBakingResult`, so
+if a doubled plant resolves itself after one, the registration was simply too
+late. It also makes a stale registration testable without a restart.
+
+Because this is all client rendering and `SwayAPI.register` reaches Sway's client
+behaviour classes, a startup script doing this needs
+`Platform.isClientEnvironment()` as well as `Platform.isLoaded('sway')` - startup
+scripts run on both sides.
+
+---
+
 ## EMI tab order
 
 Category order is data-driven. EMI's `emi:category_properties` reload listener

@@ -9,7 +9,7 @@
 //Farmer's Delight, Serene Shrubbery and No Man's Land. Nothing in either mod
 //covers Regions Unexplored, Oh The Biomes We've Gone, Eternal Starlight or any
 //of the pack's other plant mods, which is why regions_unexplored:windswept_grass
-//stands still while biomesoplenty:high_grass works.
+//stood still while biomesoplenty:high_grass worked.
 //
 //This makes the same SwayAPI.register call Interactive Foliage makes, but sweeps
 //the block registry by class instead of naming ids, so a new plant mod is
@@ -18,6 +18,24 @@
 //by hand (DoublePlantBlock, TallGrassBlock, FlowerBlock, SaplingBlock, CropBlock
 //and MushroomBlock all extend it), and regions_unexplored:windswept_grass is a
 //RuDoublePlantBlock -> DoublePlantBlock -> BushBlock.
+//
+//THIS HAS TO RUN BEFORE MODEL BAKING, which is why it is a startup script rather
+//than a client script on ClientEvents.loggedIn. Interactive Foliage's
+//NeoforgeFoliageHooks.wrapModels listens to ModelEvent.ModifyBakingResult and,
+//for every block that is interactive *at bake time*, swaps that block's baked
+//models for wrapped ones. Register later than the bake and the block gets the
+//deformed/GPU treatment while its model is still the unwrapped one, so the plant
+//renders twice - once static from the chunk mesh and once animated. That is
+//exactly what registering at loggedIn produced on windswept grass.
+//GpuFoliageSplit.isFoliage has the same shape of problem: it snapshots
+//SwayAPI.isInteractive across the whole block registry on first use and never
+//invalidates it.
+//
+//Startup scripts load about 13 seconds before the atlases are built on this
+//machine, so postInit is comfortably ahead of the bake. It is also after
+//Interactive Foliage's own two registries - ModTemplate.onInitialize does Sway's
+//vanilla set and onRegistriesReady does the compat lists - so the isInteractive
+//check below really does skip everything already covered.
 //
 //1.0 is the multiplier every vanilla block and every Interactive Foliage compat
 //entry uses, so this gives modded plants the same strength as their vanilla
@@ -28,25 +46,21 @@
 //Sugar cane and the vines are deliberately left alone: Sway gives them their own
 //pipelines in registerSugarCane/registerVines, and neither is a BushBlock, so the
 //filter below cannot reach them.
-//
-//BlockPipelineRegistry.setPipeline evicts the block's cached pipeline, so
-//registering this late takes effect rather than being ignored.
 
 //Any block that ends up looking wrong when it bends can be listed here.
 const SWAY_EXCLUDE = [
 ]
 
-let swayPlantsRegistered = false
-
-ClientEvents.loggedIn(event => {
-  if (swayPlantsRegistered) return
-  swayPlantsRegistered = true
-
+StartupEvents.postInit(event => {
+  //Startup scripts run on both sides. Everything below is client rendering, and
+  //SwayAPI.register reaches into Sway's client behaviour classes, so a dedicated
+  //server must not touch it.
+  if (!Platform.isClientEnvironment()) return
   if (!Platform.isLoaded('sway')) return
 
   //tryLoadClass rather than loadClass: KubeJS throws on a class that is missing
   //*or* blocked by its class filter, and plants that do not bend are a better
-  //outcome than a handler that throws every time the player joins a world.
+  //outcome than a startup script that dies if Sway is ever removed.
   //(com.github.razorplay01 matches nothing in kubejs.classfilter.txt, and
   //ClassFilter.isAllowed0 falls through to allow, so it is reachable.)
   const SwayAPI = Java.tryLoadClass('com.github.razorplay01.sway.api.SwayAPI')
