@@ -47,8 +47,16 @@
 //pipelines in registerSugarCane/registerVines, and neither is a BushBlock, so the
 //filter below cannot reach them.
 
-//Any block that ends up looking wrong when it bends can be listed here.
+//Plants that do not come out right when Sway is given them. An excluded block
+//keeps its vanilla behaviour - it stands still, but it renders once and looks
+//correct, which is better than a plant that draws twice.
+//
+//Add an id here when a plant renders doubled or otherwise misbehaves in game.
+//There is no way to predict it from the jars, so this list only grows from
+//things actually seen.
 const SWAY_EXCLUDE = [
+  //Draws two models until a resource reload.
+  'regions_unexplored:windswept_grass'
 ]
 
 StartupEvents.postInit(event => {

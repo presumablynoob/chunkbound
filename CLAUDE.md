@@ -618,6 +618,21 @@ That leaves two, and both have been used here: press F3+T once a session, or cal
 client script, which is the same thing automated at the cost of freezing that
 join for about four seconds.
 
+**The pack takes neither: it blacklists the plants that come out wrong.**
+`SWAY_EXCLUDE` in the startup script drops an id from the sweep, so that block
+keeps vanilla behaviour - it stands still, but it renders once and looks right,
+which beats drawing twice. The list grows from what is actually seen in game;
+nothing in the jars predicts it. `regions_unexplored:windswept_grass` is the
+first entry.
+
+If the doubling turns out to affect *every* block the sweep registers rather
+than particular ones, the blacklist is the wrong tool and the reload is the
+answer instead - the list would have to hold all 448. Worth checking a
+single-block modded plant against a double-tall one before adding many entries,
+since 179 of the pack's modded plants are double-tall (81 of them Regions
+Unexplored, 39 Oh The Biomes We've Gone) and that is the obvious thing for
+windswept grass to have in common with others.
+
 `GpuFoliageSplit.isFoliage` has the same shape of problem - it snapshots
 `SwayAPI.isInteractive` across the whole block registry on first use and there is
 exactly one write to that field in the class, so it is **never invalidated**.
