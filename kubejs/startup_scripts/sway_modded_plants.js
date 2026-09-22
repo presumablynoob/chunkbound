@@ -1,5 +1,4 @@
-//Registers the pack's modded plants with Sway, so they bend away from the
-//player like vanilla grass does.
+//Gives the pack's modded plants Sway's bend-away-from-the-player effect.
 //
 //Sway has no tags and no block list in its config - SwayAPI.isInteractive is
 //just "is this block in the registry", and SwayRegistry.initialize() fills it
@@ -11,58 +10,45 @@
 //of the pack's other plant mods, which is why regions_unexplored:windswept_grass
 //stood still while biomesoplenty:high_grass worked.
 //
-//This makes the same SwayAPI.register call Interactive Foliage makes, but sweeps
-//the block registry by class instead of naming ids, so a new plant mod is
-//covered without editing a list - the failure mode those hardcoded lists already
-//have. BushBlock is the common ancestor of essentially everything Sway registers
-//by hand (DoublePlantBlock, TallGrassBlock, FlowerBlock, SaplingBlock, CropBlock
-//and MushroomBlock all extend it), and regions_unexplored:windswept_grass is a
-//RuDoublePlantBlock -> DoublePlantBlock -> BushBlock.
+//THE TIMING IS THE WHOLE PROBLEM, so read this before changing the hook.
+//All the bending lives in the wrapped model: SwayModel is a BakedModel wrapper
+//that calls SwayBehaviorDeformer.deform, and Sway's ModelBlockRendererMixin only
+//records the current block position for it. Interactive Foliage's
+//NeoforgeFoliageHooks.wrapModels swaps those wrappers in on
+//ModelEvent.ModifyBakingResult, for every block interactive AT BAKE TIME. A
+//block made interactive after the bake has an unwrapped model that can never
+//bend, and renders twice instead - the static unwrapped model from the chunk
+//mesh, plus a bending copy from the GPU renderer.
 //
-//postInit is the latest hook that still has full block registries, and it is
-//too late for the models to be wrapped: the reload that bakes them starts before
-//it. That matters more than it sounds, because ALL the bending lives in the
-//wrapped model - SwayModel is a BakedModel wrapper that calls
-//SwayBehaviorDeformer.deform. A block whose model was not wrapped never bends,
-//and the plant instead draws twice: the static unwrapped model from the chunk
-//mesh, plus the bending copy from Interactive Foliage's GPU renderer.
+//Enumerating the block registry cannot work, because no KubeJS hook runs between
+//the block registries being complete and the models being baked. StartupEvents
+//.postInit is the latest hook with full registries and still lands after the
+//bake; ClientEvents.atlasSpriteRegistry never fires at all. That left reloading
+//resources on every world join, which is not worth it.
 //
-//So the plants registered here need one resource reload before they look right.
-//F3+T does it. Turning off the GPU renderer does NOT - that removes the bending
-//copy and leaves the static one, so the plants stop reacting altogether. Tried
-//in game; see the Sway section in CLAUDE.md before reaching for it again.
+//So this does not enumerate. SwayAPI.registerGlobalBehavior takes a
+//Predicate<Block>, and BlockPipelineRegistry evaluates it lazily inside
+//hasPipeline/buildPipeline - which is what isInteractive calls. The predicate
+//therefore answers correctly at bake time no matter when it was handed over, and
+//needs no populated registry when it is. StartupEvents.init is used because it
+//runs before the first resource reload even starts.
 //
-//postInit does run after Interactive Foliage's own two registries -
-//ModTemplate.onInitialize does Sway's vanilla set and onRegistriesReady does the
-//compat lists - so the isInteractive check below really does skip everything
-//already covered.
+//The five behaviours and their priorities mirror what SwayAPI.register sets up
+//for a single block, where setPipeline assigns (i + 1) * 100 down the list, so a
+//two-block plant is handled the way vanilla tall grass is. 1.0 is the multiplier
+//every vanilla and Interactive Foliage entry uses.
 //
-//1.0 is the multiplier every vanilla block and every Interactive Foliage compat
-//entry uses, so this gives modded plants the same strength as their vanilla
-//counterparts. SwayAPI.register sets the standard pipeline - entity collision,
-//proximity force, double-plant multiblock, standard deformation - so a two-block
-//plant is handled the way vanilla tall grass is.
-//
-//Sugar cane and the vines are deliberately left alone: Sway gives them their own
-//pipelines in registerSugarCane/registerVines, and neither is a BushBlock, so the
-//filter below cannot reach them.
+//Sugar cane and the vines keep their own pipelines: they are not BushBlocks, so
+//the predicate cannot reach them.
 
-//Plants that do not come out right when Sway is given them. An excluded block
-//keeps its vanilla behaviour - it stands still, but it renders once and looks
-//correct, which is better than a plant that draws twice.
-//
-//Add an id here when a plant renders doubled or otherwise misbehaves in game.
-//There is no way to predict it from the jars, so this list only grows from
-//things actually seen.
+//Plants that do not come out right. An excluded block keeps vanilla behaviour -
+//it stands still, but renders once. Grows from what is seen in game.
 const SWAY_EXCLUDE = [
-  //Draws two models until a resource reload.
-  'regions_unexplored:windswept_grass'
 ]
 
-StartupEvents.postInit(event => {
-  //Startup scripts run on both sides. Everything below is client rendering, and
-  //SwayAPI.register reaches into Sway's client behaviour classes, so a dedicated
-  //server must not touch it.
+StartupEvents.init(event => {
+  //Startup scripts run on both sides, and this reaches Sway's client behaviour
+  //classes, so a dedicated server must not touch it.
   if (!Platform.isClientEnvironment()) return
   if (!Platform.isLoaded('sway')) return
 
@@ -72,29 +58,64 @@ StartupEvents.postInit(event => {
   //(com.github.razorplay01 matches nothing in kubejs.classfilter.txt, and
   //ClassFilter.isAllowed0 falls through to allow, so it is reachable.)
   const SwayAPI = Java.tryLoadClass('com.github.razorplay01.sway.api.SwayAPI')
+  const Builtin = Java.tryLoadClass('com.github.razorplay01.sway.client.behavior.BuiltinBehaviors')
   const BushBlock = Java.tryLoadClass('net.minecraft.world.level.block.BushBlock')
   const BuiltInRegistries = Java.tryLoadClass('net.minecraft.core.registries.BuiltInRegistries')
 
-  if (!SwayAPI || !BushBlock || !BuiltInRegistries) {
-    console.error('[sway] could not load SwayAPI, BushBlock or BuiltInRegistries - no modded plants registered')
+  if (!SwayAPI || !Builtin || !BushBlock || !BuiltInRegistries) {
+    console.error('[sway] could not load Sway or Minecraft classes - modded plants will not bend')
     return
   }
 
+  //SwayAPI.register does this before touching any key; the keys are null until
+  //it has run.
+  Builtin.ensureRegistered()
+
+  const registry = SwayAPI.getRegistry()
+
+  const isModdedPlant = block => {
+    if (!(block instanceof BushBlock)) return false
+    //Anything Sway or Interactive Foliage registered explicitly already has its
+    //own pipeline. Leaving those to their own entries avoids stacking a second
+    //copy of every behaviour on top.
+    if (registry.containsKey(block)) return false
+    if (SWAY_EXCLUDE.length === 0) return true
+    return SWAY_EXCLUDE.indexOf(BuiltInRegistries.BLOCK.getKey(block).toString()) === -1
+  }
+
+  SwayAPI.registerGlobalBehavior(Builtin.ENTITY_COLLISION_KEY, 100, isModdedPlant)
+  SwayAPI.registerGlobalBehavior(Builtin.PROXIMITY_FORCE_KEY, 200, isModdedPlant)
+  SwayAPI.registerGlobalBehavior(Builtin.DOUBLE_PLANT_MULTIBLOCK_KEY, 300, isModdedPlant)
+  SwayAPI.registerGlobalBehavior(Builtin.STANDARD_DEFORMATION_KEY, 400, isModdedPlant)
+  SwayAPI.registerGlobalBehavior(Builtin.multiplierKey(1.0), 500, isModdedPlant)
+
+  console.info('[sway] registered the modded-plant behaviours globally, ahead of model baking')
+})
+
+//Purely informational: the predicate above is lazy, so nothing has been counted
+//by the time it is handed over. This reports what it actually matches once the
+//registries are complete, which is the only way to see the scope of it.
+StartupEvents.postInit(event => {
+  if (!Platform.isClientEnvironment()) return
+  if (!Platform.isLoaded('sway')) return
+
+  const SwayAPI = Java.tryLoadClass('com.github.razorplay01.sway.api.SwayAPI')
+  const BushBlock = Java.tryLoadClass('net.minecraft.world.level.block.BushBlock')
+  const BuiltInRegistries = Java.tryLoadClass('net.minecraft.core.registries.BuiltInRegistries')
+
+  if (!SwayAPI || !BushBlock || !BuiltInRegistries) return
+
   const perNamespace = {}
-  let added = 0
+  let matched = 0
 
   BuiltInRegistries.BLOCK.forEach(block => {
     if (!(block instanceof BushBlock)) return
-    //Already handled by Sway itself or by Interactive Foliage's compat lists.
-    if (SwayAPI.isInteractive(block)) return
+    if (!SwayAPI.isInteractive(block)) return
 
     const id = BuiltInRegistries.BLOCK.getKey(block).toString()
-    if (SWAY_EXCLUDE.indexOf(id) !== -1) return
-
-    SwayAPI.register(block, 1.0)
-    added++
     const namespace = id.split(':')[0]
     perNamespace[namespace] = (perNamespace[namespace] || 0) + 1
+    matched++
   })
 
   const summary = Object.keys(perNamespace)
@@ -102,5 +123,5 @@ StartupEvents.postInit(event => {
     .map(ns => `${ns} ${perNamespace[ns]}`)
     .join(', ')
 
-  console.info(`[sway] registered ${added} modded plants: ${summary}`)
+  console.info(`[sway] ${matched} plant blocks are interactive: ${summary}`)
 })

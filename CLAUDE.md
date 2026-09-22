@@ -574,13 +574,13 @@ Man's Land (36) and Farmer's Delight (15). Regions Unexplored, Oh The Biomes
 We've Gone and Eternal Starlight are on nobody's list, which is what "this plant
 does not react" always turns out to mean.
 
-`kubejs/startup_scripts/sway_modded_plants.js` fills the gap by sweeping the
-block registry for `BushBlock` subclasses and making the same
-`SwayAPI.register(block, 1.0)` call, skipping anything already interactive. By
-class rather than by id, so a plant mod added later needs no edit - the failure
-those hardcoded lists already demonstrate. `BushBlock` is the common ancestor of
-essentially everything Sway registers by hand. Sugar cane and the vines have
-their own pipelines and are not `BushBlock`s, so the sweep cannot disturb them.
+`kubejs/startup_scripts/sway_modded_plants.js` fills the gap by describing the
+plants with a predicate - `BushBlock` subclasses Sway does not already know -
+rather than naming ids, so a plant mod added later needs no edit, which is the
+failure those hardcoded lists already demonstrate. `BushBlock` is the common
+ancestor of essentially everything Sway registers by hand. Sugar cane and the
+vines have their own pipelines and are not `BushBlock`s, so the predicate cannot
+reach them.
 
 **All the bending lives in the wrapped model, which is why registering late is
 not a cosmetic problem.** `SwayModel` is a `BakedModel` wrapper that calls
@@ -613,25 +613,32 @@ reload, not the atlas line.** `ClientEvents.atlasSpriteRegistry` looks like the
 answer and is not: `ATLAS_SPRITE_REGISTRY` is declared in KubeJS's `ClientEvents`
 and referenced nowhere else in the jar, so it never fires.
 
-That leaves two, and both have been used here: press F3+T once a session, or call
-`Minecraft.getInstance().reloadResourcePacks()` on the first world join from a
-client script, which is the same thing automated at the cost of freezing that
-join for about four seconds.
+That leaves two bad options - press F3+T once a session, or call
+`Minecraft.getInstance().reloadResourcePacks()` on first world join and freeze it
+for four seconds - and one good one.
 
-**The pack takes neither: it blacklists the plants that come out wrong.**
-`SWAY_EXCLUDE` in the startup script drops an id from the sweep, so that block
-keeps vanilla behaviour - it stands still, but it renders once and looks right,
-which beats drawing twice. The list grows from what is actually seen in game;
-nothing in the jars predicts it. `regions_unexplored:windswept_grass` is the
-first entry.
+**Register a global behaviour with a predicate instead of enumerating blocks.**
+`SwayAPI.registerGlobalBehavior(key, priority, Predicate<Block>)` hands Sway a
+*test*, and `BlockPipelineRegistry` evaluates it lazily inside
+`hasPipeline`/`buildPipeline`, which is what `isInteractive` calls. So the answer
+is correct at bake time regardless of when the predicate was handed over, and no
+populated block registry is needed at the moment of the call - which sidesteps
+the whole race, because the thing that could not be done early was *enumerating*
+the registry, not describing it. `StartupEvents.init` is early enough, running
+before the first resource reload even starts. `registerGlobalBehavior` clears
+`CACHED_PIPELINES` wholesale, so late additions still take.
 
-If the doubling turns out to affect *every* block the sweep registers rather
-than particular ones, the blacklist is the wrong tool and the reload is the
-answer instead - the list would have to hold all 448. Worth checking a
-single-block modded plant against a double-tall one before adding many entries,
-since 179 of the pack's modded plants are double-tall (81 of them Regions
-Unexplored, 39 Oh The Biomes We've Gone) and that is the obvious thing for
-windswept grass to have in common with others.
+The five behaviours and priorities mirror what `SwayAPI.register` sets for a
+single block - `setPipeline` assigns `(i + 1) * 100` down its list - so a
+two-block plant behaves like vanilla tall grass. Have the predicate skip anything
+already in `SwayAPI.getRegistry()`: Sway's own vanilla set and Interactive
+Foliage's compat lists both go through `SwayAPI.register`, and leaving them to
+their explicit pipelines avoids stacking a second copy of every behaviour on top.
+
+`SWAY_EXCLUDE` in the script is still there for plants that come out wrong, and
+drops an id from the predicate. It is empty: the doubling turned out to hit every
+block the sweep touched rather than particular ones, so a blacklist was the wrong
+tool for it.
 
 `GpuFoliageSplit.isFoliage` has the same shape of problem - it snapshots
 `SwayAPI.isInteractive` across the whole block registry on first use and there is
