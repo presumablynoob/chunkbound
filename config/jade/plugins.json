@@ -6,8 +6,8 @@
     "animal_owner": true,
     "harvest_tool.effective_tool": true,
     "energy_storage.style": "PROGRESS_BAR",
-    "item_storage.normal_amount": 9,
     "item_storage": true,
+    "item_storage.normal_amount": 9,
     "harvest_tool": true,
     "armor_stand": true,
     "fluid_storage.detailed": false,
@@ -69,8 +69,19 @@
     "entity": true,
     "entity_variant": true
   },
+  "cobblemonraiddens": {
+    "raid_crystal": true
+  },
   "ftbquests": {
     "barrier": true
+  },
+  "cobblemonintegrations": {
+    "healer": true,
+    "campfire_pot": true,
+    "fossil_analyzer": true,
+    "tm_machine": true,
+    "pokemon_entity": true,
+    "berry_bush": true
   },
   "jade": {
     "coordinates.rel": false,
@@ -96,11 +107,6 @@
   "jadeaddons.lootr": {
     "info": true
   },
-  "toms_storage": {
-    "inventory_hopper": true,
-    "inventory_config": true,
-    "inventory_connector": true
-  },
   "kaleidoscope_cookery": {
     "chopping_board": true,
     "shawarma_spit": true,
@@ -108,6 +114,11 @@
     "food_bite_block": true,
     "millstone": true,
     "enamel_basin": true
+  },
+  "toms_storage": {
+    "inventory_hopper": true,
+    "inventory_config": true,
+    "inventory_connector": true
   },
   "waystones": {
     "waystone": true

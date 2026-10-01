@@ -92,6 +92,11 @@
 	# Default: 3
 	# Range: 1 ~ 6
 	MAX_PINNED_TOOLTIPS = 3
+	# Reopen the config screen and the frame editor where you left them (category, entry and section) instead of starting from the top
+	# every time. Remembered until the game closes.
+	# 
+	# Default: true
+	REMEMBER_LAST_PAGE = true
 
 # divider §§
 [divider]
@@ -241,6 +246,10 @@
 	# 
 	# Default: false
 	SHOW_REGISTRY_NAME = false
+	# Center the title and rating over the whole tooltip width instead of the space left next to the icon.
+	# 
+	# Default: false
+	ALIGNMENT_IGNORES_ICON = false
 
 # effects §§
 [effects]
