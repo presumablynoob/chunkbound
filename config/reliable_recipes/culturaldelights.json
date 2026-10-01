@@ -17,29 +17,21 @@
     {
         "action": "replace_input",
         "target": "culturaldelights:corn_dough",
-        "replacement": [
-            "cornexpansion:corn_dough"
-        ]
+        "replacement": "cornexpansion:corn_dough"
     },
     {
         "action": "replace_input",
         "target": "culturaldelights:corn_cob",
-        "replacement": [
-            "#c:crops/corn"
-        ]
+        "replacement": "#c:crops/corn"
     },
     {
         "action": "replace_input",
         "target": "#c:foods/milk",
-        "replacement": [
-            "#c:drinks/milk"
-        ]
+        "replacement": "#c:drinks/milk"
     },
     {
         "action": "replace_input",
         "target": "culturaldelights:raw_calamari",
-        "replacement": [
-            "minersdelight:tentacles"
-        ]
+        "replacement": "minersdelight:tentacles"
     }
 ]

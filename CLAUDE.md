@@ -107,6 +107,25 @@ adds the two new knives, and `data/c/tags/item/tools/knife.json` adds
 `#farmersdelight:tools/knives` transitively so the sets stay equal as mods come
 and go. Side effect worth knowing: `bakery:bread_knife` now works for FD recipes.
 
+**The Kaleidoscope suite is tagged `c:foods` by predicate, not by list.**
+Cookery, Nether and End tag none of their foods `c:foods`, so they were invisible
+to Selling Bin (which prices every `#c:foods` item from its nutrition) and to
+REMI's food grouping. `kubejs/server_scripts/kaleidoscope_food_tags.js` walks the
+item registry and adds any item in those three namespaces that has a
+`minecraft:food` component **or** plays the EAT/DRINK animation — the teacups and
+clay-pot milk tea are drinks with no food component, so a component check alone
+misses them. Plated dishes eaten bite by bite off the placed block (KC's
+`FoodBiteBlock`, which Nether and End reuse via `FoodBiteRegistry`) go in
+`c:foods/edible_when_placed`, the tag NeoForge uses for cake and which `c:foods`
+includes. This is a KubeJS job because no `reliable_recipes` tag action *adds*
+(they are `remove_from_tag`, `clear_tag`, `remove_all_tags`), and a datapack would
+need a hand-kept list of ids that are only knowable from code.
+
+Retired items are added too and then stripped again, because Reliable Recipes'
+hidden-item pass runs at the RETURN of `ReloadableServerResources.updateRegistryTags`,
+after `ServerEvents.tags`. `Hidden items integration removed N` going up is the
+check that this still holds.
+
 **A broken biome tag does not necessarily stop worldgen.** medieval_buildings
 lists 12 Terralith biomes plus a misspelled `biomeswevegone:skyrise_vale` (the
 real id is `skyris_vale`) as *required* entries in its four
@@ -118,6 +137,15 @@ still generate, most likely because Structurify's `StructureMixin` wraps
 spawns" from tag errors; **check in game before writing a fix or a bug report.**
 An override for such a tag needs `"replace": true`, since a merging override
 leaves the broken entries in place and the tag still fails.
+
+**Kaleidoscope Cookery 1.6.0 ships the same kind of break, with a real cost.**
+Its `cookery_mod_items` and `carryon:block_blacklist` tags list nine
+`kaleidoscope_cookery:kalc/quark/*` furniture items as required entries, and
+those only register when Quark is installed — it is not here. Both tags fail
+whole. Carry On is not installed either, so the blacklist does not matter, but
+`cookery_mod_items` is the trigger of KC's `advancement/root.json`, so the KC
+advancement tab cannot unlock. Upstream bug (the entries need
+`"required": false`).
 
 ---
 
@@ -445,7 +473,9 @@ actually registered.
 **Everything else needs `event.custom({…})`**, which takes the raw recipe JSON —
 the same object the datapack file holds. Farm & Charm and Farmer's Delight ship
 no KubeJS integration, so `farm_and_charm:pot_cooking`, `farmersdelight:cooking`
-and `farmersdelight:cutting` all go that route.
+and `farmersdelight:cutting` all go that route. **But check first whether a
+Reliable Recipes `add` rule will do** — it takes the same raw JSON, for any type,
+and sits higher in the hierarchy (see "Adding and overriding recipes" below).
 
 Removal and retargeting take a **filter** object — `{output, input, mod, type,
 id}`, combinable, with `not:` for negation and an array for OR:
@@ -455,9 +485,11 @@ event.remove({ type: 'minecraft:campfire_cooking', output: 'minecraft:cooked_chi
 event.replaceInput({ id: 'examplemod:x' }, 'minecraft:stick', '#minecraft:saplings')
 ```
 
-Because `replaceInput` is filter-scoped, KubeJS *can* express the one case
-Reliable Recipes cannot — the same source going to two different targets in
-different recipes. Rules still come first; this is the fallback for that shape.
+`replaceInput` is filter-scoped, but so is Reliable Recipes' `replace_input`
+(scope it with `id`), so the same source going to two different targets in
+different recipes is a rule, not a reason to use KubeJS —
+`reliable_recipes/kaleidoscope_cookery.json` already does this for
+`raw_cut_small_meats`.
 
 ### Zero-arg Java methods are properties in Rhino
 
@@ -764,15 +796,33 @@ Beyond `items`, a rule can select with `blocks`, `fluids`, `effects`, `tags`,
 `mod` (a whole namespace), `patterns` (regex, `/.*_sword/`), `nbt`, `registry`,
 `tag_type`, `dimensions` and `advancements`, and `not` inverts a condition.
 Granular actions exist too — `remove_creative`, `remove_loot`,
-`remove_chest_loot`, `remove_trade`, `remove_enchantment`, `remove_potion` — 16
-in all. Global toggles live in `config/reliable_remover.json`. Docs:
+`remove_chest_loot`, `remove_trade`, `remove_enchantment`, `remove_potion` — 18
+in all as of 3.3.0. Global toggles live in `config/reliable_remover.json`; 3.3.0
+renamed `removeItemsFromEmi` to `removeItemsFromRecipeViewers` (default true), so
+the old key in our file is ignored — edit the new name if it ever needs to change.
+Docs:
 <https://moddedmc.wiki/en/project/reliable-remover/latest/docs/reliable-remover/usage>
 
-**None of Reliable Remover's 17 actions removes a recipe.** Verified against the
-jar: `RecipeManagerMixin` only calls `RuleManager.load()`, and the `Action` enum
-has no recipe entry. On its own it would leave a producing recipe running, with
-the result deleted again by `removeItemsFromInventories` — which reads as a
-broken craft. Recipe work belongs to its sibling, **Reliable Recipes** (below).
+**Reliable Remover's own `remove_recipe` action does nothing in this pack.** 3.3.0
+added `Action.REMOVE_RECIPE` and a `removeRecipes` toggle, but the only reader is
+`RuleManager.isRecipeBlocked`, reached only through the public
+`ReliableRemoverAPI` — and no installed mod calls it (it is for evandev's own
+recipe viewer, RRV, which is not installed). Do not use it. Recipe work belongs to
+the sibling, **Reliable Recipes** (below).
+
+**A removed item's recipes are dropped anyway — by Reliable Recipes.** After its
+rules run, `RecipeModifier.processCustomRecipeJson` asks the remover (through the
+registered item hider) about every recipe and drops it if **any result** — a
+`result`/`results`/`output` object, string or array entry — **or anything under
+`input`, `reagent`, `ingredients` or `key`** is a removed item. Present since 3.2.0.
+Two consequences:
+
+- A `remove_recipe` rule keyed on `output` for a retired item is redundant with
+  the `remove` rule; it does no harm, and documents intent.
+- A recipe that still *consumes* a retired item and was not rewritten does not
+  show up broken — it **vanishes**. Only those four keys are checked, so a
+  retired item named under `ingredient` (singular, as smelting and cutting use)
+  or `container` is not caught and the recipe stays live.
 
 `RemovalRule` does have a `replace_with` field (JSON is snake_case via
 `@SerializedName`; the Java fields are `replaceWith`/`tagType`) which forwards to
@@ -830,15 +880,60 @@ are `remove_recipe`, `replace_input`, `replace_output`, `prevent_repair`,
 [
   { "action": "remove_recipe", "id": ["minecraft:wooden_pickaxe"] },
   { "action": "replace_input", "target": "minecraft:stick",
-    "replacement": ["minecraft:bamboo"], "id": "examplemod:reinforced_sword" },
+    "replacement": "minecraft:bamboo", "id": "examplemod:reinforced_sword" },
   { "action": "remove_from_tag", "tag": "c:foods", "id": ["examplemod:x"] }
 ]
 ```
 
 Recipes are selected by `output`, `id`, `mod`, `type` or `input`; a `/…/` string
 is a regex, `+#` (or `{"expand": true}`) expands a tag to its members, and `not`
-/ `or` / `and` combine conditions. `remove_recipe` is what replaces a
-`neoforge:false` stanza, and `replace_input` replaces a hand-written retarget.
+/ `or` / `and` combine conditions. Since 3.3.0 `type` also matches on the path
+alone (`"pot_cooking"`). `remove_recipe` is what replaces a `neoforge:false`
+stanza, and `replace_input` replaces a hand-written retarget.
+
+### Adding and overriding recipes
+
+**Reliable Recipes adds recipes from its rule files — this pack long assumed it
+could not.** It is not a `RecipeRule$Action`, which is why reading the enum
+missed it: `RecipeConfigIO.computeCustomRecipes` collects recipe objects from the
+same files, and `RecipeModifier.modifyRecipesJson` puts them into the recipe JSON
+map at the head of `RecipeManager.apply`, before anything is parsed. So the normal
+codec reads them, and **any recipe type works**, modded ones included. Present in
+3.2.0 as well.
+
+```json
+{ "action": "add", "id": "farm_and_charm:pot_cooking/chocolate",
+  "recipe": { "type": "farm_and_charm:pot_cooking", ... } }
+```
+
+The other accepted shapes: `add` with the recipe fields inline instead of under
+`recipe`, a bare recipe object with a `type` and no `action` sitting in the rule
+array, or an object holding a `recipes` / `custom_recipes` / `recipe_additions`
+array. `add_recipe` is an alias. An `id` with no namespace is prefixed
+`reliable_recipes:`; with no `id` at all one is derived from the file path.
+
+**An `add` whose `id` matches an existing recipe replaces it**, because it is a
+`Map.put` into the same map the jar recipes are already in. That makes an `add`
+the rule-file equivalent of a CBTweaks recipe override, and it covers everything
+`replace_input`/`replace_output` cannot: a result count, an ingredient count, a
+custom field like `farm_and_charm:pot_cooking`'s `container`, or a whole new
+shape. Added recipes skip the rules (a `replace_input` does not touch them) but
+still go through the hidden-item drop described under Reliable Remover. A loaded
+batch logs `Loaded N custom recipe(s) from reliable_recipes`.
+
+**Confirmed in game.** `kubejs/server_scripts/bakery_jar_retired.js` was
+replaced by two `add` rules in `reliable_recipes/bakery.json`, overriding
+Bakery's jar-shipped `farm_and_charm:pot_cooking/chocolate` and `/pudding` to use
+a glass bottle instead of the retired `bakery:jar`. The log showed `Loaded 2
+custom recipe(s) from reliable_recipes`, no new parse errors, and KubeJS's
+summary going from `removed 2` to `removed 0` — the override needed no removal,
+and the two ids did not end up live twice.
+
+The same mod registers two recipe types worth knowing: `reliable_recipes:brewing`
+(`input`, `reagent`, `output` — data-driven potion brewing, applied through
+`PotionBrewingMixin`) and `reliable_recipes:crafting_transmute` (`input`,
+`material`, `material_count`, `result`, `add_material_count_to_result`, keeping
+the input's components — 1.21.2's transmute recipe, backported).
 
 **The two mods are wired together.** `reliable_remover`'s `CommonClass` calls
 `ReliableRecipesAPI.registerContextualItemHider(...)` at init, and Reliable
@@ -936,6 +1031,17 @@ look like the rule had failed. Treat the count as a smoke alarm for a rule
 matching far too much - dozens, as the `#farm_and_charm:tomato` collapse was -
 and use EMI for anything finer.
 
+**Locate a small delta with KubeJS's own summary before chasing it.** KubeJS
+logs `Found N recipes` (the set after the datapacks and Reliable Recipes, before
+scripts) and `Added A recipes, removed R recipes`, and the loaded total is
+`N - R + A - <parse errors>` exactly. That splits a delta into "came from the
+scripts" and "was already in the set KubeJS was handed". The drift lives in the
+second: two 23 Sept launches with nothing changed found 12897 and 12898, and the
+Reliable Recipes `add` pilot looked like it had lost a recipe (13018 -> 13017)
+until the same split put the -1 in `Found`, not in either rule. A `/reload` is
+the cleanest A/B, since it keeps everything else in the session fixed — the three
+new jam recipes moved 13017 to exactly 13020 that way.
+
 ### `replace_output` is unusable for most modded recipe types
 
 **It rewrites the result correctly and then wraps it in an array.** A rule
@@ -947,13 +1053,80 @@ item in the wrong shape is worse than no rule at all.
 
 Eleven such rules cost 16 recipes and added 16 parse errors in one launch. FD
 cooked rice vanished from the game, because the stockpot is deliberately its only
-source. **Use a datapack override or KubeJS for a result swap**; `replace_input`
-is unaffected, since it preserves the entry shape it replaces.
+source. **Use an `add` rule with the recipe's own id for a result swap** (see
+"Adding and overriding recipes").
 
-**No rule can change a result's count or an ingredient's arity either.** Those
-were the other blockers in the retarget sweep — `mincer/minced_beef` goes 1 -> 2,
-the four jams go from 2 ingredients to 4. `event.custom` in KubeJS handles all of
-it, since it takes the whole recipe JSON.
+**No `replace_*` rule can change a result's count or an ingredient's arity
+either.** Those were the other blockers in the retarget sweep —
+`mincer/minced_beef` goes 1 -> 2, the four jams go from 2 ingredients to 4. An
+`add` with the same id handles all of it, since it takes the whole recipe JSON.
+
+### `replace_input`'s `replacement` must be a bare string, never a `[...]` array
+
+Correction to the note above: **`replace_input` is *not* unaffected** — writing
+`"replacement"` as a JSON array hits the same array-wrapping failure as
+`replace_output`, just gated by the target recipe's ingredient codec instead of
+firing on every recipe. Every rule in this pack was written the array way
+(`"replacement": ["#c:foods/tomato"]`), copying the shape of the mod's own
+`recipe_example.json.disabled`, which uses a *two*-element array to demonstrate
+the genuinely-multi-value case. With one element, that array is pure liability.
+
+Confirmed by decompiling `RecipeModifier.mutateJsonRecursively` in
+`reliable_recipes-neoforge-1.21.1-3.2.0.jar`: when a matched ingredient sits
+inside a plural `ingredients`/`inputs` JSON array (`isIngredientListKey` true —
+the exact shape `farmersdelight:cooking`, `cookscollection:baking`,
+`culturaldelights:cooking`/`tofu`/`aging` and others use) *and* `replacement` is
+a `JsonArray`, the method does `outputArray.add(innerArray)` — nesting the whole
+replacement array as one element — instead of flattening its contents in. The
+result is exactly the observed parse error,
+`Not a JSON object: [{"tag":"c:foods/tomato"}]`. The same method's
+`JsonPrimitive` branch (taken when `replacement` is a bare string) does the
+correct thing in both the list-array context and the single-object context:
+copies the matched object, swaps its `tag`/`item` property in place, and inserts
+that one clean object — no array, no nesting.
+
+This had been silently breaking real recipes for a long time: `farmersdelight:
+cooking/dumplings`, `.../ratatouille`, `.../tomato_sauce`, `.../cabbage_rolls`,
+`.../squid_ink_pasta`, `.../baked_cod_stew`, `cookscollection:baking`'s two
+`ratatouille` sources, `culturaldelights:cooking/empanada`,
+`.../cinnamon_mint_curry`, `.../corn_dog`, `tofu/dumplings`,
+`tofu/cinnamon_mint_curry`, `aging/chilling/bloody_mary`,
+`aging/fermenting/rotten_tomato`, and two `starcatcher_delight` FD-compat stews —
+all failing to load entirely. Unwrapping the arrays took `Loaded NNNNN recipes`
+from 12889 to 12905 and cleared every one of those parse errors, confirmed in
+game. The count only moved because these recipes had never loaded at all; it
+still cannot confirm a `replace_input` that parses but targets the wrong thing.
+Before the fix, the breakage only surfaced as
+`Parsing error loading recipe ...: Not a JSON object: [...]` in the log, one line
+per broken recipe, easy to mistake for a stack of unrelated third-party mod bugs
+since several genuinely-unrelated ones (missing soft-dependency fluids/items in
+`create_factory`, `emi_letsdo_compat`) sit right next to them in the same log
+block.
+
+**Read the error text, not just the recipe id.** `brewinandchewin:pizza_from_dough`
+sat in the same block and looked like one more victim, but its error is
+`Unknown registry key ... item: farmersdelight:dough`. That is a stale id: FD's
+dough is `farmersdelight:wheat_dough`, and the recipe, a `cookscollection:baking`
+alternative shipped in the **cookscollection** jar rather than B&C's, was broken
+upstream. `reliable_recipes/cookscollection.json` retargets it to
+`#c:foods/dough`. `target` matches the string as written, so an id that was
+never registered works as a target, the same way a removed item does. B&C's own
+crafting-grid `pizza` recipe was never affected.
+
+**The fix: never wrap a single-value `replacement` in `[...]`.** Write
+`"replacement": "#c:foods/tomato"`, not `"replacement": ["#c:foods/tomato"]`.
+Reserve the array form for a rule that genuinely wants multiple alternative
+replacements (this pack has none). Every existing rule across
+`config/reliable_recipes/*.json` was converted this way in one pass; if a new
+rule ever needs multiple alternatives, expect it to still only work for recipe
+types using a lenient (NeoForge-patched) `Ingredient` codec — verify in-game the
+same way `replace_output`'s limitation is verified, by checking the recipe
+actually loads, not just that the rule "applied."
+
+**Still unfixed in 3.3.0.** `mutateJsonRecursively` is byte-for-byte the same as
+3.2.0's. 3.3.0 ships a new `RecipeJsonMutator` that looks like groundwork for a
+fix, but nothing calls it yet — re-check this after the next bump rather than
+assuming.
 
 ### Loot belongs in LootJS
 
@@ -1006,15 +1179,16 @@ This pack is being tuned for performance, and the three mechanisms do not cost
 the same. **Use the highest one on this list that can express the change:**
 
 1. **A `reliable_*` rule file.** `remove_recipe` for a `neoforge:false` stanza,
-   `replace_input` for a hand-written ingredient retarget, `replace_output` for
-   a result swap, `remove` for an item retirement, `remove_from_tag` for a tag
+   `replace_input` for a hand-written ingredient retarget, `add` for a new
+   recipe or a whole-recipe override (result swaps, count or arity changes,
+   custom fields), `remove` for an item retirement, `remove_from_tag` for a tag
    `remove` list, Reliable Replacer for a worldgen block override.
-2. **A KubeJS script (or LootJS / MoreJS).** Chiefly *adding* a recipe, which no reliable_* action
-   can do — `RecipeRule$Action` is only `remove`, `replace_input`,
-   `replace_output`, `prevent_repair`, `set_repair_material`. `event.custom({…})`
-   in `ServerEvents.recipes` takes arbitrary JSON, so modded recipe types work,
-   and `Platform.isLoaded('modid')` stands in for a `neoforge:mod_loaded`
-   condition. Also the only home for item-component edits (food, stack size) and
+2. **A KubeJS script (or LootJS / MoreJS).** Recipes generated by code rather
+   than listed, and — until tested — recipes gated on which mods are loaded.
+   An added recipe reaches the same parser as a datapack one, so a
+   `neoforge:conditions` block inside it *should* be honoured, but that is
+   unconfirmed; `Platform.isLoaded('modid')` is the known-good gate. Also the
+   only home for item-component edits (food, stack size), tag *additions*, and
    client-side lang/tooltip work.
 3. **A CBTweaks datapack file.** Last resort, for what neither of the above can
    express: the data map, the vanilla loot restorations, the `minecraft:empty`
@@ -1112,11 +1286,19 @@ a retired item** — the nine KC recipes needed `id` keying because their result
 include `minecraft:bone` and `kaleidoscope_cookery:sashimi`, and output-keying
 would have removed every bone recipe in the pack.
 
+KC 1.6.0 made the chicken and rabbit `chopping_board` cuts multi-result —
+`result` is now an array of the cuts plus one `minecraft:bone`. The output rule
+still matches them on the cuts, and removing the whole recipe is right since its
+point is the retired item; just do not read "the rule matched" as "every result
+was retired".
+
 What deliberately stays hand-written: the ~57 *retarget* recipes (stockpot rice,
 sticky rice cakes, the soups, `straw_block`, `tomato_platter`, and the five meat
 consumers). Reliable Recipes' `replace_input` could express simple swaps, but
 these are heterogeneous rewrites, and `replace_with` on the remover is global per
-item so it cannot handle two targets for one source. The three crop loot tables
+item so it cannot handle two targets for one source. Those reasons predate the
+discovery of `add`: an `add` rule with the recipe's own id expresses any of them,
+so they are now candidates to move into `reliable_recipes/` like the rest. The three crop loot tables
 stay as `{}` — deleting them would fall back to KC's own table and drop the
 retired items again.
 
@@ -1209,6 +1391,23 @@ Retiring an item can orphan neighbours — check for recipes that consumed it an
 now have no input, and for crops whose seed is gone. Planting is code-driven
 (`BlockItem`), so a seedless crop block stays placeable by command but cannot be
 obtained.
+
+**It can also take away a cooking route the survivor relied on.** Brewin' &
+Chewin's `apple_jelly`, `glow_berry_marmalade` and `sweet_berry_jam` were the FD
+cooking-pot recipes for exactly Bakery's apple, glowberry and sweetberry jam inputs
+(three fruit + sugar, glass bottle). Retiring them left those three jams on the
+F&C pot alone, while strawberry and chocolate, which had our own compat recipes,
+kept every station — a visible gap in EMI. `compat_cooking_pot.js` now covers all
+five. When retiring a duplicate, list the stations its recipes ran on and check
+the survivor still has each.
+
+**KC's stockpot runs every `farmersdelight:cooking` recipe.**
+`compat/farmersdelight/CookingPotCompat` hooks `StockpotMatchRecipeEvent$Post`:
+when no stockpot recipe matches, it tries FD's cooking-pot recipes with the same
+input and takes that result, and it lists them under the stockpot in the recipe
+viewer too. So adding an FD cooking recipe adds a stockpot one for free, and a
+stockpot "equivalent" with no recipe file behind it is this fallback, not a bug.
+A real stockpot recipe always wins over it.
 
 ---
 
@@ -1510,9 +1709,11 @@ Note all of these track **killing** a Pokemon, never a battle defeat -
 `PokemonEntity` does not override `die()`, so weapon kills go through vanilla kill
 attribution while battle faints go through `recallWithAnimation()`/`remove()` and
 fire nothing vanilla. Type-filtered *catching* is unreachable from Bountiful; that
-belongs in **Cobblemon Quests**, whose `CobblemonTask` has `pokemons`,
+is **Cobblemon Quests**' job, whose `CobblemonTask` has `pokemons`,
 `pokemonTypes` and an `actions` list including `defeat` (battle) and `kill`
-(entity death), driven off `CobblemonEvents.BATTLE_VICTORY`.
+(entity death), driven off `CobblemonEvents.BATTLE_VICTORY` — but it is **not
+installed**: 1.2.0 crashes on Cobblemon 1.8 and the reloaded fork will not load
+(see "Check a fat jar for package overlap" below).
 
 Cobblemon reference values, read from the jar rather than guessed: EXP candy yields
 are XS 100, S 800, M 3000, L 10000, XL 30000 (`CandyItem.DEFAULT_*_CANDY_YIELD`),
@@ -1621,6 +1822,24 @@ EOF
 This is not fixable from the pack side — the overlap is inside a distributed jar,
 so it needs a slim build from the mod or the older version.
 
+**But the older version does not survive Cobblemon 1.8.** Cobblemon 1.8 renamed
+the `PokedexEntryProgress` constants — `ENCOUNTERED` → `SEEN`, `CAUGHT` → `OWNED`
+(the 1.8.1 enum is `UNREGISTERED, SEEN, OWNED`). Cobblemon Quests 1.2.0 was built
+against 1.7 and reads `CAUGHT` as the first instruction of its
+`POKEDEX_DATA_CHANGED` handler, so **every** Pokédex gain — first sighting, first
+catch of a species or form, evolution, trade, fossil, starter — throws
+`NoSuchFieldError: ... PokedexEntryProgress CAUGHT` and crashes the game as a
+"Ticking entity" (the ball entity mid-catch, for a capture). Its dependency range
+is the open-ended `[1.7.0,)`, so the loader raises nothing and the pack boots and
+plays normally until the first new Pokédex entry. When bumping Cobblemon, check
+every addon's references into its API — a dependency range is not a
+compatibility claim.
+
+**So Cobblemon Quests is removed**, jar and `config/cobblemon_quests/` both. Nothing
+used it: the only FTB Quests chapter, `starting_out`, has plain `item` and `xp`
+tasks. Reinstalling needs a build compiled against Cobblemon 1.8 *and* free of the
+shaded `org/bson` above — check both before it goes back in.
+
 ### Line endings
 
 **`.gitattributes` patterns match case-insensitively on Windows.** The LFS rule
@@ -1685,6 +1904,25 @@ same commit, and drop its `.gitignore` entry if it had one. Look wider than
 `<modid>-client.toml` / `-common.toml` / `-server.toml` triples, and files under
 another mod's namespace, so list what the jar actually created rather than
 guessing from the id.
+
+**A startup crash report names the last mod to trip, not the one that broke.**
+When any mod fails to construct, NeoForge logs `Failed to wait for future Mod
+Construction`, stops loading configs and refuses every later event ("Cowardly
+refusing to send event ... to a broken mod state"). The first mod whose client
+tick reads a config then throws `Cannot get config value before config is
+loaded` — and *that* is what the crash report shows. Seen with Hourglass blamed
+for a Tim Core failure. Grep the log for `Failed to create mod instance` before
+reading the crash report's stack.
+
+**Tim Core can fail to construct at random.** Its `AbstractMod` constructor
+subscribes to `CobblemonEvents.HABITAT_SPAWN_ACTIVATED`, and three mods here run
+that constructor — Tim Core, Capture XP and Spawn Notification — in parallel on
+the mod-loading workers. Cobblemon's `PrioritizedList` is a plain `ArrayList`, so
+two concurrent `subscribe` calls can corrupt it:
+`ArrayIndexOutOfBoundsException: Index 1 out of bounds for length 0` inside
+`ArrayList.add`, which is impossible single-threaded. First seen 2026-09-23, in
+none of the 96 earlier launch logs. Relaunching clears it; the fix is upstream
+(subscribe during setup, not construction).
 
 **Diff error counts against an older log before blaming an update.** Several
 errors that looked like fresh regressions after a mod bump were present at the

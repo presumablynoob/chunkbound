@@ -14,16 +14,12 @@
     {
         "action": "replace_input",
         "target": "#cornexpansion:cheese",
-        "replacement": [
-            "#brewinandchewin:foods/cheese_wedge"
-        ]
+        "replacement": "#brewinandchewin:foods/cheese_wedge"
     },
     {
         "action": "replace_input",
         "target": "minecraft:sugar",
-        "replacement": [
-            "#cornexpansion:sweet_ingredient"
-        ],
+        "replacement": "#cornexpansion:sweet_ingredient",
         "id": [
             "farm_and_charm:pot_cooking/simple_tomato_soup"
         ]

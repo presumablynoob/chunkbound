@@ -1,0 +1,7 @@
+[
+    {
+        "action": "replace_input",
+        "target": "farmersdelight:dough",
+        "replacement": "#c:foods/dough"
+    }
+]

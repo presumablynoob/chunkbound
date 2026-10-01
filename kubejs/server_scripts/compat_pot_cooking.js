@@ -1,8 +1,10 @@
 // Farm & Charm pot-cooking equivalents of other mods' recipes.
 //
-// These recipes have no counterpart in any mod jar - the pack invents them - so no
-// reliable_* rule can express them; RecipeRule$Action has no add. KubeJS is the next
-// step down the hierarchy. Migrated out of CBTweaks/data/chunkbound/recipe/.
+// These recipes have no counterpart in any mod jar - the pack invents them. A
+// Reliable Recipes `add` rule could carry the JSON, but each recipe is gated on
+// which mods are loaded, and whether `neoforge:conditions` survive an `add` is
+// untested - so they stay here until it is. Migrated out of
+// CBTweaks/data/chunkbound/recipe/.
 //
 // The mod_loaded conditions each recipe carried in the datapack become Platform
 // .isLoaded guards. event.custom takes the raw recipe JSON, which is what these

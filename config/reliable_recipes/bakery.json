@@ -8,14 +8,44 @@
     {
         "action": "replace_input",
         "target": "#farm_and_charm:raw_bacon",
-        "replacement": [
-            "#c:foods/raw_bacon"
-        ]
+        "replacement": "#c:foods/raw_bacon"
     },
     {
         "action": "remove_recipe",
         "id": [
             "farm_and_charm:pot_cooking/beetroot_soup"
         ]
+    },
+    {
+        "action": "add",
+        "id": "farm_and_charm:pot_cooking/chocolate",
+        "recipe": {
+            "type": "farm_and_charm:pot_cooking",
+            "ingredients": [
+                { "item": "minecraft:sugar" },
+                { "item": "minecraft:cocoa_beans" },
+                { "tag": "bakery:milk" }
+            ],
+            "container": { "id": "minecraft:glass_bottle" },
+            "result": { "id": "bakery:chocolate_truffle", "count": 4 },
+            "requiresLearning": false,
+            "requireContainer": false
+        }
+    },
+    {
+        "action": "add",
+        "id": "farm_and_charm:pot_cooking/pudding",
+        "recipe": {
+            "type": "farm_and_charm:pot_cooking",
+            "ingredients": [
+                { "tag": "bakery:eggs" },
+                { "tag": "bakery:jam" },
+                { "tag": "bakery:milk" }
+            ],
+            "container": { "id": "minecraft:glass_bottle" },
+            "result": { "id": "bakery:pudding", "count": 1 },
+            "requiresLearning": false,
+            "requireContainer": false
+        }
     }
 ]

@@ -2,71 +2,51 @@
     {
         "action": "replace_input",
         "target": "#c:crops/tomato",
-        "replacement": [
-            "#c:foods/tomato"
-        ]
+        "replacement": "#c:foods/tomato"
     },
     {
         "action": "replace_input",
         "target": "#c:crops/cabbage",
-        "replacement": [
-            "#c:foods/cabbage"
-        ]
+        "replacement": "#c:foods/cabbage"
     },
     {
         "action": "replace_input",
         "target": "#farm_and_charm:tomato",
-        "replacement": [
-            "#c:foods/tomato"
-        ]
+        "replacement": "#c:foods/tomato"
     },
     {
         "action": "replace_input",
         "target": "#farm_and_charm:cabbage",
-        "replacement": [
-            "#c:foods/cabbage"
-        ]
+        "replacement": "#c:foods/cabbage"
     },
     {
         "action": "replace_input",
         "target": "kaleidoscope_cookery:cooked_rice",
-        "replacement": [
-            "#c:foods/cooked_rice"
-        ]
+        "replacement": "#c:foods/cooked_rice"
     },
     {
         "action": "replace_input",
         "target": "farm_and_charm:bacon",
-        "replacement": [
-            "#c:foods/raw_bacon"
-        ]
+        "replacement": "#c:foods/raw_bacon"
     },
     {
         "action": "replace_input",
         "target": "farm_and_charm:chicken_parts",
-        "replacement": [
-            "farmersdelight:chicken_cuts"
-        ]
+        "replacement": "farmersdelight:chicken_cuts"
     },
     {
         "action": "replace_input",
         "target": "farm_and_charm:minced_beef",
-        "replacement": [
-            "farmersdelight:minced_beef"
-        ]
+        "replacement": "farmersdelight:minced_beef"
     },
     {
         "action": "replace_input",
         "target": "#farm_and_charm:dough",
-        "replacement": [
-            "#c:foods/dough"
-        ]
+        "replacement": "#c:foods/dough"
     },
     {
         "action": "replace_input",
         "target": "#farm_and_charm:pasta",
-        "replacement": [
-            "#c:foods/pasta"
-        ]
+        "replacement": "#c:foods/pasta"
     }
 ]

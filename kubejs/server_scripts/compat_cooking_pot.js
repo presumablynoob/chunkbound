@@ -1,8 +1,10 @@
 // Create cooking-pot equivalents of other mods' cooking recipes.
 //
-// These recipes have no counterpart in any mod jar - the pack invents them - so no
-// reliable_* rule can express them; RecipeRule$Action has no add. KubeJS is the next
-// step down the hierarchy. Migrated out of CBTweaks/data/chunkbound/recipe/.
+// These recipes have no counterpart in any mod jar - the pack invents them. A
+// Reliable Recipes `add` rule could carry the JSON, but each recipe is gated on
+// which mods are loaded, and whether `neoforge:conditions` survive an `add` is
+// untested - so they stay here until it is. Migrated out of
+// CBTweaks/data/chunkbound/recipe/.
 //
 // The mod_loaded conditions each recipe carried in the datapack become Platform
 // .isLoaded guards. event.custom takes the raw recipe JSON, which is what these
@@ -11,6 +13,37 @@ ServerEvents.recipes(event => {
   const when = (mods, id, recipe) => {
     if (mods.every(m => Platform.isLoaded(m))) event.custom(recipe).id(id)
   }
+
+  // The apple, glowberry and sweetberry jams had a cooking-pot route through
+  // Brewin' & Chewin's apple_jelly, glow_berry_marmalade and sweet_berry_jam -
+  // same inputs, same glass bottle. Retiring those three items took the route
+  // with them, so these restore it for the Bakery jams. KC's stockpot runs any
+  // farmersdelight:cooking recipe as a fallback (CookingPotCompat), so each one
+  // also appears under the stockpot.
+  when(["bakery", "farmersdelight"], 'chunkbound:compat/cooking_pot/farm_and_charm/pot_cooking/apple_jam', {
+    type: "farmersdelight:cooking",
+    recipe_book_tab: "meals",
+    ingredients: [
+      {
+        item: "minecraft:apple"
+      },
+      {
+        item: "minecraft:apple"
+      },
+      {
+        item: "minecraft:apple"
+      },
+      {
+        item: "minecraft:sugar"
+      }
+    ],
+    container: {
+      id: "minecraft:glass_bottle"
+    },
+    result: {
+      id: "bakery:apple_jam"
+    }
+  })
 
   when(["farm_and_charm", "farmersdelight"], 'chunkbound:compat/cooking_pot/farm_and_charm/pot_cooking/barley_soup', {
     type: "farmersdelight:cooking",
@@ -148,6 +181,31 @@ ServerEvents.recipes(event => {
     result: {
       id: "farm_and_charm:corn_grits",
       count: 1
+    }
+  })
+
+  when(["bakery", "farmersdelight"], 'chunkbound:compat/cooking_pot/farm_and_charm/pot_cooking/glowberry_jam', {
+    type: "farmersdelight:cooking",
+    recipe_book_tab: "meals",
+    ingredients: [
+      {
+        item: "minecraft:glow_berries"
+      },
+      {
+        item: "minecraft:glow_berries"
+      },
+      {
+        item: "minecraft:glow_berries"
+      },
+      {
+        item: "minecraft:sugar"
+      }
+    ],
+    container: {
+      id: "minecraft:glass_bottle"
+    },
+    result: {
+      id: "bakery:glowberry_jam"
     }
   })
 
@@ -480,6 +538,31 @@ ServerEvents.recipes(event => {
     result: {
       id: "farm_and_charm:strawberry_tea",
       count: 1
+    }
+  })
+
+  when(["bakery", "farmersdelight"], 'chunkbound:compat/cooking_pot/farm_and_charm/pot_cooking/sweetberry_jam', {
+    type: "farmersdelight:cooking",
+    recipe_book_tab: "meals",
+    ingredients: [
+      {
+        item: "minecraft:sweet_berries"
+      },
+      {
+        item: "minecraft:sweet_berries"
+      },
+      {
+        item: "minecraft:sweet_berries"
+      },
+      {
+        item: "minecraft:sugar"
+      }
+    ],
+    container: {
+      id: "minecraft:glass_bottle"
+    },
+    result: {
+      id: "bakery:sweetberry_jam"
     }
   })
 

@@ -66,71 +66,51 @@
     {
         "action": "replace_input",
         "target": "#farm_and_charm:onion",
-        "replacement": [
-            "#c:foods/onion"
-        ]
+        "replacement": "#c:foods/onion"
     },
     {
         "action": "replace_input",
         "target": "farm_and_charm:onion",
-        "replacement": [
-            "#c:foods/onion"
-        ]
+        "replacement": "#c:foods/onion"
     },
     {
         "action": "replace_input",
         "target": "farm_and_charm:tomato",
-        "replacement": [
-            "#c:foods/tomato"
-        ]
+        "replacement": "#c:foods/tomato"
     },
     {
         "action": "replace_input",
         "target": "#farm_and_charm:strawberry",
-        "replacement": [
-            "#c:foods/strawberry"
-        ]
+        "replacement": "#c:foods/strawberry"
     },
     {
         "action": "replace_input",
         "target": "farm_and_charm:lettuce",
-        "replacement": [
-            "farmersdelight:cabbage"
-        ]
+        "replacement": "farmersdelight:cabbage"
     },
     {
         "action": "replace_input",
         "target": "#farm_and_charm:cooked_beef",
-        "replacement": [
-            "#c:foods/cooked_beef"
-        ]
+        "replacement": "#c:foods/cooked_beef"
     },
     {
         "action": "replace_input",
         "target": "#farm_and_charm:raw_chicken",
-        "replacement": [
-            "#c:foods/raw_chicken"
-        ]
+        "replacement": "#c:foods/raw_chicken"
     },
     {
         "action": "replace_input",
         "target": "#farm_and_charm:raw_pork",
-        "replacement": [
-            "#c:foods/raw_pork"
-        ]
+        "replacement": "#c:foods/raw_pork"
     },
     {
         "action": "replace_input",
         "target": "#farm_and_charm:raw_beef",
-        "replacement": [
-            "#c:foods/raw_beef"
-        ]
+        "replacement": "#c:foods/raw_beef"
     },
     {
         "action": "replace_input",
         "target": "#farm_and_charm:bread",
-        "replacement": [
-            "#c:bread"
-        ]
+        "replacement": "#c:bread"
     }
 ]

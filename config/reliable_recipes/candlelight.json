@@ -8,15 +8,11 @@
     {
         "action": "replace_input",
         "target": "#candlelight:cheeses",
-        "replacement": [
-            "#brewinandchewin:foods/cheese_wedge"
-        ]
+        "replacement": "#brewinandchewin:foods/cheese_wedge"
     },
     {
         "action": "replace_input",
         "target": "candlelight:mozzarella",
-        "replacement": [
-            "#brewinandchewin:foods/cheese_wedge"
-        ]
+        "replacement": "#brewinandchewin:foods/cheese_wedge"
     }
 ]
