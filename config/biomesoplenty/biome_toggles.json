@@ -3,7 +3,7 @@
   "auroral_garden_enabled": true,
   "bayou_enabled": true,
   "bog_enabled": true,
-  "cold_desert_enabled": true,
+  "cold_desert_enabled": false,
   "coniferous_forest_enabled": true,
   "crag_enabled": true,
   "crystalline_chasm_enabled": true,
