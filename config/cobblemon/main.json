@@ -23,7 +23,7 @@
   "maxVerticalSpace": 8,
   "spawningZoneDiameter": 8,
   "spawningZoneHeight": 16,
-  "ticksBetweenSpawnAttempts": 30.0,
+  "ticksBetweenSpawnAttempts": 33.3,
   "minimumSpawningZoneDistanceFromPlayer": 16.0,
   "maximumSpawningZoneDistanceFromPlayer": 64.0,
   "maximumSpawnsPerPass": 4,
@@ -39,7 +39,7 @@
   "luckyEggMultiplier": 1.5,
   "allowSpectating": true,
   "experienceMultiplier": 2.0,
-  "pokemonPerChunk": 1.0,
+  "pokemonPerChunk": 0.88,
   "pokeSnackPokemonPerChunk": 2.0,
   "passiveStatuses": {
     "cobblemon:poison": "180-300",

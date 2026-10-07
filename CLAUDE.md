@@ -1589,17 +1589,29 @@ it in `config/cobblemon/main.json`, not In Control.
 
 ### Cobblemon spawn tuning
 
-**The pack ships these at stock.** A tightening pass was tried for server
+**The pack ships these at stock, bar two.** A tightening pass was tried for server
 performance and reverted - every intermediate setting read as too sparse in play,
-so Cobblemon's own defaults are the baseline. The reference below is kept because
+so Cobblemon's own defaults are the baseline. The deviations are small, deliberate
+cuts:
+
+- `ticksBetweenSpawnAttempts` 30.0 -> 33.3, a 10% cut in spawn throughput. It goes
+  on the interval rather than `maximumSpawnsPerPass` because that is an int and
+  4 -> 3 would be a 25% cut.
+- `pokemonPerChunk` 1.0 -> 0.88, one Pokemon fewer per player area. The bail test
+  is float `nearby / 9f >= value`, so the cap only moves in steps of 1/9 and a
+  value **between** steps does nothing: 0.9 bails at the same `nearby` (9) as 1.0.
+  The step down to bailing at 8 needs `value <= 8/9 = 0.8889`, and 0.889 is just
+  *above* that, so it is a no-op too. 0.88 sits safely under the boundary.
+
+The reference below is kept because
 every value was read out of the jar and the arithmetic is not what the names
 suggest; get these wrong and a change does nothing, or does the opposite.
 
 | Key | Stock | What it actually does |
 |---|---|---|
-| `pokemonPerChunk` | 1.0 | `Spawner.calculateSpawnActionsForArea` counts `PokemonEntity`s with `getCountsTowardsSpawnCap()` in a 96 x 1000 x 96 box around the spawning zone and bails when `nearby / 9 >= max(pokemonPerChunk, spawner.maxPokemonPerChunk)`. 1.0 therefore allows 8 wild Pokemon in that column. |
+| `pokemonPerChunk` | 1.0 (pack: 0.88) | `Spawner.calculateSpawnActionsForArea` counts `PokemonEntity`s with `getCountsTowardsSpawnCap()` in a 96 x 1000 x 96 box around the spawning zone and bails when `nearby / 9 >= max(pokemonPerChunk, spawner.maxPokemonPerChunk)`. 1.0 therefore allows 8 wild Pokemon in that column. |
 | `pokeSnackPokemonPerChunk` | 2.0 | Same formula for `PokeSnackBlockEntity`'s `FixedAreaSpawner`. **A derived value, not an independent one:** because of the `max(...)`, anything at or below `pokemonPerChunk` does nothing at all. Move it whenever `pokemonPerChunk` moves. |
-| `ticksBetweenSpawnAttempts` | 30.0 | `PlayerSpawner` runs one pass **per player** this often. Each pass does the 96 x 1000 x 96 `getEntitiesOfClass` plus zone generation, so this is the most expensive knob of the set. |
+| `ticksBetweenSpawnAttempts` | 30.0 (pack: 33.3) | `PlayerSpawner` runs one pass **per player** this often. Each pass does the 96 x 1000 x 96 `getEntitiesOfClass` plus zone generation, so this is the most expensive knob of the set. |
 | `maximumSpawnsPerPass` | 4 | Passed as the `max` argument to `SpawningSelector.select`. Spawn throughput is `maximumSpawnsPerPass / ticksBetweenSpawnAttempts`, and **this is the cheap half of that ratio** - the expensive scan has already happened by the time it applies, so changing it adds or removes spawns at near-zero CPU. Tune this before touching the interval. |
 | `minimumDistanceBetweenEntities` | 14.0 | Inflates the zone AABB in `CobblemonSpawningZoneGenerator`; `AreaSpawnablePositionResolver` then rejects positions within it of an existing entity. It interacts with `pokemonPerChunk`: at 20-block spacing a 96 x 96 area only fits about 23 positions, so a raised spacing can make a raised density ceiling unreachable. Tune the two together. |
 | `despawnerNearDistance` / `despawnerMinAgeTicks` | 32.0 / 600 | **Leave these alone.** Together they are the only thing stopping a Pokemon vanishing while a player walks toward it. |
