@@ -1891,6 +1891,12 @@ Every blob in the repo is **LF**. `.gitattributes` is `* text=auto eol=lf`, with
 `xaerohud.txt`, `badoptimizations.txt` and `defaultoptions/options.txt`. `eol`
 only affects the working directory; `text=auto` still normalizes to LF on commit.
 
+**Not every `.toml` comes from NeoForge's writer.** More Culling writes its own
+`config/moreculling.toml` with LF endings, so the blanket CRLF rule would check
+it out wrong and it would show as modified on every launch. It has an `eol=lf`
+exception *below* the toml rule, since later `.gitattributes` lines win. Run
+`file` on a new mod's TOML before assuming it is CRLF.
+
 The point is to make checkout write exactly what the mods write. When it doesn't,
 files show as **modified with a completely empty `git diff`**: git records the
 on-disk size at checkout, the mod rewrites the file with different endings, the

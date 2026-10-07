@@ -42,5 +42,9 @@
 	// How raid coordinate allocation is determined (Options: SPIRAL, RANDOM). Default: SPIRAL
 	"raid_allocation": "SPIRAL",
 	// Whether IVs from raids affect the Pokemon's natural IVs or hyper trained IVs. Default: true
-	"use_natural_ivs": true
+	"use_natural_ivs": true,
+	/* Whether players are invulnerable to damage in the raid dimension.
+	   WARNING: Player deaths in the raid dimension is not directly supported. Disable at your own risk.
+	*/
+	"player_invulnerability": true
 }

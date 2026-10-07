@@ -90,6 +90,7 @@ config/sodium-options.json
 config/spawn_notification.json
 config/structure_layout_optimizer.jsonc
 config/tim_core.json
+config/zfastnoise.mixin.properties
 
 # KubeJS's own regenerated runtime settings (not scripts/data)
 kubejs/config/
