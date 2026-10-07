@@ -1,0 +1,13 @@
+{
+  "effect.kaleidoscope_nether.mysterious_poison.description": "Hurts you over time. Higher levels hurt harder and more often.",
+  "effect.kaleidoscope_nether.crimson": "Crimson",
+  "effect.kaleidoscope_nether.crimson.description": "Makes your attacks much stronger and lets them go through armor. Higher levels make attacks even stronger.",
+  "effect.kaleidoscope_nether.warped": "Warped",
+  "effect.kaleidoscope_nether.warped.description": "Stops mobs from attacking you, and makes mobs chasing you give up. Ends as soon as you hit something.",
+  "effect.kaleidoscope_nether.star_blessing": "Star Blessing",
+  "effect.kaleidoscope_nether.star_blessing.description": "Removes bad effects and blocks new ones. Greatly reduces damage taken, stops knockback, and heals you quickly.",
+  "effect.kaleidoscope_nether.ghost": "Ghost",
+  "effect.kaleidoscope_nether.ghost.description": "Lets you climb walls by walking into them. Prevents fall damage while touching a wall.",
+  "effect.kaleidoscope_nether.tropical_strider": "Tropical Strider",
+  "effect.kaleidoscope_nether.tropical_strider.description": "Prevents fire and lava damage. In the Nether, stops any block from slowing you down."
+}

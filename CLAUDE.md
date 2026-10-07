@@ -589,6 +589,28 @@ to add one key under another mod's namespace.
 (emiffect falls back to `.desc`). Without one it shows
 *"The effect appears to have no descriptions..."*.
 
+**A mod's lang file can name effects that do not exist.** Kaleidoscope Nether
+1.1.2's `en_us.json` keys its effects as `crimson_buff`, `warped_buff`,
+`star_blessing_buff`, `ghost_buff`, `lava_walker` and others, but `KNEffects`
+registers `crimson`, `warped`, `star_blessing`, `ghost` and `tropical_strider`
+(only `zh_cn.json` matches), so five effects showed raw keys in English. Take
+ids from the `DeferredRegister.register` strings in the registry class, not from
+the lang file. The mod-authored descriptions are not reliable either: KE's Mint
+claims only magic damage is reduced, but its `LivingDamageEvent$Pre` handler cuts
+**all** damage by 80%. Read the handler before trusting a description.
+`CBResources/assets/kaleidoscope_{nether,end}/lang/en_us.json` carry the fixes.
+
+**House style for any effect description we write.** Match emiffect's vanilla
+set: open with a verb and drop the subject ("Increases…", "Prevents…",
+"Lets you…", "Stops…"), with "you" only as an object, and end with "Higher
+levels …" only when the code actually reads the amplifier. No numbers - no
+percentages, durations or "Slowness II". Plain words a kid would understand;
+Minecraft terms like mobs, smelted and Endermen are fine. One or two short
+sentences. "Greatly reduces damage taken, stops knockback, and heals you
+quickly." - not "Damage taken is reduced by 80%", and not "You take much less
+damage". Work out the behaviour from the code first; the wording is simple, the
+facts still have to be right.
+
 **Tag display names** come from `tag.item.<namespace>.<path>`, dots replacing
 `:` and `/`.
 
